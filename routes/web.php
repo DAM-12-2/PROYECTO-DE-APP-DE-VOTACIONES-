@@ -23,16 +23,6 @@ Route::get('/kiosko', function () {
 })->name('kiosko');
 
 Route::get('/', function () {
-    if (auth()->check()) {
-        $user = auth()->user();
-        if ($user->role === 'jrv') {
-            return redirect('/jrv');
-        }
-        if ($user->role === 'tee') {
-            return redirect('/tribunal');
-        }
-        return redirect('/admin');
-    }
     return redirect('/login');
 });
 
