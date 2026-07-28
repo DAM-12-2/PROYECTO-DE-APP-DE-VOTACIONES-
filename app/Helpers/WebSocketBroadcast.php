@@ -1,0 +1,1 @@
+<?php namespace App\Helpers; class WebSocketBroadcast { public static function votoRegistrado($idMesa) {} public static function urnaCambioEstado($idUrna, $idEstudiante, $idMesa, $activada) {} public static function aperturaCierre($abierto) {} }

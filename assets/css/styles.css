@@ -1,0 +1,6 @@
+.nav-link.active {
+    background-color: rgba(0, 30, 64, 0.05);
+    border-left-color: #001e40;
+    color: #001e40;
+    font-weight: 600;
+}

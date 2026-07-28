@@ -1,0 +1,1 @@
+<?php namespace App\Helpers; class NumeroALetras { public static function convertir($numero) { return ''; } }
