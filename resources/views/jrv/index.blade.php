@@ -15,8 +15,13 @@
 <a class="text-label-lg font-label-lg text-on-surface-variant hover:text-on-surface transition-colors" href="#">Instrucciones</a>
 </nav>
 <div class="flex items-center gap-base border-l border-outline-variant pl-gutter">
-<span class="hidden sm:block text-label-sm font-label-sm text-on-surface-variant">Estudiante</span>
-<img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLuTBFcc-2slsMcGa9bAzK26iSHmQZRm4Lj5DMIgu32aygymwnLN_p_Q52xZlsMIjknAXAE6yTZWVJWqcJC6QOrPTb88ofuJC6hxdyOOiPha5kcxHKH3j2GI1IeAb-hy4E8I6oCPBPBThHKsORXUSye7CtS4cReERkk3MiLVpz74AYqFC_QxnnustxuPimMg-yyLeW4EMOokj1xBcw5_cFV3lmLo53IrOhmGhCCHIRaRUxKt-QyVRpCnSxKHbxlw4MRMLjWZbiuQ"/>
+<span class="hidden sm:block text-label-sm font-label-sm text-on-surface-variant">{{ Auth::user()->name ?? 'Estudiante' }}</span>
+<form method="POST" action="{{ route('logout') }}" class="inline">
+@csrf
+<button type="submit" class="p-2 text-error hover:bg-error-container/20 rounded-full transition-colors flex items-center gap-1" title="Cerrar sesión">
+<span class="material-symbols-outlined text-sm">logout</span>
+</button>
+</form>
 </div>
 </div>
 </div>
