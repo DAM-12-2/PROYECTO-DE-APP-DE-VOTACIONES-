@@ -1,168 +1,184 @@
 <!DOCTYPE html>
-<html lang="es">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="csrf-token" content="{{ csrf_token() }}">
-  <title>Panel de Administración — Votaciones</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <script src="/js/admin-config.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/css/admin.css">
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>@yield('title', 'Admin Dashboard — Sistema Electoral')</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "on-primary": "#ffffff",
+          "surface-container-low": "#f3f4f5",
+          "surface-dim": "#d9dadb",
+          "surface-container-high": "#e7e8e9",
+          "secondary-fixed": "#ffe16d",
+          "on-secondary-container": "#6e5c00",
+          "on-background": "#191c1d",
+          "primary-fixed": "#d5e3ff",
+          "on-secondary-fixed-variant": "#544600",
+          "on-tertiary-fixed": "#00210c",
+          "surface-container": "#edeeef",
+          "on-primary-fixed": "#001b3c",
+          "primary-fixed-dim": "#a7c8ff",
+          "surface-container-highest": "#e1e3e4",
+          "secondary-container": "#fcd400",
+          "on-primary-container": "#799dd6",
+          "error-container": "#ffdad6",
+          "on-error": "#ffffff",
+          "secondary-fixed-dim": "#e9c400",
+          "outline": "#737780",
+          "surface-tint": "#3a5f94",
+          "on-tertiary": "#ffffff",
+          "on-tertiary-fixed-variant": "#005228",
+          "surface-container-lowest": "#ffffff",
+          "primary-container": "#003366",
+          "outline-variant": "#c3c6d1",
+          "tertiary-fixed": "#6bfe9c",
+          "secondary": "#705d00",
+          "surface-bright": "#f8f9fa",
+          "on-surface": "#191c1d",
+          "surface": "#f8f9fa",
+          "tertiary-container": "#003c1b",
+          "on-secondary-fixed": "#221b00",
+          "tertiary": "#00240e",
+          "primary": "#001e40",
+          "on-surface-variant": "#43474f",
+          "inverse-primary": "#a7c8ff",
+          "error": "#ba1a1a",
+          "tertiary-fixed-dim": "#4ae183",
+          "on-primary-fixed-variant": "#1f477b",
+          "on-tertiary-container": "#00b35d",
+          "background": "#f8f9fa",
+          "on-secondary": "#ffffff",
+          "inverse-on-surface": "#f0f1f2",
+          "surface-variant": "#e1e3e4",
+          "on-error-container": "#93000a",
+          "inverse-surface": "#2e3132"
+        },
+        borderRadius: {
+          DEFAULT: "0.125rem",
+          lg: "0.25rem",
+          xl: "0.5rem",
+          full: "0.75rem"
+        },
+        spacing: {
+          "container-padding": "24px",
+          gutter: "16px",
+          "card-gap": "20px",
+          "section-margin": "40px",
+          base: "8px"
+        },
+        fontFamily: {
+          "body-md": ["Inter"],
+          "headline-sm": ["Inter"],
+          "label-lg": ["Inter"],
+          "body-lg": ["Inter"],
+          "label-sm": ["Inter"],
+          "headline-lg-mobile": ["Inter"],
+          "headline-md": ["Inter"],
+          "headline-lg": ["Inter"]
+        },
+        fontSize: {
+          "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+          "headline-sm": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+          "label-lg": ["14px", { lineHeight: "20px", fontWeight: "600" }],
+          "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+          "label-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+          "headline-lg-mobile": ["24px", { lineHeight: "32px", fontWeight: "700" }],
+          "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+          "headline-lg": ["30px", { lineHeight: "38px", letterSpacing: "-0.02em", fontWeight: "700" }]
+        }
+      }
+    }
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .material-symbols-outlined.fill {
+    font-variation-settings: 'FILL' 1;
+  }
+  body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; color: #191c1d; }
+  .nav-item.active {
+    border-left-width: 4px;
+    border-color: #001e40;
+    background-color: #d5e3ff;
+    color: #001b3c;
+    font-weight: 600;
+  }
+  .nav-item.active .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1;
+  }
+  .section-content { display: none; }
+  .section-content.active { display: block; }
+</style>
 </head>
-
-<body class="text-slate-800 antialiased flex h-screen overflow-hidden">
-
- <!-- Sidebar -->
- <aside class="w-56 lg:w-64 bg-slate-900 text-slate-300 flex flex-col shadow-xl z-20 shrink-0">
-  <div class="h-16 flex items-center px-6 border-b border-slate-800">
-   <i class="ph ph-shield-check text-brand-500 text-2xl mr-3"></i>
-   <span class="text-white font-bold text-lg tracking-wide">Cómputo<span class="text-brand-500">SYS</span></span>
-  </div>
-
-   <div class="flex-1 overflow-y-auto py-4">
-    @php $currentRoute = request()->path(); @endphp
-     <nav class="space-y-1 px-3">
-      <a href="/admin"
-       class="flex items-center px-3 py-2.5 {{ $currentRoute == 'admin' ? 'bg-brand-600/10 text-brand-500' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} rounded-lg transition-colors">
-       <i class="ph ph-squares-four text-xl mr-3"></i>
-       <span class="font-medium">Panel de Control</span>
-      </a>
-
-      @if(auth()->user()?->isAdmin() || auth()->user()?->isTee())
-      <p class="px-3 pt-4 pb-1 text-xs font-bold text-slate-600 uppercase tracking-widest">Padrón & Partidos</p>
-
-      <a href="/admin/estudiantes"
-       class="flex items-center px-3 py-2.5 {{ str_contains($currentRoute, 'estudiantes') ? 'bg-brand-600/10 text-brand-500' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} rounded-lg transition-colors">
-       <i class="ph ph-users text-xl mr-3"></i>
-       <span class="font-medium">Estudiantes</span>
-      </a>
-
-      <a href="/admin/partidos"
-       class="flex items-center px-3 py-2.5 {{ str_contains($currentRoute, 'partidos') ? 'bg-brand-600/10 text-brand-500' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} rounded-lg transition-colors">
-       <i class="ph ph-flag-banner text-xl mr-3"></i>
-       <span class="font-medium">Partidos</span>
-      </a>
-
-      <a href="/admin/candidatos"
-       class="flex items-center px-3 py-2.5 {{ str_contains($currentRoute, 'candidatos') ? 'bg-brand-600/10 text-brand-500' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} rounded-lg transition-colors">
-       <i class="ph ph-medal text-xl mr-3"></i>
-       <span class="font-medium">Candidaturas</span>
-      </a>
-
-      <p class="px-3 pt-4 pb-1 text-xs font-bold text-slate-600 uppercase tracking-widest">Infraestructura</p>
-
-      <a href="/admin/urnas"
-       class="flex items-center px-3 py-2.5 {{ str_contains($currentRoute, 'urnas') ? 'bg-brand-600/10 text-brand-500' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} rounded-lg transition-colors">
-       <i class="ph ph-desktop text-xl mr-3"></i>
-       <span class="font-medium">Urnas / Terminales</span>
-      </a>
-
-      <a href="/admin/mesas"
-       class="flex items-center px-3 py-2.5 {{ str_contains($currentRoute, 'mesas') ? 'bg-brand-600/10 text-brand-500' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} rounded-lg transition-colors">
-       <i class="ph ph-table text-xl mr-3"></i>
-       <span class="font-medium">Mesas Electorales</span>
-      </a>
-
-       <p class="px-3 pt-4 pb-1 text-xs font-bold text-slate-600 uppercase tracking-widest">Resultados & Auditoría</p>
-
-       <a href="/admin/resultados"
-        class="flex items-center px-3 py-2.5 {{ str_contains($currentRoute, 'resultados') ? 'bg-brand-600/10 text-brand-500' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} rounded-lg transition-colors">
-        <i class="ph ph-chart-pie-slice text-xl mr-3"></i>
-        <span class="font-medium">Resultados Oficiales</span>
-       </a>
-
-       <a href="/admin/reportes"
-        class="flex items-center px-3 py-2.5 {{ str_contains($currentRoute, 'reportes') ? 'bg-brand-600/10 text-brand-500' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} rounded-lg transition-colors">
-        <i class="ph ph-file-text text-xl mr-3"></i>
-        <span class="font-medium">Reportes</span>
-       </a>
-      @endif
-
-      <a href="/admin/incidentes"
-       class="flex items-center px-3 py-2.5 {{ str_contains($currentRoute, 'incidentes') ? 'bg-brand-600/10 text-brand-500' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} rounded-lg transition-colors">
-       <i class="ph ph-warning-octagon text-xl mr-3"></i>
-       <span class="font-medium">Incidentes</span>
-      </a>
-
-      @if(auth()->user()?->isAdmin() || auth()->user()?->isTee())
-      <a href="/admin/bitacora"
-       class="flex items-center px-3 py-2.5 {{ str_contains($currentRoute, 'bitacora') ? 'bg-brand-600/10 text-brand-500' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} rounded-lg transition-colors">
-       <i class="ph ph-book-open-text text-xl mr-3"></i>
-       <span class="font-medium">Bitácora</span>
-      </a>
-      @endif
-
-      @if(auth()->user()?->isAdmin())
-      <p class="px-3 pt-4 pb-1 text-xs font-bold text-slate-600 uppercase tracking-widest">Sistema</p>
-
-      <a href="/admin/usuarios"
-       class="flex items-center px-3 py-2.5 {{ str_contains($currentRoute, 'usuarios') ? 'bg-brand-600/10 text-brand-500' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} rounded-lg transition-colors">
-       <i class="ph ph-user-circle-gear text-xl mr-3"></i>
-       <span class="font-medium">Usuarios</span>
-      </a>
-      @endif
-
-      <a href="/admin/tee"
-       class="flex items-center px-3 py-2.5 {{ str_contains($currentRoute, 'tee') ? 'bg-brand-600/10 text-brand-500' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} rounded-lg transition-colors">
-       <i class="ph ph-scales text-xl mr-3"></i>
-       <span class="font-medium">Tribunal (TEE)</span>
-      </a>
-
-      @if(auth()->user()?->isAdmin())
-      <a href="/admin/configuracion"
-       class="flex items-center px-3 py-2.5 {{ str_contains($currentRoute, 'configuracion') ? 'bg-brand-600/10 text-brand-500' : 'text-slate-400 hover:text-white hover:bg-slate-800' }} rounded-lg transition-colors">
-       <i class="ph ph-gear text-xl mr-3"></i>
-       <span class="font-medium">Configuración</span>
-      </a>
-      @endif
-     </nav>
-   </div>
-
-  <div class="p-4 border-t border-slate-800">
-   <div class="flex items-center justify-between">
-    <div class="flex items-center">
-     <div
-      class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-white font-bold shadow-inner text-sm">
-      {{ substr(Auth::user()->name ?? 'A', 0, 1) }}
-     </div>
-     <div class="ml-3">
-      <p class="text-sm font-medium text-white">{{ Auth::user()->name ?? 'Admin' }}</p>
-     </div>
-    </div>
-     <a href="{{ auth()->user()?->role === 'admin' ? '/Html/login.html' : '/Html/Tribunal_est.html' }}"
-        class="text-slate-500 hover:text-red-400 transition-colors" title="Cerrar Sesión">
-      <i class="ph ph-sign-out text-xl"></i>
-     </a>
-   </div>
-  </div>
- </aside>
-
- <!-- Main Content -->
- <main class="flex-1 flex flex-col h-screen overflow-hidden">
-  <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:px-8 z-10 shrink-0">
-   <h1 class="text-base md:text-xl font-semibold text-slate-800 truncate">@yield('title', 'Dashboard')</h1>
-   <div class="flex items-center space-x-2 md:space-x-3 shrink-0">
-    <a href="/kiosko" target="_blank"
-     class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 md:px-3 py-1.5 rounded-lg font-bold transition-colors whitespace-nowrap">
-     <i class="ph ph-monitor mr-1"></i> <span class="hidden sm:inline">Ver Kiosko</span><span class="sm:hidden">Kiosko</span>
-    </a>
-    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest hidden lg:inline">Junta Receptora</span>
-   </div>
-  </header>
-
-  <div class="flex-1 overflow-auto bg-slate-50 p-4 md:p-8">
-   <div class="max-w-7xl mx-auto">
-    @yield('content')
-   </div>
-  </div>
- </main>
-
- <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
- @stack('scripts')
-</body>
-
-</html>
+<body class="bg-background text-on-background flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-full py-6 bg-surface-container-lowest border-r border-outline-variant w-[280px] h-screen fixed left-0 top-0 z-20">
+<div class="px-6 mb-8 flex items-center gap-4">
+<img alt="Institution Logo" class="w-12 h-12 rounded-full border border-outline-variant object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiUe5r27lUDB32rXuNSmDo8VCjlvcI8WSHSd1QxDHFSAvGxwZHYZvlM79vQOERWy1_Pv3ktYp7vaQw1uoJueLO7hQrG76tHpssZVuNOcT5oKgtT9_1n6F1JG_EgdQbEf8LMVqyZ2yi0DVySY1Gei6JzCdi2ewoqOAiyQxMsmqZy0rtwUilO0uur3r8Pz5lZWuusb6F1Z3tCreVf-hqWQPvXN3wkXvrhr4X_tbPUmsCNvz_aHWK2S8Gv8vRMElPHs4fVg"/>
+<div class="overflow-hidden">
+<h1 class="font-headline-md text-headline-md text-primary truncate">Sistema Electoral</h1>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Administrador</p>
+</div>
+</div>
+@php $route = request()->path(); @endphp
+<ul class="flex-1 space-y-1" id="nav-menu">
+<li><a class="nav-item {{ $route == 'admin' ? 'active' : '' }} flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 active:scale-95" href="{{ route('admin.dashboard') }}"><span class="material-symbols-outlined">dashboard</span>Inicio</a></li>
+<li><a class="nav-item {{ str_contains($route, 'configuracion') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 active:scale-95" href="{{ route('admin.settings') }}"><span class="material-symbols-outlined">settings</span>Parámetros</a></li>
+<li><a class="nav-item {{ str_contains($route, 'estudiantes') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 active:scale-95" href="{{ route('admin.students') }}"><span class="material-symbols-outlined">person</span>Estudiantes</a></li>
+<li><a class="nav-item {{ str_contains($route, 'respaldar') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 active:scale-95" href="{{ route('admin.backup') }}"><span class="material-symbols-outlined">backup</span>Respaldar Base de Datos</a></li>
+<li><a class="nav-item {{ str_contains($route, 'bitacora') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 active:scale-95" href="{{ route('admin.bitacora') }}"><span class="material-symbols-outlined">history</span>Consultar bitácora</a></li>
+<li><a class="nav-item {{ str_contains($route, 'usuarios') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 active:scale-95" href="{{ route('admin.usuarios') }}"><span class="material-symbols-outlined">group</span>Usuarios</a></li>
+<li><a class="nav-item {{ str_contains($route, 'ayuda') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 active:scale-95" href="{{ route('admin.help') }}"><span class="material-symbols-outlined">help</span>Ayuda</a></li>
+</ul>
+<div class="px-4 mt-auto">
+<form method="POST" action="{{ route('logout') }}">
+@csrf
+<button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-error hover:bg-error-container hover:text-on-error-container rounded-lg transition-colors transition-all duration-200 active:scale-95">
+<span class="material-symbols-outlined">logout</span>Cerrar Sesión
+</button>
+</form>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="flex items-center justify-between px-gutter w-full h-16 fixed top-0 right-0 md:left-[280px] md:w-[calc(100%-280px)] z-10 bg-surface-container border-b border-outline-variant">
+<div class="flex items-center gap-4 min-w-0">
+<button class="md:hidden p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full" onclick="document.querySelector('nav').classList.toggle('hidden')"><span class="material-symbols-outlined">menu</span></button>
+<span class="font-headline-lg text-headline-lg text-primary hidden md:block truncate">Sistema Electoral Institucional</span>
+</div>
+<div class="flex items-center gap-4 shrink-0">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors cursor-pointer active:opacity-80 rounded-full"><span class="material-symbols-outlined">notifications</span></button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors cursor-pointer active:opacity-80 rounded-full"><span class="material-symbols-outlined">account_circle</span></button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-0 md:ml-[280px] mt-16 p-container-padding overflow-y-auto" id="main-content">
+<div class="max-w-7xl mx-auto space-y-section-margin pb-20">
+@yield('content')
+</div>
+</main>
+<!-- Logout Modal -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" id="logout-modal">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 w-full max-w-sm shadow-xl">
+<div class="flex items-center gap-3 text-error mb-4">
+<span class="material-symbols-outlined text-3xl">logout</span>
+<h3 class="font-headline-sm text-headline-sm">Cerrar Sesión</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">¿Está seguro que desea salir del sistema?</p>
+<div class="flex justify-end gap-3">
+<button class="px-4 py-2 text-primary font-label-lg hover:bg-surface-container rounded-lg transition-colors" onclick="document.getElementById('logout-modal').classList.add('hidden')">Cancelar</button>
+<button class="px-4 py-2 bg-error text-on-error font-label-lg rounded-lg hover:bg-[#93000a] transition-colors" onclick="document.querySelector('#logout-modal + form')?.submit() || document.querySelector('form[action*=\"logout\"]').submit()">Salir</button>
+</div>
+</div>
+</div>
+@stack('scripts')
+</body></html>

@@ -2,50 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\BitacoraService;
-use App\Services\BackupService;
-use App\Services\ElectionService;
-use App\Services\FileUploadService;
-use App\Services\InstitutionService;
 use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
-    private BitacoraService $bitacoraService;
-    private ElectionService $electionService;
-    private InstitutionService $institutionService;
-    private FileUploadService $fileUploadService;
-    private BackupService $backupService;
-
-    public function __construct(BitacoraService $bitacoraService, ElectionService $electionService, InstitutionService $institutionService, FileUploadService $fileUploadService, BackupService $backupService)
-    {
-    }
-
     public function settings()
     {
+        return view('admin.settings');
     }
 
     public function updateSettings(Request $request)
     {
+        return back();
     }
 
     public function toggleEleccion(Request $request)
     {
+        return back();
     }
 
     public function resetVotos(Request $request)
     {
+        return back();
     }
 
     public function resetCompleto(Request $request)
     {
+        return back();
     }
 
-    public function backupDownload()
+    public function backupDownload(Request $request)
     {
+        return view('admin.backup');
     }
 
     public function backupRestore(Request $request)
     {
+        return back();
     }
 }

@@ -16,6 +16,7 @@ use App\Http\Controllers\ResultController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\JrvController;
+use App\Http\Controllers\TribunalController;
 
 Route::get('/kiosko', function () {
     return view('voting.urna');
@@ -27,6 +28,9 @@ Route::get('/', function () {
         if ($user->role === 'jrv') {
             return redirect('/jrv');
         }
+        if ($user->role === 'tee') {
+            return redirect('/tribunal');
+        }
         return redirect('/admin');
     }
     return redirect('/login');
@@ -35,6 +39,12 @@ Route::get('/', function () {
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::middleware(['auth', 'role:tee'])->prefix('tribunal')->group(function () {
+    Route::get('/', [TribunalController::class, 'index'])->name('tribunal.dashboard');
+    Route::get('/estudiantes', [TribunalController::class, 'estudiantes'])->name('tribunal.estudiantes');
+    Route::get('/configuracion', [TribunalController::class, 'configuracion'])->name('tribunal.configuracion');
+});
 
 Route::middleware(['auth', 'role:admin,tee'])->prefix('admin')->group(function () {
     Route::get('/', [DashboardController::class, 'dashboard'])->name('admin.dashboard');
@@ -94,9 +104,13 @@ Route::middleware(['auth', 'role:admin,tee'])->prefix('admin')->group(function (
     Route::delete('/incidentes/{id}', [IncidenteController::class, 'destroy'])->name('admin.incidentes.destroy');
 
     Route::get('/bitacora', function () {
-        $bitacoras = \App\Models\Bitacora::with('user')->latest()->limit(500)->get();
-        return view('admin.bitacora', compact('bitacoras'));
+        return view('admin.bitacora');
     })->name('admin.bitacora');
+
+    Route::get('/respaldar', [SettingsController::class, 'backupDownload'])->name('admin.backup');
+    Route::get('/ayuda', function () {
+        return view('admin.help');
+    })->name('admin.help');
 
     Route::middleware('role:admin')->group(function () {
         Route::get('/usuarios', [UsuarioController::class, 'index'])->name('admin.usuarios');

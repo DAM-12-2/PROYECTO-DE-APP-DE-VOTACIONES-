@@ -2,40 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreUsuarioRequest;
-use App\Http\Requests\UpdateUsuarioRequest;
-use App\Services\BitacoraService;
 use Illuminate\Http\Request;
 
 class UsuarioController extends Controller
 {
-    private BitacoraService $bitacoraService;
-
-    public function __construct(BitacoraService $bitacoraService)
-    {
-    }
-
     public function index()
     {
+        return view('admin.usuarios');
     }
 
-    public function store(StoreUsuarioRequest $request)
+    public function store(Request $request)
     {
+        return back();
     }
 
     public function edit($id)
     {
+        return view('admin.usuarios_edit');
     }
 
-    public function update(UpdateUsuarioRequest $request, $id)
+    public function update(Request $request, $id)
     {
+        return back();
     }
 
     public function destroy($id)
     {
+        return back();
     }
 
     public function changePassword(Request $request)
     {
+        return back();
     }
 }

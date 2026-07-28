@@ -2,48 +2,42 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreStudentRequest;
-use App\Http\Requests\UpdateStudentRequest;
-use App\Services\BitacoraService;
-use App\Services\ImportService;
-use App\Services\StudentSearchService;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
-    private BitacoraService $bitacoraService;
-    private ImportService $importService;
-    private StudentSearchService $searchService;
-
-    public function __construct(BitacoraService $bitacoraService, ImportService $importService, StudentSearchService $searchService)
-    {
-    }
-
     public function index(Request $request)
     {
+        return view('admin.students');
     }
 
-    public function store(StoreStudentRequest $request)
+    public function store(Request $request)
     {
+        return back();
     }
 
     public function edit($id)
     {
+        return view('admin.students_edit');
     }
 
-    public function update(UpdateStudentRequest $request, $id)
+    public function update(Request $request, $id)
     {
+        return back();
     }
 
     public function destroy($id)
     {
+        return back();
     }
 
     public function import(Request $request)
     {
+        return back();
     }
 
     public function search(Request $request)
     {
+        return response()->json([]);
     }
 }

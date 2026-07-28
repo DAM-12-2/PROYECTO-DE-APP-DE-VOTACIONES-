@@ -23,6 +23,7 @@ class JrvController extends Controller
 
     public function index()
     {
+        return view('jrv.index');
     }
 
     public function searchStudents(Request $request)

@@ -255,16 +255,52 @@ document.addEventListener('DOMContentLoaded', () => {
         `,
         'resultados': `
             <div class="space-y-stack-lg">
-                <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-12 shadow-sm text-center">
-                    <span class="material-symbols-outlined text-8xl text-outline-variant mb-6">analytics</span>
-                    <h3 class="font-headline-xl text-primary mb-4">Resultados en Tiempo Real</h3>
-                    <div class="max-w-md mx-auto p-6 bg-surface-container-low border border-dashed border-outline-variant rounded-2xl">
-                        <p class="text-secondary italic">El acceso a los escrutinios parciales est\u00e1 <span class="font-bold text-primary">bloqueado</span> por el Tribunal Estudiantil hasta el cierre formal del proceso electoral.</p>
+                <div class="flex flex-col items-center justify-center p-12 bg-surface-container-low border-2 border-dashed border-outline-variant rounded-2xl text-center" id="resultados-lock">
+                    <span class="material-symbols-outlined text-7xl text-outline-variant mb-4">visibility_off</span>
+                    <h3 class="font-headline-lg text-primary mb-2">Acceso Restringido</h3>
+                    <p class="text-secondary max-w-md mx-auto">Los resultados est\u00e1n deshabilitados por configuraci\u00f3n de seguridad. Consulte con el administrador para habilitarlos en la secci\u00f3n de Ajustes.</p>
+                    <div class="mt-6 p-3 bg-primary-container/5 rounded-lg border border-primary-container/20">
+                        <p class="text-xs text-primary font-medium">Consulte con el Tribunal Estudiantil para habilitar este m\u00f3dulo.</p>
                     </div>
-                    <div class="mt-12 h-48 w-full bg-surface-container-low/50 rounded-xl flex items-end justify-center gap-4 p-8 border border-outline-variant/30">
-                        <div class="w-16 bg-outline-variant/20 rounded-t-lg h-[10%]"></div>
-                        <div class="w-16 bg-outline-variant/20 rounded-t-lg h-[10%]"></div>
-                        <div class="w-16 bg-outline-variant/20 rounded-t-lg h-[10%]"></div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 hidden" id="resultados-content">
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden flex flex-col">
+                        <div class="p-6 border-b border-outline-variant"><h3 class="font-headline-md text-primary">Resumen de Escrutinio</h3></div>
+                        <table class="w-full text-left">
+                            <thead class="bg-surface-container-low border-b border-outline-variant">
+                                <tr>
+                                    <th class="px-6 py-4 text-xs font-bold text-secondary uppercase">Partido</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-secondary uppercase text-center">Votos</th>
+                                    <th class="px-6 py-4 text-xs font-bold text-secondary uppercase text-right">Porcentaje</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-outline-variant">
+                                <tr>
+                                    <td class="px-6 py-4 font-medium text-primary">Partido A</td>
+                                    <td class="px-6 py-4 text-center font-mono">0</td>
+                                    <td class="px-6 py-4 text-right font-bold text-secondary">0.00%</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-medium text-primary">Partido B</td>
+                                    <td class="px-6 py-4 text-center font-mono">0</td>
+                                    <td class="px-6 py-4 text-right font-bold text-secondary">0.00%</td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="bg-primary text-on-primary">
+                                <tr>
+                                    <td class="px-6 py-3 font-bold">TOTAL</td>
+                                    <td class="px-6 py-3 text-center font-bold">0</td>
+                                    <td class="px-6 py-3 text-right font-bold">0.00%</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm p-6">
+                        <h3 class="font-headline-md text-primary mb-8">Distribuci\u00f3n Visual</h3>
+                        <div class="flex items-end justify-around h-64 border-b border-outline-variant pb-2 px-4 gap-4">
+                            <div class="w-full bg-surface-container-high border border-outline-variant rounded-t-lg h-[15%]"></div>
+                            <div class="w-full bg-surface-container-high border border-outline-variant rounded-t-lg h-[15%]"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -353,26 +389,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
                         <h3 class="font-headline-md text-primary mb-6 flex items-center gap-2">
-                            <span class="material-symbols-outlined">database</span> Configuraci\u00f3n de Datos
+                            <span class="material-symbols-outlined">rule</span> Reglas de Victoria
                         </h3>
                         <div class="space-y-6">
                             <div class="flex items-center justify-between">
-                                <label class="text-sm font-medium">Motor de Base de Datos</label>
-                                <select class="p-2 border border-outline-variant rounded bg-surface text-sm">
-                                    <option>Local (SQLite)</option>
-                                    <option>Red (MySQL)</option>
-                                </select>
+                                <label class="text-sm font-medium">Umbral M\u00ednimo (%)</label>
+                                <input class="w-20 p-2 border border-outline-variant rounded bg-surface" type="number" value="40"/>
                             </div>
-                            <div class="p-4 bg-surface-container-low rounded-lg border border-outline-variant">
-                                <p class="text-[10px] font-bold text-secondary uppercase mb-3">Respaldo Autom\u00e1tico</p>
-                                <button class="w-full py-2 bg-secondary text-on-secondary rounded text-xs font-bold flex items-center justify-center gap-2">
-                                    <span class="material-symbols-outlined text-sm">backup</span> Generar Respaldo Ahora (.sql)
-                                </button>
+                            <div class="flex items-center justify-between pt-4 border-t border-outline-variant">
+                                <div>
+                                    <p class="text-sm font-medium">Habilitar Visualizaci\u00f3n de Resultados</p>
+                                    <p class="text-[10px] text-secondary">Permite el acceso al m\u00f3dulo de escrutinio en tiempo real.</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input class="sr-only peer" id="toggle-results-visibility" type="checkbox"/>
+                                    <div class="w-11 h-6 bg-outline-variant rounded-full peer peer-checked:after:translate-x-full peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                                </label>
                             </div>
-                        </div>
-                        <div class="mt-8 pt-6 border-t border-outline-variant">
-                            <p class="text-xs text-secondary font-bold mb-2">CONTACTO T\u00c9CNICO</p>
-                            <p class="text-sm font-medium text-primary">Departamento de Inform\u00e1tica del CTP AIRA</p>
                         </div>
                     </div>
                     <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm">
@@ -428,6 +461,62 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
+    }
+
+    let resultsEnabled = false;
+
+    function setResultsVisibility(enabled) {
+        resultsEnabled = enabled;
+        const toggle = document.getElementById('toggle-results-visibility');
+        if (toggle) toggle.checked = enabled;
+        const lock = document.getElementById('resultados-lock');
+        const content = document.getElementById('resultados-content');
+        if (!lock || !content) return;
+        if (enabled) {
+            lock.classList.add('hidden');
+            content.classList.remove('hidden');
+        } else {
+            lock.classList.remove('hidden');
+            content.classList.add('hidden');
+        }
+    }
+
+    function attachResultadosListeners() {
+        const toggle = document.getElementById('toggle-results-visibility');
+        if (toggle) {
+            toggle.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    e.target.checked = false;
+                    showModal('Habilitar Resultados', `
+                        <div class="flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary">visibility</span>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-primary mb-2">Habilitar Resultados</p>
+                                <p class="text-sm text-secondary">Advertencia: Habilitar la visualizaci\u00f3n de resultados permite el acceso a datos sensibles del escrutinio en tiempo real. \u00bfEst\u00e1 seguro de continuar?</p>
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-3 mt-6">
+                            <button class="px-4 py-2 border border-outline-variant rounded text-sm font-medium text-secondary hover:bg-surface-container-high modal-close-btn">Cancelar</button>
+                            <button class="px-4 py-2 bg-primary text-on-primary rounded text-sm font-bold shadow-md" id="confirm-results-btn">S\u00ed, habilitar</button>
+                        </div>
+                    `);
+                    setTimeout(() => {
+                        const confirmBtn = document.getElementById('confirm-results-btn');
+                        if (confirmBtn) {
+                            confirmBtn.addEventListener('click', () => {
+                                setResultsVisibility(true);
+                                hideModal();
+                            });
+                        }
+                    }, 50);
+                } else {
+                    setResultsVisibility(false);
+                }
+            });
+        }
+        setResultsVisibility(resultsEnabled);
     }
 
     function showModal(title, formHtml) {
@@ -590,6 +679,10 @@ document.addEventListener('DOMContentLoaded', () => {
             attachVotacionesListeners();
         }
 
+        if (sectionId === 'resultados' || sectionId === 'configuracion') {
+            attachResultadosListeners();
+        }
+
         attachModals();
 
         document.querySelector('main').scrollTop = 0;
@@ -612,5 +705,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    switchSection('dashboard');
+    const pathToSection = {
+        '/tribunal': 'dashboard',
+        '/tribunal/estudiantes': 'estudiantes',
+        '/tribunal/configuracion': 'configuracion',
+    };
+    const initialSection = pathToSection[window.location.pathname] || 'dashboard';
+    switchSection(initialSection);
 });

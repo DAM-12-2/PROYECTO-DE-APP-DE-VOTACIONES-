@@ -14,11 +14,8 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
-        'email',
         'password',
         'role',
-        'mesa_id',
-        'must_change_password',
     ];
 
     protected $hidden = [
@@ -29,7 +26,6 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
