@@ -40,6 +40,54 @@ Laravel 12 + SQLite + Tailwind CSS + Phosphor Icons + JavaScript vanilla
 - CSS y tailwind.config inline extraídos a archivos externos
 - Logout redirige según rol: admin -> `/Html/login.html`, tribunal -> `/Html/Tribunal_est.html`
 
+## Flujo de trabajo (Git Flow)
+
+El equipo organiza el trabajo con ramas. `main` es la versión estable, `develop` es donde todos integran, y cada quien trabaja en su propia rama `feat/*`. **Nada entra a `main` ni a `develop` sin Pull Request.**
+
+| Rama | Uso | Quién la toca |
+|------|-----|---------------|
+| `main` | Versión estable / producción | Solo vía PR desde `develop` |
+| `develop` | Integración de todo el equipo | Solo vía PR (nunca push directo) |
+| `feat/<algo>` | Rama personal de trabajo | Solo su dueño |
+
+> `feat/<algo>` se nombra por la tarea: `feat/login`, `feat/dashboard`, `feat/api-estudiantes`.
+
+### Tomar una tarea
+```bash
+git checkout develop
+git pull origin develop
+git checkout -b feat/mi-tarea
+```
+
+### Trabajar y subir
+```bash
+git add <archivos>
+git commit -m "feat: qué hice"
+git push -u origin feat/mi-tarea
+```
+
+### Mantener tu rama al día
+```bash
+git checkout develop
+git pull origin develop
+git checkout feat/mi-tarea
+git merge develop
+git push
+```
+
+### Abrir Pull Request
+1. En GitHub: `feat/mi-tarea` → `develop`
+2. Título claro + breve descripción
+3. Resolver comentarios y merge solo tras aprobación
+
+### Reglas de oro
+1. **Nunca** pushear directo a `develop` ni a `main`
+2. Todo entra por **Pull Request**
+3. `main` solo se actualiza desde `develop`
+4. Commits descriptivos: `feat:`, `fix:`, `refactor:`, `docs:`
+5. Antes de cada PR: traer lo último de `develop` y probar
+6. Conflictos se resuelven en tu rama local, no en GitHub
+
 ## Documentación
 | Categoría | Archivo |
 |-----------|---------|
