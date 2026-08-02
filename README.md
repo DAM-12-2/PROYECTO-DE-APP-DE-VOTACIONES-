@@ -52,6 +52,18 @@ El equipo organiza el trabajo con ramas. `main` es la versión estable, `develop
 
 > `feat/<algo>` se nombra por la tarea: `feat/login`, `feat/dashboard`, `feat/api-estudiantes`.
 
+### Ramas `feat/*` por miembro del equipo
+
+Cada quien usa su propio prefijo para que se sepa de quién es cada rama:
+
+| Miembro | Rol | Prefijo de rama | Ejemplo |
+|---------|-----|-----------------|---------|
+| **Backend** | Modelos, migraciones, controllers, API, WebSocket | `feat/backend-...` | `feat/backend-api-estudiantes` |
+| **Frontend** | Vistas, layouts, estilos, HTML/JS | `feat/frontend-...` | `feat/frontend-login` |
+| **Middle (tú)** | Integración, PRs, orden del repo | `feat/integracion-...` | `feat/integracion-juntar-modulos` |
+
+Regla: si no dice de quién es, pregunta antes de abrir el PR. El dueño de la rama es quien la integra.
+
 ### Tomar una tarea
 ```bash
 git checkout develop
