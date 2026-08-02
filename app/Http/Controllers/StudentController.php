@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Student;
 
 class StudentController extends Controller
 {
@@ -38,6 +39,20 @@ class StudentController extends Controller
 
     public function search(Request $request)
     {
-        return response()->json([]);
+        $identificacion = $request->input('identificacion');
+
+        $estudiante = Student::where('identificacion', $identificacion)->first();
+        if ($estudiante) {
+            return response()->json([
+                'success' => true,
+                'data' => $estudiante
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Estudiante no encontrado'
+            ], 404);
+        }
     }
 }
+

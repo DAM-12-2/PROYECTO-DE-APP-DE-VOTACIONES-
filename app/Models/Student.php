@@ -9,6 +9,10 @@ class Student extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'identificacion';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected $fillable = [
         'identificacion',
         'nombre',
@@ -29,6 +33,6 @@ class Student extends Model
 
     public function urna()
     {
-        return $this->hasOne(Urna::class, 'id_estudiante');
+        return $this->hasOne(Urna::class, 'idUrna', 'id');
     }
 }

@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Urna extends Model
 {
     use HasFactory;
+    
+    protected $primaryKey = 'id_urna';
 
     protected $fillable = [
         'codigo',
@@ -24,11 +26,11 @@ class Urna extends Model
 
     public function student(): BelongsTo
     {
-        return $this->belongsTo(Student::class, 'id_estudiante');
+        return $this->belongsTo(Student::class, 'id_estudiante', 'identificacion');
     }
 
     public function mesa(): BelongsTo
     {
-        return $this->belongsTo(Mesa::class, 'id_mesa');
+        return $this->belongsTo(Mesa::class, 'id_mesa' , 'id');
     }
 }
