@@ -47,6 +47,7 @@ Laravel 12 + SQLite + Tailwind CSS + Phosphor Icons + JavaScript vanilla
 | Estructura | `docs/modules/estructura.md` |
 | Inicio | `docs/modules/startup-flow.md` |
 | Despliegue | `docs/modules/deploy.md` |
+| Workflow (Git Flow) | `docs/modules/workflow.md` |
 | Testing | `docs/modules/testing.md` |
 | API/Rutas | `docs/modules/api.md` |
 | Modelos | `docs/modules/models.md` |
