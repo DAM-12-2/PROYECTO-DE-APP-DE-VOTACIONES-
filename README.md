@@ -93,12 +93,13 @@ git push
 3. Resolver comentarios y merge solo tras aprobación
 
 ### Reglas de oro
-1. **Nunca** pushear directo a `develop` ni a `main`
-2. Todo entra por **Pull Request**
+1. **Nadie puede hacer push directo** a `develop` ni a `main`. Punto. Es política del equipo, no opcional.
+2. Todo entra por **Pull Request** (aunque seas tú mismo, aunque sea un typo)
 3. `main` solo se actualiza desde `develop`
 4. Commits descriptivos: `feat:`, `fix:`, `refactor:`, `docs:`
 5. Antes de cada PR: traer lo último de `develop` y probar
 6. Conflictos se resuelven en tu rama local, no en GitHub
+7. Si intentas `git push origin develop` y te rechaza, **no es un error**: es la protección funcionando. Crea tu rama `feat/*` y abre el PR.
 
 ## Documentación
 | Categoría | Archivo |
