@@ -5,7 +5,7 @@
   "command": {
     "dev": {
       "description": "Iniciar servidor local",
-      "pipeline": ["python -m http.server 8080"]
+      "template": "python -m http.server 8080"
     }
   }
 }

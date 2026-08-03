@@ -4,7 +4,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <title>@yield('title', 'Admin Dashboard — Sistema Electoral')</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="/js/tailwind.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <script>
@@ -124,7 +124,7 @@
 <!-- SideNavBar -->
 <nav class="hidden md:flex flex-col h-full py-6 bg-surface-container-lowest border-r border-outline-variant w-[280px] h-screen fixed left-0 top-0 z-20">
 <div class="px-6 mb-8 flex items-center gap-4">
-<img alt="Institution Logo" class="w-12 h-12 rounded-full border border-outline-variant object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBiUe5r27lUDB32rXuNSmDo8VCjlvcI8WSHSd1QxDHFSAvGxwZHYZvlM79vQOERWy1_Pv3ktYp7vaQw1uoJueLO7hQrG76tHpssZVuNOcT5oKgtT9_1n6F1JG_EgdQbEf8LMVqyZ2yi0DVySY1Gei6JzCdi2ewoqOAiyQxMsmqZy0rtwUilO0uur3r8Pz5lZWuusb6F1Z3tCreVf-hqWQPvXN3wkXvrhr4X_tbPUmsCNvz_aHWK2S8Gv8vRMElPHs4fVg"/>
+<img alt="Institution Logo" class="w-12 h-12 rounded-full border border-outline-variant object-cover" src="/img/logo.png"/>
 <div class="overflow-hidden">
 <h1 class="font-headline-md text-headline-md text-primary truncate">Sistema Electoral</h1>
 <p class="font-body-md text-body-md text-on-surface-variant truncate">Administrador</p>

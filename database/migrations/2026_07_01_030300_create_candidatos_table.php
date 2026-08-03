@@ -14,10 +14,10 @@ return new class extends Migration {
  {
   Schema::create("candidatos", function (Blueprint $table) {
    $table->id();
-   $table->foreignId("puesto_id")->constrained("puestos")->onDelete('cascade');
-   $table->foreingId("student_id")->constrained("students")->onDelate('cascade');
-   $table->foreingId("party_id")->constrined("parties")->onDelate('cascade');
-   $table->timestap();
+        $table->foreignId("puesto_id")->constrained("puestos")->onDelete('cascade');
+        $table->foreignId("student_id")->constrained("students")->onDelete('cascade');
+        $table->foreignId("party_id")->constrained("parties")->onDelete('cascade');
+        $table->timestamps();
 
   });
  }

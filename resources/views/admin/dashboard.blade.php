@@ -18,7 +18,7 @@
 </div>
 <div>
 <p class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Estudiantes Padrón</p>
-<h3 class="font-headline-lg text-headline-lg text-primary">0</h3>
+                                <h3 class="font-headline-lg text-headline-lg text-primary">{{ $totalEstudiantes }}</h3>
 </div>
 <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
 <span class="material-symbols-outlined" style="font-size: 120px;">school</span>
@@ -30,7 +30,7 @@
 </div>
 <div>
 <p class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Tribunal (0-7)</p>
-<h3 class="font-headline-lg text-headline-lg text-primary">0</h3>
+                                <h3 class="font-headline-lg text-headline-lg text-primary">{{ $totalVotantes }}</h3>
 </div>
 <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
 <span class="material-symbols-outlined" style="font-size: 120px;">how_to_reg</span>
@@ -42,7 +42,7 @@
 </div>
 <div>
 <p class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Partidos Inscritos</p>
-<h3 class="font-headline-lg text-headline-lg text-primary">0</h3>
+                                <h3 class="font-headline-lg text-headline-lg text-primary">{{ $totalPartidos }}</h3>
 </div>
 <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
 <span class="material-symbols-outlined" style="font-size: 120px;">groups</span>
@@ -54,7 +54,7 @@
 </div>
 <div>
 <p class="font-label-lg text-label-lg text-on-surface-variant uppercase tracking-wider">Juntas / Mesas</p>
-<h3 class="font-headline-lg text-headline-lg text-primary">0</h3>
+                                <h3 class="font-headline-lg text-headline-lg text-primary">{{ $totalMesas }}</h3>
 </div>
 <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
 <span class="material-symbols-outlined" style="font-size: 120px;">table_restaurant</span>
