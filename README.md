@@ -96,10 +96,30 @@ git push
 1. **Nadie puede hacer push directo** a `develop` ni a `main`. Punto. Es política del equipo, no opcional.
 2. Todo entra por **Pull Request** (aunque seas tú mismo, aunque sea un typo)
 3. `main` solo se actualiza desde `develop`
-4. Commits descriptivos: `feat:`, `fix:`, `refactor:`, `docs:`
+4. Commits descriptivos: cada commit se categoriza según su tipo (ver tabla abajo)
 5. Antes de cada PR: traer lo último de `develop` y probar
 6. Conflictos se resuelven en tu rama local, no en GitHub
 7. Si intentas `git push origin develop` y te rechaza, **no es un error**: es la protección funcionando. Crea tu rama `feat/*` y abre el PR.
+
+### Convenciones de commits
+
+Todo commit comienza con un prefijo que dice qué tipo de cambio es. Esto mantiene el historial ordenado y fácil de leer.
+
+| Prefijo | Para qué se usa | Ejemplo |
+|---------|-----------------|---------|
+| `feat:` | Nueva funcionalidad | `feat: agrega registro de estudiantes` |
+| `fix:` | Corrección de un bug | `fix: corrige error en migraciones` |
+| `refactor:` | Reestructurar código sin cambiar comportamiento | `refactor: simplifica el controlador de votos` |
+| `docs:` | Cambios solo de documentación | `docs: agrega guía de instalación` |
+| `chore:` | Tareas de mantenimiento/limpieza (no tocan la lógica) | `chore: limpia archivos no versionados` |
+| `test:` | Agregar o modificar pruebas | `test: cubre el helper de números a letras` |
+| `style:` | Formato, espacios, orden de imports (sin lógica) | `style: ordena imports del seeder` |
+| `perf:` | Mejoras de rendimiento | `perf: optimiza consulta de resultados` |
+
+Reglas rápidas:
+- Escribe el prefijo en minúsculas seguido de `:` y una descripción breve en presente ("corrige", no "corregido").
+- Un commit debe hacer una sola cosa. Si toca dos áreas, haz dos commits.
+- Ejemplo correcto: `fix: corrige error al registrar un voto` — Ejemplo incorrecto: `arreglo cosas`.
 
 ## Documentación
 | Categoría | Archivo |
