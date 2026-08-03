@@ -139,11 +139,48 @@ Reglas rápidas:
 ## Setup rápido
 ```bash
 git clone <repo>
-cd PROYECTO-DE-APP-DE-VOTACIONES-
+cd PROYECTO-DE-APP-DE-VOTACIONES
 cp .env.example .env
 php artisan key:generate
 touch database/database.sqlite
 php artisan migrate --seed
 php artisan serve --port=8000
-# Abrir http://127.0.0.1:8000/Html/login.html
+# Abrir http://127.0.0.1:8000/login
 ```
+
+## Cómo correr el servidor
+
+### 1. Instalar dependencias
+```bash
+composer install
+npm install
+```
+
+### 2. Configurar el entorno
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+### 3. Crear y sembrar la base de datos
+```bash
+touch database/database.sqlite
+php artisan migrate --seed
+```
+
+### 4. Correr el servidor Laravel
+```bash
+php artisan serve --port=8000
+```
+
+### 5. Abrir en el navegador
+- Login: `http://127.0.0.1:8000/login`
+
+### Usuarios de prueba
+| Usuario | Contraseña | Rol | Ruta |
+|---------|-----------|-----|------|
+| admin | admin | admin | `/admin` |
+| tee | tee | tribunal | `/tribunal` |
+| jrv | jrv | jrv | `/jrv` |
+
+> Nota: Si el puerto 8000 está ocupado, cierra el proceso anterior con `pkill -f "artisan serve"` o usa otro puerto con `php artisan serve --port=8001`.
