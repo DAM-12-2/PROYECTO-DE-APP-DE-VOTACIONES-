@@ -13,11 +13,9 @@ class VoteTallyService
     {
         $votes = $votes instanceof Collection ? $votes : collect($votes);
 
+        $partyVotes = [];
         $blancos = 0;
         $nulos = 0;
-        $siCount = 0;
-        $noCount = 0;
-        $partyVotes = [];
 
         foreach ($votes as $vote) {
             $valor = $vote->decrypted_party;
@@ -32,16 +30,6 @@ class VoteTallyService
                 continue;
             }
 
-            if ($valor === 'SI') {
-                $siCount++;
-                continue;
-            }
-
-            if ($valor === 'NO') {
-                $noCount++;
-                continue;
-            }
-
             $partyVotes[$valor] = ($partyVotes[$valor] ?? 0) + 1;
         }
 
@@ -49,36 +37,53 @@ class VoteTallyService
             totalVotes: $votes->count(),
             blancos: $blancos,
             nulos: $nulos,
-            siCount: $siCount,
-            noCount: $noCount,
+            siCount: 0,
+            noCount: 0,
             partyVotes: $partyVotes,
         );
     }
 
+    public function obtenerResultados(): array
+    {
+        $tally = $this->tallyVotes(Vote::all());
+
+        return [
+            'totalVotes' => $tally->totalVotes,
+            'blancos' => $tally->blancos,
+            'nulos' => $tally->nulos,
+            'partidos' => $tally->sortedPartyResults(Party::all()->all()),
+        ];
+    }
+
+    public function verificarGanador(): ?array
+    {
+        $tally = $this->tallyVotes(Vote::all());
+        $results = $tally->sortedPartyResults(Party::all()->all());
+
+        if (empty($results) || $results[0]['votos'] === 0) {
+            return null;
+        }
+
+        return $results[0];
+    }
+
     public function tallyVotesByMesa(Collection|array $votes, Collection|array $mesas): array
     {
-        $result = [];
+        $resultadosPorMesa = [];
         foreach ($mesas as $mesa) {
             $deMesa = collect($votes)->filter(fn($v) => $v->id_mesa === $mesa->id);
-            $result[] = [
-                'mesa' => $mesa->nombre,
-                'total' => $deMesa->count(),
-                'resultados' => $this->tallyVotes($deMesa)->sortedPartyResults(Party::all()),
-            ];
+            $resultadosPorMesa[$mesa->nombre] = $this->tallyVotes($deMesa);
         }
-        return $result;
+        return $resultadosPorMesa;
     }
 
     public function tallyVotesBySeccion(Collection|array $votes, Collection|array $mesas): array
     {
-        $result = [];
+        $resultadosPorSeccion = [];
         foreach ($mesas as $mesa) {
             $deMesa = collect($votes)->filter(fn($v) => $v->id_mesa === $mesa->id);
-            $result[$mesa->nombre] = [
-                'total' => $deMesa->count(),
-                'resultados' => $this->tallyVotes($deMesa)->sortedPartyResults(Party::all()),
-            ];
+            $resultadosPorSeccion[$mesa->nombre] = $this->tallyVotes($deMesa);
         }
-        return $result;
+        return $resultadosPorSeccion;
     }
 }

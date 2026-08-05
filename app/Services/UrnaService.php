@@ -3,32 +3,41 @@
 namespace App\Services;
 
 use App\Models\Urna;
+use Exception;
 use Illuminate\Support\Facades\DB;
 
 class UrnaService
 {
-    public function activar(string $codigo): Urna
+    public function activar(string $codigo): array
     {
-        $urna = Urna::where('codigo', $codigo)->firstOrFail();
+        try {
+            $urna = Urna::where('codigo', $codigo)->firstOrFail();
 
-        DB::transaction(function () use ($urna) {
-            $urna->estado = 1;
-            $urna->horaactivacion = now();
-            $urna->save();
-        });
+            DB::transaction(function () use ($urna) {
+                $urna->estado = 1;
+                $urna->horaactivacion = now();
+                $urna->save();
+            });
 
-        return $urna;
+            return ['success' => true, 'message' => 'La urna se ha activado correctamente', 'data' => $urna];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => 'Error al activar la urna: ' . $e->getMessage()];
+        }
     }
 
-    public function desactivar(string $codigo): Urna
+    public function desactivar(string $codigo): array
     {
-        $urna = Urna::where('codigo', $codigo)->firstOrFail();
+        try {
+            $urna = Urna::where('codigo', $codigo)->firstOrFail();
 
-        DB::transaction(function () use ($urna) {
-            $urna->estado = 0;
-            $urna->save();
-        });
+            DB::transaction(function () use ($urna) {
+                $urna->estado = 0;
+                $urna->save();
+            });
 
-        return $urna;
+            return ['success' => true, 'message' => 'La urna se ha desactivado correctamente', 'data' => $urna];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => 'Error al desactivar la urna: ' . $e->getMessage()];
+        }
     }
 }

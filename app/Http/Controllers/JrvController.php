@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Services\UrnaService;
 use App\Services\StudentSearchService;
+use App\Services\UrnaService;
+use Illuminate\Http\Request;
+use Exception;
 
 class JrvController extends Controller
 {
@@ -24,7 +25,7 @@ class JrvController extends Controller
 
     public function searchStudents(Request $request)
     {
-        $identificacion = $request->query('identificacion');
+        $identificacion = $request->query('identificacion') ?? $request->input('identificacion');
 
         if (!$identificacion) {
             return response()->json(['success' => false, 'message' => 'Debe enviar una identificación'], 400);
@@ -38,38 +39,34 @@ class JrvController extends Controller
 
         return response()->json([
             'success' => true,
-            'estudiante' => [
+            'data' => [[
                 'id' => $estudiante->id,
                 'identificacion' => $estudiante->identificacion,
                 'nombre' => $estudiante->nombre,
                 'apellidos' => $estudiante->apellidos,
                 'seccion' => $estudiante->seccion,
                 'voto' => $estudiante->voto,
-            ],
-        ]);
+            ]],
+        ], 200);
     }
 
     public function activarUrna(Request $request)
     {
-        $request->validate(['codigo' => 'required|string']);
-
         try {
-            $urna = $this->urnaService->activar($request->codigo);
-            return response()->json(['success' => true, 'message' => 'Urna activada', 'urna' => $urna]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Urna no encontrada'], 404);
+            $result = $this->urnaService->activar($request->input('codigo'));
+            return response()->json($result, $result['success'] ? 200 : 400);
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al activar la urna: ' . $e->getMessage()], 500);
         }
     }
 
     public function desactivarUrna(Request $request)
     {
-        $request->validate(['codigo' => 'required|string']);
-
         try {
-            $urna = $this->urnaService->desactivar($request->codigo);
-            return response()->json(['success' => true, 'message' => 'Urna desactivada', 'urna' => $urna]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Urna no encontrada'], 404);
+            $result = $this->urnaService->desactivar($request->input('codigo'));
+            return response()->json($result, $result['success'] ? 200 : 400);
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error al desactivar la urna: ' . $e->getMessage()], 500);
         }
     }
 }
