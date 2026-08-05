@@ -32,3 +32,5 @@ Thumbs.db
 /database/database.sqlite
 *.sqlite
 *.sqlite3
+opencode.jsonc
+*.pdf

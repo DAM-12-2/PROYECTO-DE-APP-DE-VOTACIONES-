@@ -17,7 +17,7 @@
 <div class="space-y-6">
 <div class="flex items-start gap-6">
 <div class="shrink-0">
-<img alt="Escudo actual" class="w-24 h-24 rounded-lg border border-outline-variant object-cover bg-surface-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPEq_8XQCWsBl6TtqKxAAgk6EoiaN1SZzy1VYAWlujRf6icJp8sDothIFZmq9_oLPuwQmZ8dfcCJr3aEdi64cMkzgatFRrc4SuFoZBhFMGkVFH3eP8MAbyaiWjLXNQ2CxVBnNOyRKgC93yoZb-F_hhdvKU0JhEXEhyU2MNYYR0CFRx2DbqbwBYwSvQ9cn6HDtqvFfZcXM1l96nZyi7ovR6m_Pa0rl65Krg2blzIXs-D9GhSLczsiA_BjunkvcYJ_MLKQ"/>
+<img alt="Escudo actual" class="w-24 h-24 rounded-lg border border-outline-variant object-cover bg-surface-variant" src="/img/logo.png"/>
 </div>
 <div class="flex-1 space-y-3">
 <div>

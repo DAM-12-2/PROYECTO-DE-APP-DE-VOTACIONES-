@@ -6,7 +6,7 @@
 <header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]">
 <div class="h-16 w-full px-container-padding flex items-center justify-between">
 <div class="flex items-center gap-base">
-<img alt="CTP AIRA" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLuTBFcc-2slsMcGa9bAzK26iSHmQZRm4Lj5DMIgu32aygymwnLN_p_Q52xZlsMIjknAXAE6yTZWVJWqcJC6QOrPTb88ofuJC6hxdyOOiPha5kcxHKH3j2GI1IeAb-hy4E8I6oCPBPBThHKsORXUSye7CtS4cReERkk3MiLVpz74AYqFC_QxnnustxuPimMg-yyLeW4EMOokj1xBcw5_cFV3lmLo53IrOhmGhCCHIRaRUxKt-QyVRpCnSxKHbxlw4MRMLjWZbiuQ"/>
+<img alt="CTP AIRA" class="w-8 h-8 rounded-full object-cover" src="/img/logo.png"/>
 <span class="font-headline-sm text-headline-sm text-primary tracking-tight">CTP AIRA</span>
 </div>
 <div class="flex items-center gap-card-gap">
