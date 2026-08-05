@@ -64,42 +64,65 @@ Cada quien usa su propio prefijo para que se sepa de quién es cada rama:
 
 Regla: si no dice de quién es, pregunta antes de abrir el PR. El dueño de la rama es quien la integra.
 
-### Tomar una tarea
+### Paso a paso: de tu rama hasta tu PR
+
+Sigue este recorrido completo. Si lo haces en orden, no te puedes equivocar.
+
+**1. Actualiza tu `develop` local**
 ```bash
 git checkout develop
 git pull origin develop
+```
+
+**2. Crea tu rama de trabajo**
+```bash
 git checkout -b feat/mi-tarea
 ```
 
-### Trabajar y subir
+**3. Trabaja y guarda tus cambios**
+
+Revisa qué cambió:
+```bash
+git status
+```
+
+Agrega lo que hiciste y haz commit:
 ```bash
 git add <archivos>
 git commit -m "feat: qué hice"
+```
+
+**4. Sube tu rama al repositorio**
+```bash
 git push -u origin feat/mi-tarea
 ```
 
-### Mantener tu rama al día
+**5. Verifica que tu rama tiene cambios (importante)**
+
+Con esto confirmas que tu trabajo está en la rama y que sí hay algo que mostrar:
 ```bash
-git checkout develop
-git pull origin develop
-git checkout feat/mi-tarea
-git merge develop
-git push
+git fetch origin
+git log --oneline origin/develop..origin/feat/mi-tarea
 ```
 
-### Abrir Pull Request
-1. En GitHub: `feat/mi-tarea` → `develop`
-2. Título claro + breve descripción
-3. Resolver comentarios y merge solo tras aprobación
+- Si aparece **al menos un commit**, tu rama tiene trabajo → sigue al paso 6.
+- Si **no aparece nada**, tu rama está vacía (igual a develop) y el PR no mostraría nada. Vuelve al paso 3.
+
+**6. Abre el Pull Request en GitHub**
+1. Entra a GitHub y verás un botón amarillo "Compare & pull request".
+2. Confirma que diga: `feat/mi-tarea` **→** `develop` (nunca a `main`).
+3. Escribe un título claro y una breve descripción de lo que hiciste.
+4. Publica el PR y avísale al equipo para que lo revise.
+
+> `main` es la versión estable y solo los administradores la actualizan. Tu trabajo siempre entra a `develop` mediante el PR.
 
 ### Reglas de oro
 1. **Nadie puede hacer push directo** a `develop` ni a `main`. Punto. Es política del equipo, no opcional.
 2. Todo entra por **Pull Request** (aunque seas tú mismo, aunque sea un typo)
-3. `main` solo se actualiza desde `develop`
-4. Commits descriptivos: cada commit se categoriza según su tipo (ver tabla abajo)
-5. Antes de cada PR: traer lo último de `develop` y probar
-6. Conflictos se resuelven en tu rama local, no en GitHub
-7. Si intentas `git push origin develop` y te rechaza, **no es un error**: es la protección funcionando. Crea tu rama `feat/*` y abre el PR.
+3. Commits descriptivos: cada commit se categoriza según su tipo (ver tabla abajo)
+4. Antes de cada PR: traer lo último de `develop` y probar
+5. Conflictos se resuelven en tu rama local, no en GitHub
+6. Si intentas `git push origin develop` y te rechaza, **no es un error**: es la protección funcionando. Crea tu rama `feat/*` y abre el PR.
 
 ### Convenciones de commits
 
