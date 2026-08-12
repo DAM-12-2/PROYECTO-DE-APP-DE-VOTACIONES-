@@ -37,18 +37,12 @@ class UrnaController extends Controller
     public function store(StoreUrnaRequest $request)
     {
         try {
-            $urna = Urna::create($request->validated());
-            $this->bitacoraService->registrar('creación de urna', 'Se creó la urna ID: ' . $urna->id);
+            Urna::create($request->validated());
+            $this->bitacoraService->registrar('creación de urna', 'Se creó una nueva urna');
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Urna creada exitosamente.',
-            ], 201);
+            return redirect()->route('admin.urnas')->with('success', 'Urna creada exitosamente.');
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al crear la urna: ' . $e->getMessage(),
-            ], 500);
+            return back()->withErrors('Error al crear la urna: ' . $e->getMessage());
         }
     }
 
@@ -66,15 +60,9 @@ class UrnaController extends Controller
             $urna->update($request->validated());
             $this->bitacoraService->registrar('actualización de urna', 'Se actualizó la urna ID: ' . $id);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Urna actualizada exitosamente.',
-            ], 200);
+            return redirect()->route('admin.urnas')->with('success', 'Urna actualizada exitosamente.');
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al actualizar la urna: ' . $e->getMessage(),
-            ], 500);
+            return back()->withErrors('Error al actualizar la urna: ' . $e->getMessage());
         }
     }
 
@@ -85,35 +73,50 @@ class UrnaController extends Controller
             $urna->delete();
             $this->bitacoraService->registrar('eliminación de urna', 'Se eliminó la urna ID: ' . $id);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Urna eliminada exitosamente.',
-            ], 200);
+            return redirect()->route('admin.urnas')->with('success', 'Urna eliminada exitosamente.');
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al eliminar la urna: ' . $e->getMessage(),
-            ], 500);
+            return back()->withErrors('Error al eliminar la urna: ' . $e->getMessage());
         }
     }
 
     public function activar(Request $request)
     {
         try {
-            $result = $this->urnaService->activar($request->input('codigo'));
-            return response()->json($result, $result['success'] ? 200 : 400);
+            $id = (int) $request->input('id') ?? 0;
+            $idEstudiante = (int) $request->input('id_estudiante') ?? 0;
+            $result = $this->urnaService->activar($id, $idEstudiante);
+
+            $this->bitacoraService->registrar('activación de urna', 'Se activó la urna ID: ' . $id);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Urna activada.',
+            ], 200);
         } catch (Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Error al activar la urna: ' . $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al activar la urna: ' . $e->getMessage(),
+            ], 500);
         }
     }
 
     public function desactivar(Request $request)
     {
         try {
-            $result = $this->urnaService->desactivar($request->input('codigo'));
-            return response()->json($result, $result['success'] ? 200 : 400);
+            $id = (int) $request->input('id') ?? 0;
+            $result = $this->urnaService->desactivar($id);
+
+            $this->bitacoraService->registrar('desactivación de urna', 'Se desactivó la urna ID: ' . $id);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Urna desactivada.',
+            ], 200);
         } catch (Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Error al desactivar la urna: ' . $e->getMessage()], 500);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al desactivar la urna: ' . $e->getMessage(),
+            ], 500);
         }
     }
 }

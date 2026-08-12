@@ -8,10 +8,52 @@ use Illuminate\Support\Facades\DB;
 
 class UrnaService
 {
-    public function activar(string $codigo): array
+    public function getAllUrnas(): array
     {
         try {
-            $urna = Urna::where('codigo', $codigo)->firstOrFail();
+            $urnas = Urna::with('mesa')->get()->toArray();
+            return ['success' => true, 'data' => $urnas];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => 'Error al cargar las urnas: ' . $e->getMessage()];
+        }
+    }
+
+    public function createUrna(array $data): array
+    {
+        try {
+            $urna = Urna::create($data);
+            return ['success' => true, 'data' => $urna, 'message' => 'Urna creada correctamente'];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => 'Error al crear la urna: ' . $e->getMessage()];
+        }
+    }
+
+    public function actualizarUrna(int $id, array $data): array
+    {
+        try {
+            $urna = Urna::findOrFail($id);
+            $urna->update($data);
+            return ['success' => true, 'data' => $urna, 'message' => 'Urna actualizada correctamente'];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => 'Error al actualizar la urna: ' . $e->getMessage()];
+        }
+    }
+
+    public function eliminarUrna(int $id): array
+    {
+        try {
+            $urna = Urna::findOrFail($id);
+            $urna->delete();
+            return ['success' => true, 'message' => 'Urna eliminada correctamente'];
+        } catch (Exception $e) {
+            return ['success' => false, 'message' => 'Error al eliminar la urna: ' . $e->getMessage()];
+        }
+    }
+
+    public function activar(int $idUrna, int $idEstudiante): array
+    {
+        try {
+            $urna = Urna::findOrFail($idUrna);
 
             DB::transaction(function () use ($urna) {
                 $urna->estado = 1;
@@ -25,10 +67,10 @@ class UrnaService
         }
     }
 
-    public function desactivar(string $codigo): array
+    public function desactivar(int $idUrna): array
     {
         try {
-            $urna = Urna::where('codigo', $codigo)->firstOrFail();
+            $urna = Urna::findOrFail($idUrna);
 
             DB::transaction(function () use ($urna) {
                 $urna->estado = 0;
