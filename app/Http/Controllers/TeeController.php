@@ -11,6 +11,7 @@ class TeeController extends Controller
 
     public function __construct(BitacoraService $bitacoraService)
     {
+        $this->bitacoraService = $bitacoraService;
     }
 
     public function index()
