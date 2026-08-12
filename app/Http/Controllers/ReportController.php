@@ -14,6 +14,9 @@ class ReportController extends Controller
 
     public function __construct(InstitutionService $institutionService, ElectionService $electionService, VoteTallyService $voteTallyService)
     {
+        $this->institutionService = $institutionService;
+        $this->electionService = $electionService;
+        $this->voteTallyService = $voteTallyService;
     }
 
     public function index()
