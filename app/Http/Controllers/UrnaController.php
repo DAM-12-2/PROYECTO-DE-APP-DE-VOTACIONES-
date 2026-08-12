@@ -33,9 +33,9 @@ class UrnaController extends Controller
 
             $this->bitacoraService->registrar('Creación de urna', 'Se creó una nueva urna ID: ' . $urna->id);
 
-            return redirect()->route('urnas.index')->with('success', 'Urna eliminada exitosamente.');
+            return redirect()->route('admin.urnas')->with('success', 'Urna creada exitosamente.');
         } catch (Exception $e) {
-            return back()->withErrors('Error al eliminar la urna: ' . $e->getMessage());
+            return back()->withErrors('Error al crear la urna: ' . $e->getMessage());
 
         }
     }
@@ -53,7 +53,7 @@ class UrnaController extends Controller
             
             $this->bitacoraService->registrar('Actualización de urna', 'Se actualizó la urna ID: ' . $id);
 
-            return redirect()->route('urnas.index')->with('success', 'Urna actualizada exitosamente.');
+            return redirect()->route('admin.urnas')->with('success', 'Urna actualizada exitosamente.');
         } catch (Exception $e) {
             return back()->withErrors('Error al actualizar la urna: ' . $e->getMessage())->withInput();
         }
@@ -67,7 +67,7 @@ class UrnaController extends Controller
 
             $this->bitacoraService->registrar('Eliminación de urna', 'Se eliminó la urna ID: ' . $id);
 
-            return redirect()->route('urnas.index')->with('success', 'Urna eliminada exitosamente.');
+            return redirect()->route('admin.urnas')->with('success', 'Urna eliminada exitosamente.');
         } catch (Exception $e) {
             return back()->withErrors('Error al eliminar la urna: ' . $e->getMessage());
         }
@@ -76,8 +76,9 @@ class UrnaController extends Controller
     public function activar(Request $request)
     {
         try {
-            $id = $request->input('id') ?? $request->input('id');
-            $this->urnaService->activar($id);
+            $id = (int) ($request->input('id') ?? 0);
+            $idEstudiante = (int) ($request->input('id_estudiante') ?? 0);
+            $this->urnaService->activar($id, $idEstudiante);
 
             $this->bitacoraService->registrar('Activación de urna', 'Se activó la urna ID: ' . $id);
 
