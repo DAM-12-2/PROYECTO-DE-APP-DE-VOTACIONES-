@@ -33,7 +33,7 @@ class PartyController extends Controller
                 ], 200);
             }
 
-            return view('parties.index', compact('parties'));
+            return view('admin.parties', compact('parties'));
         } catch (Exception $e) {
             if ($request->expectsJson()) {
                 return response()->json([
@@ -70,7 +70,7 @@ class PartyController extends Controller
         try {
             $party = Party::findOrFail($id);
 
-            return view('parties.edit', compact('party'));
+            return view('admin.parties_edit', compact('party'));
         } catch (Exception $e) {
             return redirect()->route('admin.parties')->withErrors('Partido no encontrado: ' . $e->getMessage());
         }

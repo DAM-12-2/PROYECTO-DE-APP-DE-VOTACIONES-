@@ -50,7 +50,7 @@ class UrnaService
         }
     }
 
-    public function activar(int $idUrna, int $idEstudiante): array
+    public function activar(int $idUrna): array
     {
         try {
             $urna = Urna::findOrFail($idUrna);

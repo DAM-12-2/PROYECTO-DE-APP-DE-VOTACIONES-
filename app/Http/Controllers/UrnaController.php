@@ -82,9 +82,8 @@ class UrnaController extends Controller
     public function activar(Request $request)
     {
         try {
-            $id = (int) $request->input('id') ?? 0;
-            $idEstudiante = (int) $request->input('id_estudiante') ?? 0;
-            $result = $this->urnaService->activar($id, $idEstudiante);
+            $id = (int) $request->input('id');
+            $result = $this->urnaService->activar($id);
 
             $this->bitacoraService->registrar('activación de urna', 'Se activó la urna ID: ' . $id);
 
@@ -103,7 +102,7 @@ class UrnaController extends Controller
     public function desactivar(Request $request)
     {
         try {
-            $id = (int) $request->input('id') ?? 0;
+            $id = (int) $request->input('id');
             $result = $this->urnaService->desactivar($id);
 
             $this->bitacoraService->registrar('desactivación de urna', 'Se desactivó la urna ID: ' . $id);

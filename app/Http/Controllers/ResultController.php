@@ -48,7 +48,7 @@ class ResultController extends Controller
 
             $this->bitacoraService->registrar('Verificación de ganador', 'Se verificó el ganador de la elección.');
 
-            return view('resultados.index', compact('ganador'));
+            return view('admin.resultados', compact('ganador'));
         } catch (Exception $e) {
             return back()->withErrors('Error al cargar los resultados: ' . $e->getMessage());
         }

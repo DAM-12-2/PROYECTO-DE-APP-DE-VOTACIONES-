@@ -13,12 +13,12 @@ const jrv = {
         }
     },
 
-    async activarUrna(codigo) {
+    async activarUrna(idUrna) {
         try {
             const res = await fetch('/jrv/api/activar-urna', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.csrfToken() },
-                body: JSON.stringify({ codigo }),
+                body: JSON.stringify({ id: idUrna }),
             });
             return await res.json();
         } catch (error) {
@@ -26,12 +26,12 @@ const jrv = {
         }
     },
 
-    async desactivarUrna(codigo) {
+    async desactivarUrna(idUrna) {
         try {
             const res = await fetch('/jrv/api/desactivar-urna', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': this.csrfToken() },
-                body: JSON.stringify({ codigo }),
+                body: JSON.stringify({ id: idUrna }),
             });
             return await res.json();
         } catch (error) {
