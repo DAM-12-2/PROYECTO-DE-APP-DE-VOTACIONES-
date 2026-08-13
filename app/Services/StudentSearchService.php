@@ -2,15 +2,12 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Collection;
+use App\Models\Student;
 
 class StudentSearchService
 {
-    public function search(string $query, ?int $mesaId = null, bool $onlyAvailable = true): Collection
+    public function buscar(string $identificacion): ?Student
     {
-    }
-
-    public function getAvailableStudents(): Collection
-    {
+        return Student::where('identificacion', $identificacion)->first();
     }
 }

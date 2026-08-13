@@ -14,5 +14,6 @@
 </head>
 <body class="bg-background font-body-md text-on-background">
 @yield('content')
+<script src="/assets/js/jrv.js"></script>
 </body>
 </html>

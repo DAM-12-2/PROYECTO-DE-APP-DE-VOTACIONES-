@@ -149,4 +149,5 @@ Route::middleware(['auth', 'role:jrv'])->prefix('jrv')->group(function () {
     Route::get('/api/buscar', [JrvController::class, 'searchStudents'])->middleware('throttle:120,1');
     Route::post('/api/activar-urna', [JrvController::class, 'activarUrna'])->middleware('throttle:60,1');
     Route::post('/api/desactivar-urna', [JrvController::class, 'desactivarUrna'])->middleware('throttle:60,1');
+    Route::post('/api/votar', [VoteController::class, 'store'])->middleware('throttle:60,1');
 });
