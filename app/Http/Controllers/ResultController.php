@@ -7,7 +7,9 @@ use App\Services\ElectionService;
 use App\Services\InstitutionService;
 use App\Services\VoteTallyService;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Crypt;
 
 class ResultController extends Controller
 {
@@ -24,6 +26,141 @@ class ResultController extends Controller
         $this->bitacoraService = $bitacoraService;
     }
 
+    private function checkElectionClosed(): ?JsonResponse
+    {
+        if ($this->electionService->isElectionOpen()) {
+            return response()->json([
+                'error' => 'Resultados no disponibles mientras la elección está abierta. Cierre las votaciones primero.'
+            ], 403);
+        }
+        return null;
+    }
+
+    // ===== API ENDPOINTS =====
+
+    public function apiResultados()
+    {
+        $blocked = $this->checkElectionClosed();
+        if ($blocked) return $blocked;
+
+        $result = $this->voteTallyService->tallyVotes();
+        $parties = $this->voteTallyService->formatPartyResults($result);
+        $ganador = $this->calculateGanador($result);
+
+        return response()->json([
+            'total_votos' => $result->totalVotes,
+            'blancos' => $result->blancos,
+            'nulos' => $result->nulos,
+            'votos_validos' => $result->votosValidos(),
+            'partidos' => $parties,
+            'ganador' => $ganador,
+            'es_consulta_popular' => $this->electionService->isConsultaPopular(),
+        ]);
+    }
+
+    public function apiResultadosPorMesa()
+    {
+        $blocked = $this->checkElectionClosed();
+        if ($blocked) return $blocked;
+
+        $results = $this->voteTallyService->tallyVotesByMesa();
+
+        return response()->json($results);
+    }
+
+    public function apiResultadosPorSeccion()
+    {
+        $blocked = $this->checkElectionClosed();
+        if ($blocked) return $blocked;
+
+        $results = $this->voteTallyService->tallyVotesBySeccion();
+
+        return response()->json($results);
+    }
+
+    public function apiResumen()
+    {
+        $blocked = $this->checkElectionClosed();
+        if ($blocked) return $blocked;
+
+        $result = $this->voteTallyService->tallyVotes();
+        $totalEstudiantes = \App\Models\Student::where('estado', 1)->count();
+
+        return response()->json([
+            'total_votos' => $result->totalVotes,
+            'votos_validos' => $result->votosValidos(),
+            'blancos' => $result->blancos,
+            'nulos' => $result->nulos,
+            'total_electores' => $totalEstudiantes,
+            'porcentaje_participacion' => $totalEstudiantes > 0 ? round(($result->totalVotes / $totalEstudiantes) * 100, 1) : 0,
+            'es_consulta_popular' => $this->electionService->isConsultaPopular(),
+        ]);
+    }
+
+    public function apiVerificarGanador()
+    {
+        $blocked = $this->checkElectionClosed();
+        if ($blocked) return $blocked;
+
+        $result = $this->voteTallyService->tallyVotes();
+        $ganador = $this->calculateGanador($result);
+
+        return response()->json([
+            'hay_ganador' => $ganador !== null,
+            'ganador' => $ganador,
+            'es_consulta_popular' => $this->electionService->isConsultaPopular(),
+        ]);
+    }
+
+    public function exportarResultadosCsv()
+    {
+        $blocked = $this->checkElectionClosed();
+        if ($blocked) return $blocked;
+
+        $result = $this->voteTallyService->tallyVotes();
+        $parties = $this->voteTallyService->formatPartyResults($result);
+
+        $filename = 'resultados_' . now()->format('Y-m-d_H-i-s') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($parties, $result) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            if ($this->electionService->isConsultaPopular()) {
+                fputcsv($file, ['Opción', 'Votos', 'Porcentaje']);
+                foreach ($parties as $party) {
+                    fputcsv($file, [$party['nombre'], $party['votos'], $party['porcentaje'] . '%']);
+                }
+                fputcsv($file, []);
+                fputcsv($file, ['Total Votos', $result->totalVotes]);
+                fputcsv($file, ['Blancos', $result->blancos]);
+                fputcsv($file, ['Nulos', $result->nulos]);
+                fputcsv($file, ['Votos Válidos', $result->votosValidos()]);
+            } else {
+                fputcsv($file, ['Partido', 'Siglas', 'Votos', 'Porcentaje']);
+                foreach ($parties as $party) {
+                    fputcsv($file, [$party['nombre'], $party['siglas'], $party['votos'], $party['porcentaje'] . '%']);
+                }
+                fputcsv($file, []);
+                fputcsv($file, ['Total Votos', $result->totalVotes]);
+                fputcsv($file, ['Blancos', $result->blancos]);
+                fputcsv($file, ['Nulos', $result->nulos]);
+                fputcsv($file, ['Votos Válidos', $result->votosValidos()]);
+            }
+            
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    // ===== WEB ENDPOINTS (original) =====
+
     public function resultados()
     {
         try {
@@ -35,7 +172,7 @@ class ResultController extends Controller
         }
     }
 
-    public function apiVerificarGanador()
+    public function verificarGanadorAutomatico()
     {
         try {
             $ganador = $this->voteTallyService->verificarGanador();
@@ -46,30 +183,54 @@ class ResultController extends Controller
         }
     }
 
-    public function verificarGanadorAutomatico()
-    {
-        return $this->apiVerificarGanador();
-    }
+    // ===== HELPER =====
 
-    public function exportarResultadosCsv()
+    private function calculateGanador($result): ?array
     {
-        try {
-            $datos = $this->voteTallyService->obtenerResultados();
-
-            return response()->streamDownload(function () use ($datos) {
-                $salida = fopen('php://output', 'w');
-                fputcsv($salida, ['Partido', 'Votos', 'Porcentaje']);
-                foreach ($datos['partidos'] as $partido) {
-                    fputcsv($salida, [$partido['nombre'], $partido['votos'], $partido['porcentaje'] . '%']);
-                }
-                fclose($salida);
-            }, 'resultados.csv', [
-                'Content-Type' => 'text/csv',
-                'Content-Disposition' => 'attachment; filename="resultados.csv"',
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error al exportar los resultados: ' . $e->getMessage());
-            return back()->withErrors('Error al exportar los resultados.');
+        if ($this->electionService->isConsultaPopular()) {
+            $validos = $result->votosValidos();
+            if ($validos === 0) return null;
+            
+            if ($result->siCount > $result->noCount) {
+                return [
+                    'opcion' => 'SÍ',
+                    'votos' => $result->siCount,
+                    'porcentaje' => round(($result->siCount / $validos) * 100, 1),
+                ];
+            } elseif ($result->noCount > $result->siCount) {
+                return [
+                    'opcion' => 'NO',
+                    'votos' => $result->noCount,
+                    'porcentaje' => round(($result->noCount / $validos) * 100, 1),
+                ];
+            }
+            return ['opcion' => 'EMPATE', 'votos' => $result->siCount, 'porcentaje' => 50.0];
         }
+
+        $parties = \App\Models\Party::where('estado', 1)->get()->all();
+        $sorted = $result->sortedPartyResults($parties);
+        
+        if (empty($sorted)) return null;
+        
+        $top = $sorted[0];
+        $validos = $result->votosValidos();
+        
+        if ($validos > 0 && $top['votos'] > ($validos / 2)) {
+            return [
+                'siglas' => $top['siglas'],
+                'nombre' => $top['nombre'],
+                'votos' => $top['votos'],
+                'porcentaje' => $top['porcentaje'],
+                'mayoria_absoluta' => true,
+            ];
+        }
+
+        return [
+            'siglas' => $top['siglas'],
+            'nombre' => $top['nombre'],
+            'votos' => $top['votos'],
+            'porcentaje' => $top['porcentaje'],
+            'mayoria_absoluta' => false,
+        ];
     }
 }

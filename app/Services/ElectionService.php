@@ -4,13 +4,30 @@ namespace App\Services;
 
 use App\DTOs\VoteTallyResult;
 use App\Models\Party;
+use App\Models\Setting;
 use App\Models\Vote;
+use App\Services\VoteTallyService;
 
 class ElectionService
 {
     public function __construct(
         private VoteTallyService $voteTallyService,
     ) {
+    }
+
+    public function isConsultaPopular(): bool
+    {
+        return Setting::where('nombre', 'tipo_eleccion')->value('detalle') === 'consulta_popular';
+    }
+
+    public function isElectionOpen(): bool
+    {
+        return Setting::where('nombre', 'eleccion_abierta')->value('detalle') === '1';
+    }
+
+    public function isPadronBloqueado(): bool
+    {
+        return Setting::where('nombre', 'padron_bloqueado')->value('detalle') === '1';
     }
 
     public function tallyAll(): VoteTallyResult
@@ -46,5 +63,19 @@ class ElectionService
             'ganador' => $results[0],
             'message' => 'Ganador definido',
         ];
+    }
+
+    public function getWinnerThreshold(): array
+    {
+        return ['type' => 'mayoria_absoluta', 'value' => 50];
+    }
+
+    public function toggle(): array
+    {
+        $setting = Setting::firstOrCreate(['nombre' => 'eleccion_abierta'], ['detalle' => '0']);
+        $setting->detalle = $setting->detalle === '1' ? '0' : '1';
+        $setting->save();
+
+        return ['eleccion_abierta' => $setting->detalle === '1'];
     }
 }
