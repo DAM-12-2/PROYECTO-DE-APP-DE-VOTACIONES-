@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Student;
-use App\Models\Vote;
 use App\Models\Urna;
 use App\Models\Party;
 use App\Models\Mesa;

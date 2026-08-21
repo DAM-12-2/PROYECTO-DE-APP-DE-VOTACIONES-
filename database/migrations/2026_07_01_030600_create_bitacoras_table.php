@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('bitacoras', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('mesa_id')->constrained('mesas')->onDelete('cascade');
+            $table->foreignId('mesa_id')->nullable()->constrained('mesas')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->text('detalle');
             $table->timestamps();

@@ -20,7 +20,6 @@ class UsuarioController extends Controller
     {
         User::create([
             'name' => $request->name,
-            'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'mesa_id' => $request->mesa_id,
@@ -40,7 +39,7 @@ class UsuarioController extends Controller
     {
         $usuario = User::findOrFail($id);
 
-        $data = $request->only(['name', 'email', 'role', 'mesa_id']);
+        $data = $request->only(['name', 'role', 'mesa_id']);
         $usuario->update($data);
 
         return redirect()->route('admin.usuarios')->with('success', 'Usuario actualizado exitosamente.');
