@@ -41,7 +41,6 @@ class VoteController extends Controller
         ]);
 
         $estudiante->voto = true;
-        $estudiante->idUrna = $urna->id;
         $estudiante->save();
 
         return response()->json(['success' => true, 'message' => 'Voto registrado correctamente'], 201);
