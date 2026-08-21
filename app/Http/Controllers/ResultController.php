@@ -38,8 +38,12 @@ class ResultController extends Controller
     public function apiVerificarGanador()
     {
         try {
-            $ganador = $this->voteTallyService->verificarGanador();
-            return response()->json(['success' => true, 'ganador' => $ganador]);
+            $resultados = $this->voteTallyService->obtenerResultados();
+            return response()->json([
+                'success' => true,
+                'ganador' => $this->voteTallyService->verificarGanador(),
+                'partidos' => $resultados['partidos'],
+            ]);
         } catch (\Exception $e) {
             Log::error('Error al verificar ganador: ' . $e->getMessage());
             return response()->json(['success' => false, 'ganador' => null]);
