@@ -294,10 +294,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm p-6">
                         <h3 class="font-headline-md text-primary mb-8">Distribuci\u00f3n Visual</h3>
-                        <div class="flex items-end justify-around h-64 border-b border-outline-variant pb-2 px-4 gap-4">
-                            <div class="w-full bg-surface-container-high border border-outline-variant rounded-t-lg h-[15%]"></div>
-                            <div class="w-full bg-surface-container-high border border-outline-variant rounded-t-lg h-[15%]"></div>
+                        <div class="h-64 relative">
+                            <canvas id="graficoResultados" aria-label="Gráfico de votos por partido"></canvas>
                         </div>
+                    </div>
+                    <div class="lg:col-span-2 flex justify-end">
+                        <a class="px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-bold flex items-center gap-2 shadow-md" href="/resultados/exportar-csv">
+                            <span class="material-symbols-outlined text-sm">download</span>
+                            Descargar reporte CSV
+                        </a>
                     </div>
                 </div>
             </div>
@@ -461,6 +466,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let resultsEnabled = false;
+    let dashboardChart = null;
+    let resultsChart = null;
+
+    async function loadChartData(chart) {
+        if (!chart) return;
+
+        try {
+            const response = await fetch('/api/ganador', { headers: { Accept: 'application/json' } });
+            if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+            const payload = await response.json();
+            const partidos = Array.isArray(payload.partidos) ? payload.partidos : [];
+            chart.data.labels = partidos.map(partido => partido.siglas || partido.nombre);
+            chart.data.datasets[0].data = partidos.map(partido => partido.votos || 0);
+            chart.update();
+        } catch (error) {
+            console.error('No se pudieron cargar los resultados:', error);
+        }
+    }
+
+    function listenForStudentUpdates() {
+        if (!window.Echo || !window.Echo.channel) return;
+
+        window.Echo.channel('students-channel')
+            .listen('.student.updated', () => {
+                loadChartData(dashboardChart);
+                loadChartData(resultsChart);
+            });
+    }
 
     function setResultsVisibility(enabled) {
         resultsEnabled = enabled;
@@ -673,7 +707,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sectionId === 'dashboard') {
                 const ctx = document.getElementById('graficoVotos');
                 if (ctx && typeof Chart !== 'undefined') {
-                    const chart = new Chart(ctx, {
+                    if (dashboardChart) dashboardChart.destroy();
+                    dashboardChart = new Chart(ctx, {
                         type: 'bar',
                         data: {
                             labels: [],
@@ -696,14 +731,35 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
 
                         const res = await response.json();
-                        chart.data.labels = res.partidos.map(p => p.siglas);
-                        chart.data.datasets[0].data = res.partidos.map(p => p.votos);
-                        chart.update();
+                        const partidos = Array.isArray(res.partidos) ? res.partidos : [];
+                        dashboardChart.data.labels = partidos.map(p => p.siglas || p.nombre);
+                        dashboardChart.data.datasets[0].data = partidos.map(p => p.votos || 0);
+                        dashboardChart.update();
                     } catch (error) {
                         console.error('No se pudieron cargar los votos del dashboard:', error);
                     }
                 } else if (ctx) {
                     console.warn('Chart.js no está cargado. Incluya la librería Chart.js para renderizar el gráfico.');
+                }
+            }
+
+            if (sectionId === 'resultados') {
+                const ctx = document.getElementById('graficoResultados');
+                if (ctx && typeof Chart !== 'undefined') {
+                    if (resultsChart) resultsChart.destroy();
+                    resultsChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: 'Votos',
+                                data: [],
+                                backgroundColor: '#3b82f6'
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                    loadChartData(resultsChart);
                 }
             }
         } else {
@@ -746,5 +802,6 @@ document.addEventListener('DOMContentLoaded', () => {
         '/tribunal/configuracion': 'configuracion',
     };
     const initialSection = pathToSection[window.location.pathname] || 'dashboard';
+    listenForStudentUpdates();
     switchSection(initialSection);
 });
