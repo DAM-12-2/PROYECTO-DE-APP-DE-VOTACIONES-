@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Mesa;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class UsuarioController extends Controller
@@ -18,7 +20,10 @@ class UsuarioController extends Controller
 
     public function edit($id)
     {
-        return view('admin.usuarios_edit');
+        $usuario = User::findOrFail($id);
+        $mesasList = Mesa::orderBy('numero')->get();
+
+        return view('admin.usuarios_edit', compact('usuario', 'mesasList'));
     }
 
     public function update(Request $request, $id)

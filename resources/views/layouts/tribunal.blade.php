@@ -1,13 +1,11 @@
-<!DOCTYPE html><html class="light" lang="es" style=""><head>
+<!DOCTYPE html><html class="light" lang="es"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <title>@yield('title', 'Tribunal Electoral')</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
-<script src="/js/tailwind.js"></script>
-<script src="/assets/js/tailwind-config.js"></script>
-<link rel="stylesheet" href="/assets/css/styles.css">
+@vite('resources/css/tribunal.css')
 </head>
 <body class="bg-background text-on-background font-body-md h-screen flex overflow-hidden">
 <!-- SideNavBar -->

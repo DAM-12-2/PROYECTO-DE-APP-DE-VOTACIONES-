@@ -1,6 +1,6 @@
 # Sistema de Votaciones Estudiantiles -- CTP AIRA
 
-Proyecto híbrido: app Laravel 12 con backend + panel HTML standalone (sin backend).
+Aplicación web de votaciones estudiantiles para CTP AIRA, construida con Laravel 12, Blade y SQLite. Incluye paneles para administración, Tribunal Electoral, JRV y kiosco de votación.
 
 ## Stack
 Laravel 12 + SQLite + Tailwind CSS + Phosphor Icons + JavaScript vanilla
@@ -10,23 +10,17 @@ Laravel 12 + SQLite + Tailwind CSS + Phosphor Icons + JavaScript vanilla
 | Acción | Comando |
 |--------|---------|
 | Servidor Laravel | `php artisan serve --port=8000` |
-| Servidor HTML | `python -m http.server 8080` |
-| Login Laravel | `http://127.0.0.1:8000/login` |
-| Login HTML | `http://127.0.0.1:8000/Html/login.html` |
-| Panel HTML | `http://127.0.0.1:8000/Html/Tribunal_est.html` |
+| Login | `http://127.0.0.1:8000/login` |
 | Migrar BD | `php artisan migrate --seed` |
 
 ## Archivos clave
 
-### HTML standalone
+### Recursos frontend
 | Archivo | Rol |
 |---------|-----|
-| `Html/login.html` | Página de login (39 lns) |
-| `Html/Tribunal_est.html` | SPA panel electoral (142 lns) |
 | `assets/js/login.js` | Validación login (17 lns) |
 | `assets/js/app.js` | Router y templates SPA (481 lns) |
 | `assets/css/styles.css` | Estilos nav-link (6 lns) |
-| `public/Html/` | Symlink a Html/ |
 | `public/assets/` | Symlink a assets/ |
 
 ### Laravel admin
@@ -34,11 +28,28 @@ Laravel 12 + SQLite + Tailwind CSS + Phosphor Icons + JavaScript vanilla
 |---------|-----|
 | `resources/views/layouts/admin.blade.php` | Layout admin (168 lns) |
 | `public/css/admin.css` | CSS extraído (body, scrollbar) |
-| `public/js/admin-config.js` | tailwind.config extraído |
+| `resources/js/tailwind-config.js` | Configuración Tailwind procesada por Vite |
+
+### Componentes Blade reutilizables
+| Archivo | Uso |
+|---------|-----|
+| `resources/views/components/stat-card.blade.php` | Tarjetas de estadísticas del dashboard |
+| `resources/views/components/form-field.blade.php` | Campos de formulario con label, validación y placeholder |
+| `resources/views/components/delete-form.blade.php` | Formulario reutilizable para eliminar registros |
 
 ### Cambios aplicados
-- CSS y tailwind.config inline extraídos a archivos externos
-- Logout redirige según rol: admin -> `/Html/login.html`, tribunal -> `/Html/Tribunal_est.html`
+- Vistas standalone migradas a Blade dentro de Laravel.
+- Configuración Tailwind del Admin y Tribunal integrada al pipeline de Vite.
+- Componentes Blade reutilizables para estadísticas y formularios.
+- Validación básica y prevención de doble envío en el login.
+- El login enfoca automáticamente el campo de usuario y valida los campos antes de enviar.
+- El layout de votación incluye el token CSRF y usa colores del sistema MD3.
+- El layout Tribunal carga sus estilos mediante Laravel Vite sin cargas duplicadas de Tailwind.
+- El layout JRV usa la configuración Tailwind organizada mediante Vite y no contiene CSS inline de accesibilidad.
+- Consultas Eloquent movidas de las vistas a los controladores.
+- `UsuarioController` prepara `$usuario` y `$mesasList` para `admin.usuarios_edit`.
+- `delete-form` usa la clase Tailwind correcta `transition-colors`.
+- Logout redirige a `/login` según el rol autenticado.
 
 ## Flujo de trabajo (Git Flow)
 

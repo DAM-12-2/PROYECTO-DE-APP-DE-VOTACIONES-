@@ -21,7 +21,7 @@
 @csrf
 <div class="text-left">
 <label class="text-xs font-bold text-secondary uppercase mb-1.5 block" for="username">Usuario</label>
-<input class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" id="username" name="username" placeholder="Ingrese su usuario" type="text" required autocomplete="username">
+<input class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" id="username" name="username" placeholder="Ingrese su usuario" type="text" required autofocus autocomplete="username">
 </div>
 <div class="text-left">
 <label class="text-xs font-bold text-secondary uppercase mb-1.5 block" for="password">Contrase&ntilde;a</label>

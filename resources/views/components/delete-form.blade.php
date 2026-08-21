@@ -3,7 +3,7 @@
 <form method="POST" action="{{ $action }}" class="inline" onsubmit="return confirm('{{ $confirmMessage }}')">
  @csrf
  @method('DELETE')
- <button type="submit" class="text-red-400 hover:text-red-600 transition-color-colors" title="Eliminar">
+ <button type="submit" class="text-red-400 hover:text-red-600 transition-colors" title="Eliminar">
   <i class="ph ph-trash text-lg"></i>
  </button>
 </form>
