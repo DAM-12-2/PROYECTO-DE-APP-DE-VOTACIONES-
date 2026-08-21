@@ -487,13 +487,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function listenForStudentUpdates() {
-        if (!window.Echo || !window.Echo.channel) return;
-
-        window.Echo.channel('students-channel')
-            .listen('.student.updated', () => {
+        if (window.Echo && window.Echo.channel) {
+            window.Echo.channel('students-channel')
+                .listen('.student.updated', () => {
+                    loadChartData(dashboardChart);
+                    loadChartData(resultsChart);
+                });
+        } else {
+            setInterval(() => {
                 loadChartData(dashboardChart);
                 loadChartData(resultsChart);
-            });
+            }, 15000);
+        }
     }
 
     function setResultsVisibility(enabled) {

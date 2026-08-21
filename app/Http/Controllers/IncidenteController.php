@@ -29,7 +29,8 @@ class IncidenteController extends Controller
                 ], 200);
             }
 
-            return view('incidentes.index', compact('incidentes'));
+                $mesas = \App\Models\Mesa::all();
+                return view('admin.incidentes', compact('incidentes', 'mesas'));
         } catch (Exception $e) {
             if ($request->expectsJson()) {
                 return response()->json([
@@ -45,7 +46,9 @@ class IncidenteController extends Controller
     public function store(StoreIncidenteRequest $request)
     {
         try {
-            $incidente = Incidente::create($request->validated());
+                $data = $request->validated();
+                $data['user_id'] = auth()->id();
+                $incidente = Incidente::create($data);
             $this->bitacoraService->registrar('Registro de incidente', 'Se registró un incidente ID: ' . $incidente->id);
 
             return redirect()->back()->with('success', 'Incidente registrado exitosamente.');

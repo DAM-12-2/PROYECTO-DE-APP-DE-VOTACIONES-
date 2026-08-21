@@ -29,8 +29,18 @@ class Mesa extends Model
         return $this->hasMany(MiembroJrv::class, 'mesa_id');
     }
 
-    public function incidentes(): HasMany
-    {
-        return $this->hasMany(Incidente::class, 'mesa_id');
-    }
+ public function incidentes(): HasMany
+ {
+ return $this->hasMany(Incidente::class, 'mesa_id');
+ }
+
+ public function getNumeroAttribute(): string
+ {
+ return (string) $this->attributes['nombre'];
+ }
+
+ public function setNumeroAttribute(string $value): void
+ {
+ $this->attributes['nombre'] = $value;
+ }
 }

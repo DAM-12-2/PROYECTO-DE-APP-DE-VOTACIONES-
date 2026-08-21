@@ -8,9 +8,16 @@ class StoreUsuarioRequest extends FormRequest
 {
     public function authorize(): bool
     {
+        return true;
     }
 
     public function rules(): array
     {
+        return [
+            'name' => 'required|string|max:255|unique:users,name',
+            'password' => 'required|string|min:6|confirmed',
+            'role' => 'required|in:admin,tee,jrv',
+            'mesa_id' => 'nullable|exists:mesas,id',
+        ];
     }
 }

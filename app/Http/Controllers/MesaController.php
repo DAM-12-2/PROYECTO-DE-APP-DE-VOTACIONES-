@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreMesaRequest;
 use App\Http\Requests\UpdateMesaRequest;
 use App\Models\Mesa;
+use App\Models\SeccionMesa;
 use App\Services\BitacoraService;
 use Exception;
 use Illuminate\Http\Request;
@@ -18,101 +19,93 @@ class MesaController extends Controller
         $this->bitacoraService = $bitacoraService;
     }
 
-    public function index(Request $request)
+    public function index()
     {
-        try {
-            $mesas = Mesa::with('secciones', 'miembros', 'incidentes')->get();
+        $mesas = Mesa::with(['secciones', 'miembros.student', 'miembros.party'])->get();
 
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => true,
-                    'data' => $mesas,
-                ], 200);
-            }
-
-            return view('admin.mesas', compact('mesas'));
-        } catch (Exception $e) {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Error al cargar las mesas: ' . $e->getMessage(),
-                ], 500);
-            }
-
-            return back()->withErrors('Error al cargar las mesas: ' . $e->getMessage());
-        }
+        return view('admin.mesas', compact('mesas'));
     }
 
     public function store(StoreMesaRequest $request)
     {
-        try {
-            $mesa = Mesa::create($request->validated());
-            $this->bitacoraService->registrar('Creación de mesa', 'Se creó una nueva mesa ID: ' . $mesa->id);
+        Mesa::create([
+            'nombre' => $request->numero,
+            'ubicacion' => $request->ubicacion ?? '',
+            'estado' => 1,
+        ]);
 
-            return redirect()->back()->with('success', 'Mesa creada exitosamente.');
-        } catch (Exception $e) {
-            return back()->withErrors('Error al crear la mesa: ' . $e->getMessage())->withInput();
-        }
+        return redirect()->route('admin.mesas')->with('success', 'Mesa creada exitosamente.');
     }
 
     public function edit($id)
     {
-        try {
-            $mesa = Mesa::findOrFail($id);
-
-            return view('admin.mesas_edit', compact('mesa'));
-        } catch (Exception $e) {
-            return redirect()->back()->withErrors('Mesa no encontrada: ' . $e->getMessage());
-        }
+        $mesa = Mesa::findOrFail($id);
+        return view('admin.mesas_edit', compact('mesa'));
     }
 
     public function update(UpdateMesaRequest $request, $id)
     {
-        try {
-            $mesa = Mesa::findOrFail($id);
-            $mesa->update($request->validated());
-            $this->bitacoraService->registrar('Actualización de mesa', 'Se actualizó la mesa ID: ' . $id);
+        $mesa = Mesa::findOrFail($id);
 
-            return redirect()->back()->with('success', 'Mesa actualizada exitosamente.');
-        } catch (Exception $e) {
-            return back()->withErrors('Error al actualizar la mesa: ' . $e->getMessage())->withInput();
+        $data = [];
+        if ($request->has('numero')) {
+            $data['nombre'] = $request->numero;
         }
+        if ($request->has('ubicacion')) {
+            $data['ubicacion'] = $request->ubicacion;
+        }
+
+        $mesa->update($data);
+
+        return redirect()->route('admin.mesas')->with('success', 'Mesa actualizada exitosamente.');
     }
 
     public function destroy($id)
     {
-        try {
-            $mesa = Mesa::findOrFail($id);
-            $mesa->delete();
-            $this->bitacoraService->registrar('Eliminación de mesa', 'Se eliminó la mesa ID: ' . $id);
+        $mesa = Mesa::findOrFail($id);
+        $mesa->secciones()->delete();
+        $mesa->miembros()->delete();
+        $mesa->delete();
 
-            return redirect()->back()->with('success', 'Mesa eliminada exitosamente.');
-        } catch (Exception $e) {
-            return back()->withErrors('Error al eliminar la mesa: ' . $e->getMessage());
-        }
+        return redirect()->route('admin.mesas')->with('success', 'Mesa eliminada exitosamente.');
     }
 
     public function storeSeccion(Request $request, $id)
     {
-        return response()->json([
-            'success' => true,
-            'message' => 'Pendiente de implementación.',
-        ], 200);
+        $request->validate([
+            'seccion' => 'required|string|max:20',
+        ]);
+
+        $mesa = Mesa::findOrFail($id);
+
+        $mesa->secciones()->create([
+            'seccion' => $request->seccion,
+        ]);
+
+        return redirect()->route('admin.mesas')->with('success', 'Sección agregada exitosamente.');
     }
 
     public function destroySeccion($id)
     {
-        return response()->json([
-            'success' => true,
-            'message' => 'Pendiente de implementación.',
-        ], 200);
+        $seccion = SeccionMesa::findOrFail($id);
+        $seccion->delete();
+
+        return redirect()->route('admin.mesas')->with('success', 'Sección eliminada exitosamente.');
     }
 
     public function moverSeccion(Request $request)
     {
+        $request->validate([
+            'seccion_id' => 'required|exists:secciones_mesa,id',
+            'mesa_id' => 'required|exists:mesas,id',
+        ]);
+
+        $seccion = SeccionMesa::findOrFail($request->seccion_id);
+        $seccion->update(['mesa_id' => $request->mesa_id]);
+
         return response()->json([
             'success' => true,
-            'message' => 'Pendiente de implementación.',
-        ], 200);
+            'message' => 'Sección movida exitosamente.'
+        ]);
     }
 }

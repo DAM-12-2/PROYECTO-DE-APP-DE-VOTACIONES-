@@ -6,15 +6,15 @@ use App\Http\Controllers\ReportController;
 use App\Services\ElectionService;
 use App\Services\InstitutionService;
 use App\Services\VoteTallyService;
-use PHPUnit\Framework\TestCase;
 
-class ControllerDependencyInjectionTest extends TestCase
+class ControllerDependencyInjectionTest extends \Tests\TestCase
 {
+    use \Illuminate\Foundation\Testing\RefreshDatabase;
     public function test_report_controller_assigns_injected_services_in_constructor(): void
     {
         $institutionService = new InstitutionService();
-        $electionService = new ElectionService();
         $voteTallyService = new VoteTallyService();
+        $electionService = new ElectionService($voteTallyService);
 
         $controller = new ReportController($institutionService, $electionService, $voteTallyService);
 
