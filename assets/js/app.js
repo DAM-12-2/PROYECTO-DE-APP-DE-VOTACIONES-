@@ -649,7 +649,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function switchSection(sectionId) {
+    async function switchSection(sectionId) {
         navLinks.forEach(link => {
             if (link.dataset.target === sectionId) {
                 link.classList.add('active');
@@ -669,17 +669,17 @@ document.addEventListener('DOMContentLoaded', () => {
         if (templates[sectionId]) {
             routerView.innerHTML = templates[sectionId];
 
-            // Inicializar gráfico de prueba en dashboard
+            // Inicializar grafico del dashboard
             if (sectionId === 'dashboard') {
                 const ctx = document.getElementById('graficoVotos');
                 if (ctx && typeof Chart !== 'undefined') {
-                    new Chart(ctx, {
+                    const chart = new Chart(ctx, {
                         type: 'bar',
                         data: {
-                            labels: ['Partido 1', 'Partido 2', 'Nulos/Blancos'],
+                            labels: [],
                             datasets: [{
                                 label: 'Votos',
-                                data: [150, 95, 10],
+                                data: [],
                                 backgroundColor: ['#3b82f6', '#ef4444', '#9ca3af']
                             }]
                         },
@@ -688,6 +688,20 @@ document.addEventListener('DOMContentLoaded', () => {
                             maintainAspectRatio: false
                         }
                     });
+
+                    try {
+                        const response = await fetch('/api/ganador');
+                        if (!response.ok) {
+                            throw new Error(`Error HTTP: ${response.status}`);
+                        }
+
+                        const res = await response.json();
+                        chart.data.labels = res.partidos.map(p => p.siglas);
+                        chart.data.datasets[0].data = res.partidos.map(p => p.votos);
+                        chart.update();
+                    } catch (error) {
+                        console.error('No se pudieron cargar los votos del dashboard:', error);
+                    }
                 } else if (ctx) {
                     console.warn('Chart.js no está cargado. Incluya la librería Chart.js para renderizar el gráfico.');
                 }
