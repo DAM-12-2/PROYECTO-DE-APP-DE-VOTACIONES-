@@ -22,13 +22,6 @@ class StudentSearchService
                     ->orWhere('nombre', 'like', "%{$query}%");
             });
 
-<<<<<<< HEAD
-            if ($mesaId !== null) {
-                $consulta->where('mesa_id', $mesaId);
-            }
-
-=======
->>>>>>> 3e045c4 (Cambios en la base de datos, ya está al 100%)
             if ($onlyAvailable) {
                 $consulta->where('estado', 1);
             }

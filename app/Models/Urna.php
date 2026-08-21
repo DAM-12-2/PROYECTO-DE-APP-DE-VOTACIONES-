@@ -15,10 +15,7 @@ class Urna extends Model
         'horaactivacion',
         'estado',
         'id_mesa',
-<<<<<<< HEAD
-=======
         'id_estudiante',
->>>>>>> 3e045c4 (Cambios en la base de datos, ya está al 100%)
     ];
 
     protected $casts = [
@@ -28,13 +25,10 @@ class Urna extends Model
     public function mesa(): BelongsTo
     {
         return $this->belongsTo(Mesa::class, 'id_mesa', 'id');
-<<<<<<< HEAD
-=======
     }
 
     public function estudiante(): BelongsTo
     {
         return $this->belongsTo(Student::class, 'id_estudiante', 'id');
->>>>>>> 3e045c4 (Cambios en la base de datos, ya está al 100%)
     }
 }
