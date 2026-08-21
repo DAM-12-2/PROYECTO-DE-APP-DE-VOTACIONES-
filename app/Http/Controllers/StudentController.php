@@ -32,9 +32,8 @@ class StudentController extends Controller
             'correo'         => 'nullable|email',
             'seccion'        => 'nullable|string'
         ]);
-        broadcast(new StudentUpdated($student));
-
         $student = Student::create($validated);
+        broadcast(new StudentUpdated($student));
 
         return response()->json([
             'success' => true,
