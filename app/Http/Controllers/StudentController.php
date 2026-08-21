@@ -59,7 +59,7 @@ class StudentController extends Controller
 
     // Eliminar un estudiante
     public function destroy($id)
-    {A
+    {
         $student = Student::find($id);
 
         if (!$student) {
