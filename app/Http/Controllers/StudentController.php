@@ -11,10 +11,15 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $students = Student::all();
-        return response()->json([
-            'success' => true,
-            'data' => $students
-        ], 200);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => $students
+            ], 200);
+        }
+
+        return view('admin.students', compact('students'));
     }
 
     // Crear un estudiante individual
