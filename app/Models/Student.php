@@ -9,10 +9,6 @@ class Student extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'identificacion';
-    public $incrementing = false;
-    protected $keyType = 'string';
-
     protected $fillable = [
         'identificacion',
         'nombre',
@@ -21,18 +17,11 @@ class Student extends Model
         'foto',
         'huella',
         'voto',
-        'idUrna',
         'estado'
     ];
 
     protected $casts = [
         'voto'    => 'boolean',
         'estado'  => 'boolean',
-        'idUrna'  => 'integer',
     ];
-
-    public function urna()
-    {
-        return $this->hasOne(Urna::class, 'idUrna', 'id');
-    }
 }

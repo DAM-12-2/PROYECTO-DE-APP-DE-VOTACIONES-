@@ -14,7 +14,6 @@ return new class extends Migration {
             $table->string('foto')->nullable();
             $table->string('huella')->nullable();
             $table->boolean('voto')->default(0)->comment('0: no ha votado, 1: ya voto');
-            $table->integer('idUrna')->default(0);
             $table->boolean('estado')->default(1)->comment('1: activo 0: eliminado');
             $table->timestamps();
         });

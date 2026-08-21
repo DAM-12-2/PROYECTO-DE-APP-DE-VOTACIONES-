@@ -10,7 +10,8 @@ class Mesa extends Model
     protected $table = 'mesas';
 
     protected $fillable = [
-        'numero',
+        'nombre',
+        'ubicacion',
         'estado',
     ];
 
