@@ -22,12 +22,12 @@ class Vote extends Model
     }
 
     /**
-     * Accesor útil para obtener el ID real del partido descifrándolo al vuelo (solo cuando es necesario para el conteo).
+     * Accesor para obtener el partido descifrado (usado por VoteTallyService).
      */
     public function getDecryptedPartyAttribute()
     {
         try {
-            return Crypt::decryptString($this->encrypted_party);
+            return Crypt::decryptString($this->getAttribute('encrypted_party'));
         } catch (\Exception $e) {
             return null; // Voto corrupto o manipulado directamente en la DB
         }

@@ -6,41 +6,78 @@ use App\DTOs\VoteTallyResult;
 use App\Models\Party;
 use App\Models\Vote;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Crypt;
 
 class VoteTallyService
 {
-    public function tallyVotes(Collection|array $votes): VoteTallyResult
-    {
-        $votes = $votes instanceof Collection ? $votes : collect($votes);
+    private bool $isConsultaPopular;
+    private array $validPartyIds;
 
-        $partyVotes = [];
+    public function __construct()
+    {
+        $this->isConsultaPopular = $this->detectConsultaPopular();
+        $this->validPartyIds = $this->getValidPartyIds();
+    }
+
+    private function detectConsultaPopular(): bool
+    {
+        $tipo = \App\Models\Setting::where('nombre', 'tipo_eleccion')->value('detalle');
+        return $tipo === 'consulta_popular';
+    }
+
+    private function getValidPartyIds(): array
+    {
+        if ($this->isConsultaPopular) {
+            return ['1', '0'];
+        }
+        return Party::where('estado', 1)->pluck('id')->map(fn($id) => (string)$id)->toArray();
+    }
+
+    public function tallyVotes(Collection|array $votes = null): VoteTallyResult
+    {
+        if ($votes === null) {
+            $votes = Vote::select('encrypted_party', 'id_mesa')->get();
+        } elseif ($votes instanceof Collection) {
+            // already a collection
+        } else {
+            $votes = collect($votes);
+        }
+
+        $total = $votes->count();
         $blancos = 0;
         $nulos = 0;
+        $siCount = 0;
+        $noCount = 0;
+        $partyVotes = [];
 
         foreach ($votes as $vote) {
-            $valor = $vote->decrypted_party;
-
-            if ($valor === null) {
+            try {
+                $decrypted = Crypt::decryptString($vote->encrypted_party);
+            } catch (\Exception $e) {
                 $nulos++;
                 continue;
             }
 
-            if ($valor === 'BLANCO') {
-                $blancos++;
-                continue;
+            if ($this->isConsultaPopular) {
+                if ($decrypted === '1') {
+                    $siCount++;
+                } elseif ($decrypted === '0') {
+                    $noCount++;
+                } else {
+                    $nulos++;
+                }
+            } else {
+                if (in_array($decrypted, $this->validPartyIds, true)) {
+                    $partyVotes[$decrypted] = ($partyVotes[$decrypted] ?? 0) + 1;
+                } elseif ($decrypted === '') {
+                    $blancos++;
+                } else {
+                    $nulos++;
+                }
             }
-
-            $partyVotes[$valor] = ($partyVotes[$valor] ?? 0) + 1;
         }
 
-        return new VoteTallyResult(
-            totalVotes: $votes->count(),
-            blancos: $blancos,
-            nulos: $nulos,
-            siCount: 0,
-            noCount: 0,
-            partyVotes: $partyVotes,
-        );
+        return new VoteTallyResult($total, $blancos, $nulos, $siCount, $noCount, $partyVotes);
     }
 
     public function obtenerResultados(): array
@@ -67,23 +104,145 @@ class VoteTallyService
         return $results[0];
     }
 
-    public function tallyVotesByMesa(Collection|array $votes, Collection|array $mesas): array
+    public function tallyVotesByMesa(): array
     {
-        $resultadosPorMesa = [];
-        foreach ($mesas as $mesa) {
-            $deMesa = collect($votes)->filter(fn($v) => $v->id_mesa === $mesa->id);
-            $resultadosPorMesa[$mesa->nombre] = $this->tallyVotes($deMesa);
+        $votes = Vote::select('encrypted_party', 'id_mesa')->get();
+        $mesas = \App\Models\Mesa::with('secciones')->get()->keyBy('id');
+
+        $byMesa = [];
+
+        foreach ($votes as $vote) {
+            $mesaId = $vote->id_mesa;
+            if (!$mesaId || !isset($mesas[$mesaId])) {
+                continue;
+            }
+
+            if (!isset($byMesa[$mesaId])) {
+                $byMesa[$mesaId] = [
+                    'mesa' => $mesas[$mesaId],
+                    'votes' => [],
+                ];
+            }
+            $byMesa[$mesaId]['votes'][] = $vote;
         }
-        return $resultadosPorMesa;
+
+        $results = [];
+        foreach ($byMesa as $mesaId => $data) {
+            $result = $this->tallyVotesCollection($data['votes']);
+            $results[$mesaId] = [
+                'mesa_id' => $mesaId,
+                'mesa_nombre' => $data['mesa']->nombre,
+                'mesa_numero' => $data['mesa']->numero,
+                'total' => $result->totalVotes,
+                'blancos' => $result->blancos,
+                'nulos' => $result->nulos,
+                'votos_validos' => $result->votosValidos(),
+                'partidos' => $this->formatPartyResults($result),
+            ];
+        }
+
+        ksort($results);
+        return array_values($results);
     }
 
-    public function tallyVotesBySeccion(Collection|array $votes, Collection|array $mesas): array
+    public function tallyVotesBySeccion(): array
     {
-        $resultadosPorSeccion = [];
-        foreach ($mesas as $mesa) {
-            $deMesa = collect($votes)->filter(fn($v) => $v->id_mesa === $mesa->id);
-            $resultadosPorSeccion[$mesa->nombre] = $this->tallyVotes($deMesa);
+        $votes = Vote::select('encrypted_party', 'id_mesa')->get();
+        $mesas = \App\Models\Mesa::with('secciones')->get()->keyBy('id');
+
+        $bySeccion = [];
+
+        foreach ($votes as $vote) {
+            $mesaId = $vote->id_mesa;
+            if (!$mesaId || !isset($mesas[$mesaId])) {
+                continue;
+            }
+
+            $mesa = $mesas[$mesaId];
+            foreach ($mesa->secciones as $seccion) {
+                $seccionKey = $seccion->seccion;
+                if (!isset($bySeccion[$seccionKey])) {
+                    $bySeccion[$seccionKey] = [
+                        'seccion' => $seccionKey,
+                        'mesa_ids' => [],
+                        'votes' => [],
+                    ];
+                }
+                if (!in_array($mesaId, $bySeccion[$seccionKey]['mesa_ids'], true)) {
+                    $bySeccion[$seccionKey]['mesa_ids'][] = $mesaId;
+                }
+                $bySeccion[$seccionKey]['votes'][] = $vote;
+            }
         }
-        return $resultadosPorSeccion;
+
+        $results = [];
+        foreach ($bySeccion as $seccionKey => $data) {
+            $result = $this->tallyVotesCollection($data['votes']);
+            $results[$seccionKey] = [
+                'seccion' => $seccionKey,
+                'mesa_ids' => $data['mesa_ids'],
+                'total' => $result->totalVotes,
+                'blancos' => $result->blancos,
+                'nulos' => $result->nulos,
+                'votos_validos' => $result->votosValidos(),
+                'partidos' => $this->formatPartyResults($result),
+            ];
+        }
+
+        ksort($results);
+        return array_values($results);
+    }
+
+    private function tallyVotesCollection($votes): VoteTallyResult
+    {
+        $total = count($votes);
+        $blancos = 0;
+        $nulos = 0;
+        $siCount = 0;
+        $noCount = 0;
+        $partyVotes = [];
+
+        foreach ($votes as $vote) {
+            try {
+                $decrypted = Crypt::decryptString($vote->encrypted_party);
+            } catch (\Exception $e) {
+                $nulos++;
+                continue;
+            }
+
+            if ($this->isConsultaPopular) {
+                if ($decrypted === '1') {
+                    $siCount++;
+                } elseif ($decrypted === '0') {
+                    $noCount++;
+                } else {
+                    $nulos++;
+                }
+            } else {
+                if (in_array($decrypted, $this->validPartyIds, true)) {
+                    $partyVotes[$decrypted] = ($partyVotes[$decrypted] ?? 0) + 1;
+                } elseif ($decrypted === '') {
+                    $blancos++;
+                } else {
+                    $nulos++;
+                }
+            }
+        }
+
+        return new VoteTallyResult($total, $blancos, $nulos, $siCount, $noCount, $partyVotes);
+    }
+
+    public function formatPartyResults(VoteTallyResult $result): array
+    {
+        if ($this->isConsultaPopular) {
+            $validos = $result->votosValidos();
+            return [
+                ['siglas' => 'SÍ', 'nombre' => 'Sí', 'votos' => $result->siCount, 'porcentaje' => $validos > 0 ? round(($result->siCount / $validos) * 100, 1) : 0],
+                ['siglas' => 'NO', 'nombre' => 'No', 'votos' => $result->noCount, 'porcentaje' => $validos > 0 ? round(($result->noCount / $validos) * 100, 1) : 0],
+            ];
+        }
+
+        $parties = Party::where('estado', 1)->get()->all();
+        return $result->sortedPartyResults($parties);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Party;
 use App\Services\StudentSearchService;
 use App\Services\UrnaService;
 use Illuminate\Http\Request;
@@ -47,6 +48,16 @@ class JrvController extends Controller
                 'seccion' => $estudiante->seccion,
                 'voto' => $estudiante->voto,
             ]],
+        ], 200);
+    }
+
+    public function partidos()
+    {
+        $partidos = Party::where('estado', true)->get(['id', 'siglas', 'nombre']);
+
+        return response()->json([
+            'success' => true,
+            'data' => $partidos,
         ], 200);
     }
 

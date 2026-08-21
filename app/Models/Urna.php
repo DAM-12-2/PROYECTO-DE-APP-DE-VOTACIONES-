@@ -15,6 +15,7 @@ class Urna extends Model
         'horaactivacion',
         'estado',
         'id_mesa',
+        'id_estudiante',
     ];
 
     protected $casts = [
@@ -24,5 +25,10 @@ class Urna extends Model
     public function mesa(): BelongsTo
     {
         return $this->belongsTo(Mesa::class, 'id_mesa', 'id');
+    }
+
+    public function estudiante(): BelongsTo
+    {
+        return $this->belongsTo(Student::class, 'id_estudiante', 'id');
     }
 }

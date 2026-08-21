@@ -13,9 +13,9 @@ class BitacoraService
     {
         try {
             DB::table('bitacoras')->insert([
-                'usuario_id' => Auth::check() ? Auth::id() : null,
-                'accion' => $accion,
-                'detalle' => $detalle,
+                'user_id' => Auth::check() ? Auth::id() : null,
+                'mesa_id' => null, // Se puede asignar dinámicamente si se necesita
+                'detalle' => "{$accion} - {$detalle}",
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
