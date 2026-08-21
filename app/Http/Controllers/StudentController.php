@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Student;
+use App\Events\StudentUpdated;
 
 class StudentController extends Controller
 {
@@ -26,6 +27,7 @@ class StudentController extends Controller
             'correo'         => 'nullable|email',
             'seccion'        => 'nullable|string'
         ]);
+        broadcast(new StudentUpdated($student));
 
         $student = Student::create($validated);
 
@@ -52,11 +54,12 @@ class StudentController extends Controller
             'message' => 'Estudiante actualizado exitosamente',
             'data'    => $student
         ], 200);
+        broadcast(new StudentUpdated($student));
     }
 
     // Eliminar un estudiante
     public function destroy($id)
-    {
+    {A
         $student = Student::find($id);
 
         if (!$student) {
