@@ -34,11 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <h3 class="font-headline-md text-primary">Proyecci\u00f3n de Participaci\u00f3n</h3>
                             <span class="text-xs text-secondary">Basado en datos actuales</span>
                         </div>
-                        <div class="h-64 bg-surface-container-low rounded-lg flex items-center justify-center border border-dashed border-outline-variant">
-                            <div class="text-center">
-                                <span class="material-symbols-outlined text-4xl text-outline-variant mb-2">bar_chart</span>
-                                <p class="text-sm text-secondary italic">No hay datos suficientes para generar proyecci\u00f3n</p>
-                            </div>
+                        <div class="h-64 relative">
+                            <canvas id="graficoVotos"></canvas>
                         </div>
                     </div>
                     <div class="bg-primary text-on-primary rounded-xl p-6 flex flex-col justify-between">
@@ -652,7 +649,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function switchSection(sectionId) {
+    async function switchSection(sectionId) {
         navLinks.forEach(link => {
             if (link.dataset.target === sectionId) {
                 link.classList.add('active');
@@ -671,6 +668,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (templates[sectionId]) {
             routerView.innerHTML = templates[sectionId];
+
+            // Inicializar grafico del dashboard
+            if (sectionId === 'dashboard') {
+                const ctx = document.getElementById('graficoVotos');
+                if (ctx && typeof Chart !== 'undefined') {
+                    const chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: [],
+                            datasets: [{
+                                label: 'Votos',
+                                data: [],
+                                backgroundColor: ['#3b82f6', '#ef4444', '#9ca3af']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+
+                    try {
+                        const response = await fetch('/api/ganador');
+                        if (!response.ok) {
+                            throw new Error(`Error HTTP: ${response.status}`);
+                        }
+
+                        const res = await response.json();
+                        chart.data.labels = res.partidos.map(p => p.siglas);
+                        chart.data.datasets[0].data = res.partidos.map(p => p.votos);
+                        chart.update();
+                    } catch (error) {
+                        console.error('No se pudieron cargar los votos del dashboard:', error);
+                    }
+                } else if (ctx) {
+                    console.warn('Chart.js no está cargado. Incluya la librería Chart.js para renderizar el gráfico.');
+                }
+            }
         } else {
             routerView.innerHTML = '<p class="text-secondary">Secci\u00f3n no encontrada.</p>';
         }
