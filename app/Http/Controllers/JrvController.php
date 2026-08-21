@@ -2,24 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mesa;
-use App\Models\Setting;
-use App\Models\Student;
-use App\Models\Urna;
+use App\Models\Party;
 use App\Services\StudentSearchService;
 use App\Services\UrnaService;
-use Exception;
 use Illuminate\Http\Request;
+use Exception;
 
 class JrvController extends Controller
 {
     private UrnaService $urnaService;
-    private StudentSearchService $searchService;
+    private StudentSearchService $studentSearchService;
 
-    public function __construct(UrnaService $urnaService, StudentSearchService $searchService)
+    public function __construct(UrnaService $urnaService, StudentSearchService $studentSearchService)
     {
         $this->urnaService = $urnaService;
-        $this->searchService = $searchService;
+        $this->studentSearchService = $studentSearchService;
     }
 
     public function index()
@@ -29,51 +26,58 @@ class JrvController extends Controller
 
     public function searchStudents(Request $request)
     {
-        try {
-            $query = (string) $request->input('query', '');
-            $mesaId = $request->input('mesa_id');
-            $students = $this->searchService->search($query, $mesaId ? (int) $mesaId : null, true);
+        $identificacion = $request->query('identificacion') ?? $request->input('identificacion');
 
-            return response()->json([
-                'success' => true,
-                'data' => $students,
-            ], 200);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al buscar estudiantes: ' . $e->getMessage(),
-            ], 500);
+        if (!$identificacion) {
+            return response()->json(['success' => false, 'message' => 'Debe enviar una identificación'], 400);
         }
+
+        $estudiante = $this->studentSearchService->buscar($identificacion);
+
+        if (!$estudiante) {
+            return response()->json(['success' => false, 'message' => 'Estudiante no encontrado'], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [[
+                'id' => $estudiante->id,
+                'identificacion' => $estudiante->identificacion,
+                'nombre' => $estudiante->nombre,
+                'apellidos' => $estudiante->apellidos,
+                'seccion' => $estudiante->seccion,
+                'voto' => $estudiante->voto,
+            ]],
+        ], 200);
+    }
+
+    public function partidos()
+    {
+        $partidos = Party::where('estado', true)->get(['id', 'siglas', 'nombre']);
+
+        return response()->json([
+            'success' => true,
+            'data' => $partidos,
+        ], 200);
     }
 
     public function activarUrna(Request $request)
     {
         try {
-            $idUrna = (int) $request->input('id_urna', $request->input('id', 0));
-            $idEstudiante = (int) $request->input('id_estudiante', 0);
-            $result = $this->urnaService->activar($idUrna, $idEstudiante);
-
-            return response()->json($result, $result['success'] ? 200 : 500);
+            $result = $this->urnaService->activar($request->input('codigo'));
+            return response()->json($result, $result['success'] ? 200 : 400);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al activar la urna: ' . $e->getMessage(),
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Error al activar la urna: ' . $e->getMessage()], 500);
         }
     }
 
     public function desactivarUrna(Request $request)
     {
         try {
-            $idUrna = (int) $request->input('id_urna', $request->input('id', 0));
-            $result = $this->urnaService->desactivar($idUrna);
-
-            return response()->json($result, $result['success'] ? 200 : 500);
+            $result = $this->urnaService->desactivar($request->input('codigo'));
+            return response()->json($result, $result['success'] ? 200 : 400);
         } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al desactivar la urna: ' . $e->getMessage(),
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Error al desactivar la urna: ' . $e->getMessage()], 500);
         }
     }
 }

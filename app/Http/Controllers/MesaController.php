@@ -30,7 +30,7 @@ class MesaController extends Controller
                 ], 200);
             }
 
-            return view('mesas.index', compact('mesas'));
+            return view('admin.mesas', compact('mesas'));
         } catch (Exception $e) {
             if ($request->expectsJson()) {
                 return response()->json([
@@ -60,7 +60,7 @@ class MesaController extends Controller
         try {
             $mesa = Mesa::findOrFail($id);
 
-            return view('mesas.edit', compact('mesa'));
+            return view('admin.mesas_edit', compact('mesa'));
         } catch (Exception $e) {
             return redirect()->back()->withErrors('Mesa no encontrada: ' . $e->getMessage());
         }

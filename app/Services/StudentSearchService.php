@@ -2,13 +2,18 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 use App\Models\Student;
 use Exception;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class StudentSearchService
 {
+    public function buscar(string $identificacion): ?Student
+    {
+        return Student::where('identificacion', $identificacion)->first();
+    }
+
     public function search(string $query, ?int $mesaId = null, bool $onlyAvailable = true): Collection
     {
         try {

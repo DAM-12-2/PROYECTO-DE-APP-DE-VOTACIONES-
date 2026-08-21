@@ -30,7 +30,11 @@ class CandidatoController extends Controller
                 ], 200);
             }
 
-            return view('candidatos.index', compact('candidatos'));
+            $students = \App\Models\Student::all();
+        $parties = \App\Models\Party::all();
+        $puestos = Puesto::all();
+
+        return view('admin.candidatos', compact('candidatos', 'students', 'parties', 'puestos'));
         } catch (Exception $e) {
             if ($request->expectsJson()) {
                 return response()->json([
@@ -65,7 +69,7 @@ class CandidatoController extends Controller
         try {
             $puesto = Puesto::findOrFail($id);
 
-            return view('puestos.edit', compact('puesto'));
+            return view('admin.puestos_edit', compact('puesto'));
         } catch (Exception $e) {
             return redirect()->route('admin.candidatos')->withErrors('Puesto no encontrado: ' . $e->getMessage())->withInput();
         }
