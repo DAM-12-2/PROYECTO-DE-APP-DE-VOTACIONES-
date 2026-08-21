@@ -160,8 +160,7 @@
                 <p>Firma del Presidente del TEE: _______________________</p>
                 <p>Firma del Presidente de Mesa: _______________________</p>
             </div>
-        </div>
-    @endforeach
+    </div>
 
     <div class="no-print text-center mt-6">
         <button onclick="window.print()" class="bg-slate-900 text-white px-6 py-2 rounded-xl font-bold text-sm">

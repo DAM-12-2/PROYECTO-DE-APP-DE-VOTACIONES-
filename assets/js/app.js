@@ -579,9 +579,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const form = overlay.querySelector('form');
         if (form) {
-            form.addEventListener('submit', (e) => {
+            form.addEventListener('submit', async (e) => {
                 e.preventDefault();
-                hideModal();
+                const formData = new FormData(form);
+                const modalType = form.dataset.modalType;
+                let url = '';
+                let method = 'POST';
+                if (modalType === 'registro-estudiante') {
+                    url = '/admin/estudiantes';
+                } else if (modalType === 'nueva-mesa') {
+                    url = '/admin/mesas';
+                } else if (modalType === 'nueva-seccion') {
+                    url = '/admin/mesas/' + (formData.get('mesa_id') || '') + '/secciones';
+                }
+                if (url) {
+                    formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+                    formData.append('_method', 'POST');
+                    try {
+                        const resp = await fetch(url, { method: 'POST', body: formData, headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                        if (resp.ok) { hideModal(); location.reload(); }
+                        else { const err = await resp.json(); alert(err.message || 'Error al guardar.'); }
+                    } catch { alert('Error de conexión.'); }
+                } else {
+                    hideModal();
+                }
             });
         }
     }
@@ -599,20 +620,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     'registro-estudiante': {
                         title: 'Registro Manual de Estudiante',
                         html: `
-                            <form class="space-y-4">
-                                <div>
-                                    <label class="text-xs font-bold text-secondary uppercase mb-1.5 block">C\u00e9dula</label>
-                                    <input class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" type="text" placeholder="Ej. 1-2345-6789" required>
+                            <form data-modal-type="registro-estudiante" class="space-y-4">
+                                    <input class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" type="text" placeholder="Ej. 1-2345-6789" name="identificacion" required>
                                 </div>
                                 <div>
                                     <label class="text-xs font-bold text-secondary uppercase mb-1.5 block">Nombre Completo</label>
-                                    <input class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" type="text" placeholder="Nombre y apellidos" required>
+                                    <input class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" type="text" placeholder="Nombre y apellidos" name="nombre" required>
                                 </div>
                                 <div>
                                     <label class="text-xs font-bold text-secondary uppercase mb-1.5 block">Secci\u00f3n</label>
-                                    <select class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" required>
-                                        <option value="">Seleccione una secci\u00f3n</option>
-                                        <optgroup label="Tercer Ciclo">
+<select name="seccion" class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" required>
+                                <option value="">Seleccione una sección</option>
+                                <optgroup label="Tercer Ciclo">
                                             <option>7-1</option><option>7-2</option><option>7-3</option><option>7-4</option>
                                             <option>8-1</option><option>8-2</option><option>8-3</option><option>8-4</option>
                                             <option>9-1</option><option>9-2</option><option>9-3</option><option>9-4</option>
@@ -634,18 +653,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     'nueva-mesa': {
                         title: 'Nueva Mesa (JRV)',
                         html: `
-                            <form class="space-y-4">
+                            <form data-modal-type="nueva-mesa" class="space-y-4">
                                 <div>
                                     <label class="text-xs font-bold text-secondary uppercase mb-1.5 block">N\u00famero de Mesa</label>
-                                    <input class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" type="text" placeholder="Ej. Mesa #001" required>
+                                    <input class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" type="text" placeholder="Ej. Mesa #001" name="numero" required>
                                 </div>
                                 <div>
                                     <label class="text-xs font-bold text-secondary uppercase mb-1.5 block">Ubicaci\u00f3n</label>
-                                    <input class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" type="text" placeholder="Ej. Aula 12, Pasillo Central" required>
+                                    <input class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" type="text" placeholder="Ej. Aula 12, Pasillo Central" name="ubicacion" required>
                                 </div>
                                 <div>
                                     <label class="text-xs font-bold text-secondary uppercase mb-1.5 block">Cantidad de Urnas</label>
-                                    <input class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" type="number" min="1" max="8" value="4" required>
+                                    <input name="cantidad_urnas" class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" type="number" min="1" max="8" value="4" required>
                                 </div>
                                 <div class="p-4 bg-surface-container-low rounded-xl border border-outline-variant">
                                     <p class="text-xs text-secondary italic">Las urnas se crear\u00e1n autom\u00e1ticamente con ID correlativo.</p>
@@ -657,14 +676,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     'nueva-seccion': {
                         title: 'A\u00f1adir Secci\u00f3n',
                         html: `
-                            <form class="space-y-4">
+                            <form data-modal-type="nueva-seccion" class="space-y-4">
                                 <div>
                                     <label class="text-xs font-bold text-secondary uppercase mb-1.5 block">Nombre de la Secci\u00f3n</label>
-                                    <input class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" type="text" placeholder="Ej. 13-1, 13-2, Taller A" required>
+                                    <input class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" type="text" placeholder="Ej. 13-1, 13-2, Taller A" name="nombre" required>
                                 </div>
                                 <div>
                                     <label class="text-xs font-bold text-secondary uppercase mb-1.5 block">Nivel</label>
-                                    <select class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" required>
+                                    <select name="nivel" class="w-full p-3 border border-outline-variant rounded-xl bg-surface focus:ring-2 focus:ring-primary focus:border-primary outline-none" required>
                                         <option value="">Seleccione un nivel</option>
                                         <option>Tercer Ciclo</option>
                                         <option>Educaci\u00f3n Diversificada</option>
@@ -791,7 +810,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(logoutBtn) {
         logoutBtn.addEventListener('click', () => {
             if(confirm('\u00bfEst\u00e1 seguro de que desea cerrar la sesi\u00f3n administrativa?')) {
-                window.location.href = 'login.html';
+                window.location.href = '/login';
             }
         });
     }

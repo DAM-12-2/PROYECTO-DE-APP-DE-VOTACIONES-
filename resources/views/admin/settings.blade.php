@@ -14,6 +14,8 @@
 <button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">expand_more</button>
 </div>
 <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+<form action="{{ route('admin.settings') }}" method="POST" class="space-y-0">
+@csrf
 <div class="space-y-6">
 <div class="flex items-start gap-6">
 <div class="shrink-0">
@@ -22,7 +24,7 @@
 <div class="flex-1 space-y-3">
 <div>
 <label class="block font-label-lg text-label-lg text-on-surface mb-1">Nombre de institución</label>
-<input class="w-full px-3 py-2 bg-surface rounded border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none font-body-md text-body-md text-on-surface transition-all" placeholder="Nombre de institución" type="text" value="CTP AIRA"/>
+<input name="institucion_nombre" class="w-full px-3 py-2 bg-surface rounded border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none font-body-md text-body-md text-on-surface transition-all" placeholder="Nombre de institución" type="text" value="{{ $settings['institucion_nombre'] ?? 'CTP AIRA' }}"/>
 </div>
 <div>
 <button class="bg-surface hover:bg-surface-container border border-outline font-label-lg text-label-lg text-on-surface px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
@@ -41,11 +43,12 @@
 </div>
 </div>
 <div class="flex gap-3 pt-2">
-<button class="bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg px-6 py-2 rounded-lg transition-colors">Guardar Cambios</button>
+<button type="submit" class="bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg px-6 py-2 rounded-lg transition-colors">Guardar Cambios</button>
 <button class="bg-transparent hover:bg-surface-container-high text-primary font-label-lg text-label-lg px-4 py-2 rounded-lg transition-colors">Cancelar</button>
 </div>
 </div>
 </div>
+</form>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 flex flex-col gap-4">
