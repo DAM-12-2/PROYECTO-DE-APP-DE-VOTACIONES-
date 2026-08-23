@@ -9,8 +9,8 @@
 <span class="material-symbols-outlined text-primary text-6xl mb-4">help_center</span>
 <h3 class="font-headline-sm text-headline-sm text-primary mb-4">Manual de Usuario</h3>
 <p class="font-body-md text-body-md text-on-surface-variant mb-6">Descargue la guía completa para administradores del Sistema Electoral Institucional.</p>
-<button class="bg-surface hover:bg-surface-container border border-outline font-label-lg text-label-lg text-on-surface px-6 py-2 rounded-lg transition-colors inline-flex items-center gap-2">
-<span class="material-symbols-outlined">menu_book</span> Ver Documentación
-</button>
+    <a href="{{ route('admin.manual') }}" class="bg-surface hover:bg-surface-container border border-outline font-label-lg text-label-lg text-on-surface px-6 py-2 rounded-lg transition-colors inline-flex items-center gap-2 no-underline">
+        <span class="material-symbols-outlined">menu_book</span> Ver Documentación
+    </a>
 </div>
 @endsection

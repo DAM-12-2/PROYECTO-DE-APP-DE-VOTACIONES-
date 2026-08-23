@@ -381,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="mt-8 flex justify-center gap-4">
                         <button class="px-6 py-3 bg-primary text-on-primary rounded-lg font-bold shadow-md">Enviar Ticket</button>
-                        <button class="px-6 py-3 border border-outline-variant text-primary rounded-lg font-bold">Manual de Usuario</button>
+                        <a href="/admin/manual" target="_blank" class="px-6 py-3 border border-outline-variant text-primary rounded-lg font-bold no-underline">Manual de Usuario</a>
                     </div>
                 </div>
             </div>

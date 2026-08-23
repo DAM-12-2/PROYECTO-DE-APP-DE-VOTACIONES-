@@ -30,6 +30,10 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/manual', function () {
+    return view('admin.manual');
+})->name('admin.manual');
+
 Route::middleware(['auth', 'role:tee'])->prefix('tribunal')->group(function () {
     Route::get('/', [TribunalController::class, 'index'])->name('tribunal.dashboard');
     Route::get('/estudiantes', [TribunalController::class, 'estudiantes'])->name('tribunal.estudiantes');
@@ -98,9 +102,9 @@ Route::middleware(['auth', 'role:admin,tee'])->prefix('admin')->group(function (
     })->name('admin.bitacora');
 
     Route::get('/respaldar', [SettingsController::class, 'backupDownload'])->name('admin.backup');
-    Route::get('/ayuda', function () {
-        return view('admin.help');
-    })->name('admin.help');
+Route::get('/ayuda', function () {
+    return view('admin.help');
+})->name('admin.help');
 
     Route::middleware('role:admin')->group(function () {
         Route::get('/usuarios', [UsuarioController::class, 'index'])->name('admin.usuarios');
