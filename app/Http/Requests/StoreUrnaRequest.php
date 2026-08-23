@@ -13,9 +13,11 @@ class StoreUrnaRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
-            'nombre' => 'required|string|max:255',
-            'mesa_id' => 'required|exists:mesas,id',
-        ];
+return [
+'codigo' => 'required|string|max:255|unique:urnas,codigo',
+'id_mesa' => 'required|exists:mesas,id',
+'horaactivacion' => 'nullable|string|max:255',
+'estado' => 'nullable|integer|in:0,1,2',
+];
     }
 }

@@ -20,7 +20,7 @@ class UsuarioController extends Controller
     {
         User::create([
             'name' => $request->name,
-            'password' => Hash::make($request->password),
+            'password' => $request->password,
             'role' => $request->role,
             'mesa_id' => $request->mesa_id,
             'must_change_password' => $request->role === 'jrv' ? 1 : 0,
@@ -71,7 +71,7 @@ class UsuarioController extends Controller
         }
 
         $user->update([
-            'password' => Hash::make($request->new_password),
+            'password' => $request->new_password,
             'must_change_password' => 0,
         ]);
 
