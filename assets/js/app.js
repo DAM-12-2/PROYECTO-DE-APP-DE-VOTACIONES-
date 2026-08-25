@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div class="relative flex-1 max-w-md">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-secondary">search</span>
-                        <input class="w-full pl-10 pr-4 py-2 border border-outline-variant rounded-lg focus:ring-primary focus:border-primary" placeholder="Buscar por C\u00e9dula o Nombre..." type="text"/>
+                        <input id="search-estudiante" class="w-full pl-10 pr-4 py-2 border border-outline-variant rounded-lg focus:ring-primary focus:border-primary" placeholder="Buscar por C\u00e9dula o Nombre..." type="text"/>
                     </div>
                     <div class="flex gap-2">
                         <button class="px-4 py-2 bg-surface border border-outline-variant text-primary rounded-lg flex items-center gap-2 hover:bg-surface-container-low transition-colors">
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <th class="px-6 py-4 text-xs font-bold text-secondary uppercase text-right">Porcentaje</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-outline-variant">
+<tbody id="tabla-estudiantes" class="divide-y divide-outline-variant">
                                 <tr>
                                     <td class="px-6 py-4 font-medium text-primary">Partido A</td>
                                     <td class="px-6 py-4 text-center font-mono">0</td>
@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                     <div class="lg:col-span-2 flex justify-end">
-                        <a class="px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-bold flex items-center gap-2 shadow-md" href="/resultados/exportar-csv">
+                        <a class="px-4 py-2 bg-primary text-on-primary rounded-lg text-sm font-bold flex items-center gap-2 shadow-md" href="/admin/resultados/exportar-csv">
                             <span class="material-symbols-outlined text-sm">download</span>
                             Descargar reporte CSV
                         </a>
@@ -381,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="mt-8 flex justify-center gap-4">
                         <button class="px-6 py-3 bg-primary text-on-primary rounded-lg font-bold shadow-md">Enviar Ticket</button>
-                        <a href="/admin/manual" target="_blank" class="px-6 py-3 border border-outline-variant text-primary rounded-lg font-bold no-underline">Manual de Usuario</a>
+                        <a href="/manual" target="_blank" class="px-6 py-3 border border-outline-variant text-primary rounded-lg font-bold no-underline">Manual de Usuario</a>
                     </div>
                 </div>
             </div>
@@ -415,10 +415,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="material-symbols-outlined">warning</span> Zona de Peligro
                         </h3>
                         <div class="space-y-4">
-                            <button class="w-full py-2.5 border border-error text-error rounded font-bold hover:bg-error/5 transition-colors flex items-center justify-center gap-2">
+                            <button id="btn-reset-votos" class="w-full py-2.5 border border-error text-error rounded font-bold hover:bg-error/5 transition-colors flex items-center justify-center gap-2">
                                 <span class="material-symbols-outlined">restart_alt</span> Reiniciar Conteo de Votos
                             </button>
-                            <button class="w-full py-2.5 bg-error text-on-error rounded font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                            <button id="btn-reset-completo" class="w-full py-2.5 bg-error text-on-error rounded font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
                                 <span class="material-symbols-outlined">delete_forever</span> Reseteo Total del Sistema
                             </button>
                             <p class="text-[10px] text-secondary italic text-center">Estas acciones son irreversibles y requieren confirmaci\u00f3n administrativa.</p>
@@ -496,12 +496,73 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             setInterval(() => {
                 loadChartData(dashboardChart);
-                loadChartData(resultsChart);
-            }, 15000);
-        }
-    }
+loadChartData(resultsChart);
+ }, 15000);
+ }
+ }
 
-    function setResultsVisibility(enabled) {
+ async function cargarEstudiantes(query = '') {
+ const tbody = document.getElementById('tabla-estudiantes');
+ if (!tbody) return;
+ let url = '/admin/estudiantes';
+ if (query) url = '/admin/api/students/search?identificacion=' + encodeURIComponent(query);
+ try {
+ const res = await fetch(url, { headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' } });
+ if (!res.ok) throw new Error('Error HTTP: ' + res.status);
+ const json = await res.json();
+ let students = [];
+ if (query) {
+ students = json.data ? [json.data] : [];
+ } else {
+ students = json.data || [];
+ }
+ if (!students.length) {
+ tbody.innerHTML = '<tr><td class="px-6 py-12 text-center" colspan="4"><div class="flex flex-col items-center"><span class="material-symbols-outlined text-4xl text-outline-variant mb-2">person_search</span><p class="text-secondary italic">No hay estudiantes registrados en el padr\u00f3n.</p></div></td></tr>';
+ return;
+ }
+ tbody.innerHTML = students.map(s => {
+ const nombre = s.nombre || '';
+ const apellidos = s.apellidos || '';
+ return '<tr>' +
+ '<td class="px-6 py-4">' + (s.identificacion || '') + '</td>' +
+ '<td class="px-6 py-4">' + nombre + ' ' + apellidos + '</td>' +
+ '<td class="px-6 py-4">' + (s.seccion || '\u2014') + '</td>' +
+ '<td class="px-6 py-4 text-right">' + (s.estado || '') + '</td>' +
+ '</tr>';
+ }).join('');
+ } catch (err) {
+ console.error('Error al cargar estudiantes:', err);
+ }
+ }
+
+ function attachResetListeners() {
+ const csrf = document.querySelector('meta[name="csrf-token"]');
+ if (!csrf) return;
+ const btnVotos = document.getElementById('btn-reset-votos');
+ if (btnVotos) {
+ btnVotos.addEventListener('click', async () => {
+ if (!confirm('\u00bfEst\u00e1 seguro de reiniciar el conteo de votos? Esta acci\u00f3n es irreversible.')) return;
+ try {
+ const res = await fetch('/admin/reset/votos', { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf.content, 'X-Requested-With': 'XMLHttpRequest' } });
+ if (res.ok) { alert('Votos reiniciados correctamente.'); location.reload(); }
+ else { const err = await res.json(); alert(err.message || 'Error al reiniciar votos.'); }
+ } catch { alert('Error de conexi\u00f3n.'); }
+ });
+ }
+ const btnCompleto = document.getElementById('btn-reset-completo');
+ if (btnCompleto) {
+ btnCompleto.addEventListener('click', async () => {
+ if (!confirm('\u00bfEst\u00e1 seguro de realizar el reseteo total del sistema? Esta acci\u00f3n es irreversible.')) return;
+ try {
+ const res = await fetch('/admin/reset/completo', { method: 'POST', headers: { 'X-CSRF-TOKEN': csrf.content, 'X-Requested-With': 'XMLHttpRequest' } });
+ if (res.ok) { alert('Reseteo total realizado correctamente.'); location.reload(); }
+ else { const err = await res.json(); alert(err.message || 'Error al realizar el reseteo.'); }
+ } catch { alert('Error de conexi\u00f3n.'); }
+ });
+ }
+ }
+
+ function setResultsVisibility(enabled) {
         resultsEnabled = enabled;
         const toggle = document.getElementById('toggle-results-visibility');
         if (toggle) toggle.checked = enabled;
@@ -594,9 +655,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     url = '/admin/estudiantes';
                 } else if (modalType === 'nueva-mesa') {
                     url = '/admin/mesas';
-                } else if (modalType === 'nueva-seccion') {
-                    url = '/admin/mesas/' + (formData.get('mesa_id') || '') + '/secciones';
-                }
+} else if (modalType === 'nueva-seccion') {
+                const mesaId = formData.get('mesa_id');
+                if (!mesaId) { alert('Debe seleccionar la mesa para agregar la secci\u00f3n.'); return; }
+                url = '/admin/mesas/' + mesaId + '/secciones';
+            }
                 if (url) {
                     formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
                     formData.append('_method', 'POST');
@@ -790,15 +853,31 @@ document.addEventListener('DOMContentLoaded', () => {
             routerView.innerHTML = '<p class="text-secondary">Secci\u00f3n no encontrada.</p>';
         }
 
-        if (sectionId === 'votaciones') {
-            attachVotacionesListeners();
-        }
+if (sectionId === 'votaciones') {
+ attachVotacionesListeners();
+ }
 
-        if (sectionId === 'resultados' || sectionId === 'configuracion') {
-            attachResultadosListeners();
-        }
+ if (sectionId === 'resultados'||sectionId === 'configuracion') {
+ attachResultadosListeners();
+ }
 
-        attachModals();
+ if (sectionId === 'configuracion') {
+ attachResetListeners();
+ }
+
+ if (sectionId === 'estudiantes') {
+ cargarEstudiantes();
+ const searchInput = document.getElementById('search-estudiante');
+ if (searchInput) {
+ searchInput.addEventListener('input', () => {
+ const q = searchInput.value.trim();
+ if (q.length === 0) cargarEstudiantes();
+ else if (q.length >= 3) cargarEstudiantes(q);
+ });
+ }
+ }
+
+ attachModals();
 
         document.querySelector('main').scrollTop = 0;
     }
