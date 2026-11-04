@@ -168,6 +168,7 @@
 <div class="max-w-7xl mx-auto space-y-section-margin pb-20">
 @yield('content')
 </div>
+<x-creditos class="mt-10 pb-4" />
 </main>
 <!-- Logout Modal -->
 <div class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" id="logout-modal">

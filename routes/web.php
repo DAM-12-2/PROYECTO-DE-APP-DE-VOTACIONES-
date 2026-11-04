@@ -37,6 +37,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/cambiar-password', [AuthController::class, 'changePassword'])->name('password.change.update');
 });
 
+Route::get('/acerca-de', fn () => view('acerca'))->name('acerca');
+
 Route::get('/manual', function () {
     return view('admin.manual');
 })->name('admin.manual');

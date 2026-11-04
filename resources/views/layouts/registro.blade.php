@@ -71,6 +71,7 @@
             <div class="mx-auto w-full max-w-4xl px-6 py-3 text-xs text-on-surface-variant">
                 {{ $mesa?->nombre ?? 'Sin mesa asignada' }} · Red local del CTP AIRA
             </div>
+            <x-creditos class="pb-2" />
         </footer>
     </div>
     <script src="/js/pusher.min.js"></script>

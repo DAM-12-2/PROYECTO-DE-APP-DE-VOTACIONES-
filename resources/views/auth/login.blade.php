@@ -10,6 +10,7 @@
 <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body class="bg-background text-on-background font-body-md min-h-screen flex items-center justify-center p-4">
+<x-splash />
 <div class="w-full max-w-md">
 <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xl overflow-hidden">
 <div class="p-8 text-center">
@@ -38,6 +39,7 @@
 </div>
 <div class="px-8 pb-6 text-center">
 <p class="text-[10px] text-secondary">Colegio T&eacute;cnico Profesional Ambientalista Isa&iacute;as Retana Arias</p>
+<x-creditos class="mt-3" />
 </div>
 </div>
 </div>

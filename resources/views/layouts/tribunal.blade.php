@@ -70,6 +70,7 @@
 </header>
 <div class="p-gutter max-w-container-max mx-auto w-full" id="router-view">
 @yield('content')
+<x-creditos class="mt-8 pb-4" />
 </div>
 </main>
 <script src="/js/chart.min.js"></script>

@@ -81,6 +81,7 @@
                     Voto secreto y cifrado
                 </span>
             </div>
+            <x-creditos class="pb-2" />
         </footer>
     </div>
 
