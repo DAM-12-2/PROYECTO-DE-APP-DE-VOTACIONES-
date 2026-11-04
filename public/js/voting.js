@@ -39,33 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const pantallaExito =
         document.getElementById('pantalla-exito');
 
-    const tiempoRestante =
-        document.getElementById('tiempo-restante');
-
-    const barraTiempo =
-        document.getElementById('barra-tiempo');
-
-    const btnBlanco =
-        document.getElementById('btn-blanco');
-
-    const pantallaActivacion =
-        document.getElementById('pantalla-activacion');
-
-    const pantallaEspera =
-        document.getElementById('pantalla-espera');
-
-    const nombreVotante =
-        document.getElementById('nombre-votante');
-
-    const urnaId =
-        document.body.dataset.urnaId || '';
-
-    let tiempoLimite =
-        Number(document.body.dataset.tiempoVotacion) || 90;
-
-    let temporizador = null;
-    let segundosRestantes = tiempoLimite;
-
     let identificacionActual = '';
     let partidoSeleccionado = null;
 
@@ -130,41 +103,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         elemento.classList.remove(
             'hidden',
-            'bg-red-50',
-            'text-red-700',
-            'border-red-200',
-            'bg-emerald-50',
-            'text-emerald-700',
-            'border-emerald-200',
-            'bg-amber-50',
-            'text-amber-800',
-            'border-amber-200'
+            'bg-red-900',
+            'text-red-300',
+            'bg-green-900',
+            'text-green-300',
+            'bg-yellow-900',
+            'text-yellow-300'
         );
 
-        elemento.classList.add('border');
 
         if (tipo === 'success') {
 
             elemento.classList.add(
-                'bg-emerald-50',
-                'text-emerald-700',
-                'border-emerald-200'
+                'bg-green-900',
+                'text-green-300'
             );
 
         } else if (tipo === 'warning') {
 
             elemento.classList.add(
-                'bg-amber-50',
-                'text-amber-800',
-                'border-amber-200'
+                'bg-yellow-900',
+                'text-yellow-300'
             );
 
         } else {
 
             elemento.classList.add(
-                'bg-red-50',
-                'text-red-700',
-                'border-red-200'
+                'bg-red-900',
+                'text-red-300'
             );
         }
     }
@@ -185,61 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         pantallaExito.classList.add('hidden');
 
-        if (pantallaActivacion) pantallaActivacion.classList.add('hidden');
-        if (pantallaEspera) pantallaEspera.classList.add('hidden');
-
 
         pantalla.classList.remove('hidden');
-
-        if (pantalla === pantallaVotacion) {
-            iniciarTemporizador();
-        }
-
-        if (pantalla === pantallaExito) {
-            detenerTemporizador();
-        }
-    }
-
-    function iniciarTemporizador() {
-        detenerTemporizador();
-        segundosRestantes = tiempoLimite;
-        actualizarCronometro();
-        temporizador = setInterval(() => {
-            segundosRestantes--;
-            actualizarCronometro();
-            if (segundosRestantes <= 0) {
-                detenerTemporizador();
-                emitirPorTiempoAgotado();
-            }
-        }, 1000);
-    }
-
-    function detenerTemporizador() {
-        if (temporizador !== null) {
-            clearInterval(temporizador);
-            temporizador = null;
-        }
-    }
-
-    function actualizarCronometro() {
-        if (!tiempoRestante || !barraTiempo) return;
-        const segundos = Math.max(segundosRestantes, 0);
-        tiempoRestante.textContent = segundos + ' s';
-        barraTiempo.style.width = (segundos / tiempoLimite * 100) + '%';
-        barraTiempo.classList.toggle('bg-red-600', segundos <= 20);
-        barraTiempo.classList.toggle('bg-primary', segundos > 20);
-        tiempoRestante.classList.toggle('text-red-600', segundos <= 20);
-    }
-
-    async function emitirPorTiempoAgotado() {
-        const radioSeleccionado = document.querySelector('input[name="partido"]:checked');
-        partidoSeleccionado = radioSeleccionado
-            ? { id: Number(radioSeleccionado.value), nombre: radioSeleccionado.dataset.nombre }
-            : { id: 0, nombre: 'Voto en blanco' };
-
-        if (identificacionActual) {
-            await registrarVoto();
-        }
     }
 
     function mostrarPartidos(partidos) {
@@ -250,28 +163,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const opcion =
             document.createElement('label');
         opcion.className =
-            'group flex cursor-pointer items-center justify-between gap-4 rounded-xl border-2 border-outline bg-white p-5 transition hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5';
+            'block bg-gray-700 border border-gray-600 rounded-xl p-5 cursor-pointer hover:border-blue-500 transition';
         opcion.innerHTML = `
-            <div class="flex items-center gap-3">
-                <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-surface-variant text-sm font-bold uppercase text-primary">
-                    ${(partido.siglas ?? '?').slice(0, 3)}
-                </div>
+            <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-lg font-semibold text-primary">
+                    <p class="font-semibold text-lg">
                         ${partido.nombre}
                     </p>
-                    <p class="mt-0.5 text-sm text-on-surface-variant">
+                    <p class="text-gray-400 text-sm mt-1">
                         ${partido.siglas ?? ''}
                     </p>
                 </div>
+                <input
+                    type="radio"
+                    name="partido"
+                    value="${partido.id}"
+                    data-nombre="${partido.nombre}"
+                    class="w-5 h-5"
+                >
             </div>
-            <input
-                type="radio"
-                name="partido"
-                value="${partido.id}"
-                data-nombre="${partido.nombre}"
-                class="h-6 w-6 accent-primary"
-            >
         `;
         listaCandidatos.appendChild(opcion);
     });
@@ -373,10 +283,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Mostramos al usuario
             // qué opción seleccionó.
             opcionConfirmacion.innerHTML = `
-                <p class="text-sm text-on-surface-variant">
+                <p class="text-gray-400 text-sm">
                     Usted seleccionó:
                 </p>
-                <p class="mt-2 text-xl font-bold">
+                <p class="text-xl font-bold mt-2">
                     ${partidoSeleccionado.nombre}
                 </p>
             `;
@@ -385,27 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
             );
         }
     );
-    btnBlanco.addEventListener(
-        'click',
-        () => {
-            partidoSeleccionado = {
-                id: 0,
-                nombre: 'Voto en blanco',
-            };
-
-            opcionConfirmacion.innerHTML = `
-                <p class="text-sm text-on-surface-variant">
-                    Usted seleccionó:
-                </p>
-                <p class="mt-2 text-xl font-bold">
-                    ${partidoSeleccionado.nombre}
-                </p>
-            `;
-
-            mostrarPantalla(pantallaConfirmacion);
-        }
-    );
-
     btnVolver.addEventListener(
         'click',
         () => {
@@ -577,89 +466,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     function reiniciarKiosco() {
-        detenerTemporizador();
         identificacionActual = '';
         partidoSeleccionado = null;
         studentForm.reset();
         listaCandidatos.innerHTML = '';
         opcionConfirmacion.innerHTML = '';
-        if (nombreVotante) nombreVotante.textContent = '';
         ocultarMensaje(
             mensajeIdentificacion
         );
         ocultarMensaje(
             mensajeVotacion
         );
-        if (urnaId && pantallaEspera) {
-            mostrarPantalla(pantallaEspera);
-            return;
-        }
         mostrarPantalla(
             pantallaIdentificacion
         );
         identificacionInput.focus();
     }
-
-    async function consultarEstado() {
-        if (!urnaId) return;
-
-        try {
-            const response = await fetch('/kiosko/estado', {
-                headers: { 'Accept': 'application/json' },
-            });
-            const data = await response.json();
-
-            if (!data.autenticado) {
-                window.location.reload();
-                return;
-            }
-
-            tiempoLimite = data.tiempo_votacion || tiempoLimite;
-
-            if (data.estudiante) {
-                const enVotacion = !pantallaVotacion.classList.contains('hidden');
-                const enConfirmacion = !pantallaConfirmacion.classList.contains('hidden');
-                const enExito = !pantallaExito.classList.contains('hidden');
-
-                if (enVotacion || enConfirmacion || enExito) {
-                    return;
-                }
-
-                identificacionActual = data.estudiante.identificacion;
-                if (nombreVotante) {
-                    nombreVotante.textContent =
-                        data.estudiante.nombre + ' · ' + (data.estudiante.seccion || '');
-                }
-
-                const partidos = await cargarPartidos();
-                if (partidos.length > 0) {
-                    mostrarPartidos(partidos);
-                    mostrarPantalla(pantallaVotacion);
-                }
-                return;
-            }
-
-            if (identificacionActual !== '') {
-                const enExito = !pantallaExito.classList.contains('hidden');
-                const enConfirmacion = !pantallaConfirmacion.classList.contains('hidden');
-                if (!enExito && !enConfirmacion) {
-                    reiniciarKiosco();
-                }
-                return;
-            }
-
-            if (pantallaEspera && pantallaVotacion.classList.contains('hidden')) {
-                mostrarPantalla(pantallaEspera);
-            }
-        } catch (error) {
-            // Sin conexión: se reintenta en el siguiente ciclo.
-        }
-    }
-
-    if (urnaId) {
-        consultarEstado();
-        setInterval(consultarEstado, 2500);
-    }
-
-    document.addEventListener('rea:solicitud-aprobada', () => consultarEstado());
 });

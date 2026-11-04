@@ -121,27 +121,42 @@ class ResultController extends Controller
         $parties = $this->voteTallyService->formatPartyResults($result);
 
         $filename = 'resultados_' . now()->format('Y-m-d_H-i-s') . '.csv';
-        $rows = [];
 
-        if ($this->electionService->isConsultaPopular()) {
-            $headers = ['Opción', 'Votos', 'Porcentaje'];
-            foreach ($parties as $party) {
-                $rows[] = [$party['nombre'], $party['votos'], $party['porcentaje'] . '%'];
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
+        ];
+
+        $callback = function () use ($parties, $result) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            if ($this->electionService->isConsultaPopular()) {
+                fputcsv($file, ['Opción', 'Votos', 'Porcentaje']);
+                foreach ($parties as $party) {
+                    fputcsv($file, [$party['nombre'], $party['votos'], $party['porcentaje'] . '%']);
+                }
+                fputcsv($file, []);
+                fputcsv($file, ['Total Votos', $result->totalVotes]);
+                fputcsv($file, ['Blancos', $result->blancos]);
+                fputcsv($file, ['Nulos', $result->nulos]);
+                fputcsv($file, ['Votos Válidos', $result->votosValidos()]);
+            } else {
+                fputcsv($file, ['Partido', 'Siglas', 'Votos', 'Porcentaje']);
+                foreach ($parties as $party) {
+                    fputcsv($file, [$party['nombre'], $party['siglas'], $party['votos'], $party['porcentaje'] . '%']);
+                }
+                fputcsv($file, []);
+                fputcsv($file, ['Total Votos', $result->totalVotes]);
+                fputcsv($file, ['Blancos', $result->blancos]);
+                fputcsv($file, ['Nulos', $result->nulos]);
+                fputcsv($file, ['Votos Válidos', $result->votosValidos()]);
             }
-        } else {
-            $headers = ['Partido', 'Siglas', 'Votos', 'Porcentaje'];
-            foreach ($parties as $party) {
-                $rows[] = [$party['nombre'], $party['siglas'], $party['votos'], $party['porcentaje'] . '%'];
-            }
-        }
+            
+            fclose($file);
+        };
 
-        $rows[] = [];
-        $rows[] = ['Total Votos', $result->totalVotes];
-        $rows[] = ['Blancos', $result->blancos];
-        $rows[] = ['Nulos', $result->nulos];
-        $rows[] = ['Votos Válidos', $result->votosValidos()];
-
-        return \App\Support\Csv::download($filename, $headers, $rows);
+        return response()->stream($callback, 200, $headers);
     }
 
     // ===== WEB ENDPOINTS (original) =====
@@ -150,30 +165,11 @@ class ResultController extends Controller
     {
         try {
             $ganador = $this->voteTallyService->verificarGanador();
-            $resultados = $this->voteTallyService->obtenerResultados();
-
-            return view('admin.resultados', compact('ganador', 'resultados'));
+            return view('admin.resultados', compact('ganador'));
         } catch (\Exception $e) {
             Log::error('Error al cargar los resultados: ' . $e->getMessage());
             return back()->withErrors('Error al cargar los resultados.');
         }
-    }
-
-    public function integridad(\App\Services\TallySealService $sealService)
-    {
-        $sellos = \App\Models\TallySeal::with('mesa')->orderBy('mesa_id')->get();
-        $incidencias = $sealService->verifyAll();
-        $sinSellar = $sealService->sinSellar();
-
-        return view('admin.integridad', compact('sellos', 'incidencias', 'sinSellar'));
-    }
-
-    public function sellar(\App\Services\TallySealService $sealService)
-    {
-        $selladas = $sealService->sealAll();
-        $this->bitacoraService->registrar('sellado de conteo', "Se sellaron {$selladas} mesas");
-
-        return back()->with('success', "Se selló el conteo de {$selladas} mesas.");
     }
 
     public function verificarGanadorAutomatico()

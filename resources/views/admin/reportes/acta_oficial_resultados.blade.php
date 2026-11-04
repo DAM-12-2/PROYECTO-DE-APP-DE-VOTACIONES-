@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acta Oficial de Resultados — {{ $institucion }}</title>
-    <script src="/js/tailwind.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print { .no-print { display: none !important; } body { background: white; } }
         body { font-family: 'Inter', sans-serif; }

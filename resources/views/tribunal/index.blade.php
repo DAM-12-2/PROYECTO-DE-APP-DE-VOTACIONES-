@@ -19,33 +19,3 @@
 	</div>
 </div>
 @endsection
-
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', async () => {
-    const canvas = document.getElementById('graficoVotos');
-    if (!canvas || typeof Chart === 'undefined') return;
-
-    try {
-        const response = await fetch('/api/ganador', { headers: { 'Accept': 'application/json' } });
-        const data = await response.json();
-        const partidos = Array.isArray(data.partidos) ? data.partidos : [];
-
-        new Chart(canvas, {
-            type: 'bar',
-            data: {
-                labels: partidos.map(p => p.siglas || p.nombre),
-                datasets: [{
-                    label: 'Votos',
-                    data: partidos.map(p => p.votos || 0),
-                    backgroundColor: ['#3b82f6', '#ef4444', '#9ca3af', '#10b981', '#f59e0b'],
-                }],
-            },
-            options: { responsive: true, maintainAspectRatio: false },
-        });
-    } catch (error) {
-        console.error('No se pudieron cargar los votos:', error);
-    }
-});
-</script>
-@endpush

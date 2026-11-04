@@ -17,12 +17,10 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\JrvController;
 use App\Http\Controllers\TribunalController;
-use App\Http\Controllers\VoteRequestController;
 
-Route::get('/kiosko', [\App\Http\Controllers\KioskoController::class, 'show'])->name('kiosko');
-Route::post('/kiosko/activar', [\App\Http\Controllers\KioskoController::class, 'activar'])->middleware('throttle:10,1');
-Route::post('/kiosko/cerrar', [\App\Http\Controllers\KioskoController::class, 'cerrar']);
-Route::get('/kiosko/estado', [\App\Http\Controllers\KioskoController::class, 'estado'])->middleware('throttle:180,1');
+Route::get('/kiosko', function () {
+    return view('voting.urna');
+})->name('kiosko');
 
 Route::get('/', function () {
     return redirect('/login');
@@ -32,42 +30,26 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/cambiar-password', [AuthController::class, 'showChangePassword'])->name('password.change');
-    Route::post('/cambiar-password', [AuthController::class, 'changePassword'])->name('password.change.update');
-});
-
-Route::get('/acerca-de', fn () => view('acerca'))->name('acerca');
-
 Route::get('/manual', function () {
     return view('admin.manual');
 })->name('admin.manual');
 
-Route::middleware(['auth', 'password.changed', 'role:admin,tee,jrv'])->prefix('registro')->group(function () {
-    Route::get('/', [VoteRequestController::class, 'registro'])->name('registro');
-    Route::post('/solicitud', [VoteRequestController::class, 'store'])->middleware('throttle:60,1')->name('registro.solicitud');
-    Route::get('/solicitud/{id}/estado', [VoteRequestController::class, 'estado'])->name('registro.estado');
-});
-
-Route::middleware(['auth', 'password.changed', 'role:tee'])->prefix('tribunal')->group(function () {
+Route::middleware(['auth', 'role:tee'])->prefix('tribunal')->group(function () {
     Route::get('/', [TribunalController::class, 'index'])->name('tribunal.dashboard');
     Route::get('/estudiantes', [TribunalController::class, 'estudiantes'])->name('tribunal.estudiantes');
     Route::get('/configuracion', [TribunalController::class, 'configuracion'])->name('tribunal.configuracion');
 });
 
-Route::middleware(['auth', 'password.changed', 'role:admin,tee'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'role:admin,tee'])->prefix('admin')->group(function () {
     Route::get('/', [DashboardController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/dashboard/data', [DashboardController::class, 'dashboardData'])->name('admin.dashboard.data');
 
     Route::get('/estudiantes', [StudentController::class, 'index'])->name('admin.students');
-    Route::get('/estudiantes/exportar', [StudentController::class, 'exportXlsx'])->name('admin.students.export.xlsx');
-    Route::get('/estudiantes/exportar/csv', [StudentController::class, 'export'])->name('admin.students.export.csv');
-    Route::post('/estudiantes', [StudentController::class, 'store'])->middleware('block.padron')->name('admin.students.store');
+    Route::post('/estudiantes', [StudentController::class, 'store']);
     Route::get('/estudiantes/{id}/edit', [StudentController::class, 'edit'])->name('admin.students.edit');
-    Route::put('/estudiantes/{id}', [StudentController::class, 'update'])->middleware('block.padron')->name('admin.students.update');
-    Route::delete('/estudiantes/{id}', [StudentController::class, 'destroy'])->middleware('block.padron')->name('admin.students.destroy');
-    Route::post('/estudiantes/importar', [StudentController::class, 'import'])->middleware('block.padron')->name('admin.students.import');
-    Route::post('/estudiantes/{id}/desbloquear', [StudentController::class, 'desbloquear'])->name('admin.students.desbloquear');
+    Route::put('/estudiantes/{id}', [StudentController::class, 'update'])->name('admin.students.update');
+    Route::delete('/estudiantes/{id}', [StudentController::class, 'destroy']);
+    Route::post('/estudiantes/importar', [StudentController::class, 'import'])->name('admin.students.import');
 
     Route::get('/partidos', [PartyController::class, 'index'])->name('admin.parties');
     Route::post('/partidos', [PartyController::class, 'store']);
@@ -83,8 +65,6 @@ Route::middleware(['auth', 'password.changed', 'role:admin,tee'])->prefix('admin
 
     Route::get('/resultados', [ResultController::class, 'resultados'])->middleware('block.reports')->name('admin.resultados');
     Route::get('/resultados/exportar-csv', [ResultController::class, 'exportarResultadosCsv'])->middleware('block.reports')->name('admin.resultados.export_csv');
-    Route::get('/integridad', [ResultController::class, 'integridad'])->name('admin.integridad');
-    Route::post('/integridad/sellar', [ResultController::class, 'sellar'])->middleware('role:admin')->name('admin.integridad.sellar');
 
     Route::get('/configuracion', [SettingsController::class, 'settings'])->name('admin.settings');
     Route::post('/configuracion', [SettingsController::class, 'updateSettings']);
@@ -168,17 +148,11 @@ Route::get('/ayuda', function () {
     Route::get('/api/ganador', [ResultController::class, 'apiVerificarGanador'])->middleware('throttle:30,1');
 });
 
-Route::middleware(['auth', 'password.changed', 'role:jrv'])->prefix('jrv')->group(function () {
+Route::middleware(['auth', 'role:jrv'])->prefix('jrv')->group(function () {
     Route::get('/', [JrvController::class, 'index'])->name('jrv.index');
     Route::get('/api/buscar', [JrvController::class, 'searchStudents'])->middleware('throttle:120,1');
     Route::get('/api/partidos', [JrvController::class, 'partidos'])->middleware('throttle:120,1');
-    Route::get('/api/urnas', [JrvController::class, 'urnas'])->middleware('throttle:120,1');
-    Route::get('/api/cola', [VoteRequestController::class, 'cola'])->middleware('throttle:120,1');
-    Route::post('/api/solicitud/{id}/aprobar', [VoteRequestController::class, 'aprobar'])->middleware('throttle:60,1');
-    Route::post('/api/solicitud/{id}/rechazar', [VoteRequestController::class, 'rechazar'])->middleware('throttle:60,1');
-    Route::post('/api/asignar', [JrvController::class, 'asignar'])->middleware('throttle:60,1');
-    Route::post('/api/liberar', [JrvController::class, 'liberar'])->middleware('throttle:60,1');
     Route::post('/api/activar-urna', [JrvController::class, 'activarUrna'])->middleware('throttle:60,1');
     Route::post('/api/desactivar-urna', [JrvController::class, 'desactivarUrna'])->middleware('throttle:60,1');
-    Route::post('/api/votar', [VoteController::class, 'store'])->middleware('throttle:' . env('VOTE_THROTTLE', '60') . ',1');
+    Route::post('/api/votar', [VoteController::class, 'store'])->middleware('throttle:60,1');
 });

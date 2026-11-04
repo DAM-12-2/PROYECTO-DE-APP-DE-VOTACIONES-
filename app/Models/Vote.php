@@ -12,15 +12,9 @@ class Vote extends Model
     use HasFactory;
 
     protected $fillable = [
-        'student_id',
         'encrypted_party',
         'id_mesa'
     ];
-
-    public function student(): BelongsTo
-    {
-        return $this->belongsTo(Student::class);
-    }
 
     public function mesa(): BelongsTo
     {

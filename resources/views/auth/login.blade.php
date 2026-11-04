@@ -1,16 +1,14 @@
 <!DOCTYPE html><html lang="es"><head>
-<link rel="icon" type="image/png" href="/img/logo.png">
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<link rel="stylesheet" href="/css/fuentes.css">
-<link rel="stylesheet" href="/css/fuentes.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
 <script src="/js/tailwind.js"></script>
 <script src="/assets/js/tailwind-config.js"></script>
 <link rel="stylesheet" href="/assets/css/styles.css">
 </head>
 <body class="bg-background text-on-background font-body-md min-h-screen flex items-center justify-center p-4">
-<x-splash />
 <div class="w-full max-w-md">
 <div class="bg-surface-container-lowest border border-outline-variant rounded-2xl shadow-xl overflow-hidden">
 <div class="p-8 text-center">
@@ -39,7 +37,6 @@
 </div>
 <div class="px-8 pb-6 text-center">
 <p class="text-[10px] text-secondary">Colegio T&eacute;cnico Profesional Ambientalista Isa&iacute;as Retana Arias</p>
-<x-creditos class="mt-3" />
 </div>
 </div>
 </div>

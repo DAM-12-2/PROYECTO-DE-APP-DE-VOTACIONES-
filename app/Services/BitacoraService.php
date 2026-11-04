@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 class BitacoraService
 {
-    public function registrar(string $accion, ?string $detalle = null)
+    public function registrar(string $accion, string $detalle = null)
     {
         try {
             DB::table('bitacoras')->insert([

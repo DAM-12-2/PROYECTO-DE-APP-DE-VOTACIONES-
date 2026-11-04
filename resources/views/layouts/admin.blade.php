@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html lang="es"><head>
 <meta charset="utf-8"/>
-<link rel="icon" type="image/png" href="/img/logo.png">
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <title>@yield('title', 'Admin Dashboard — Sistema Electoral')</title>
 <script src="/js/tailwind.js"></script>
-<link rel="stylesheet" href="/css/fuentes.css">
-<link rel="stylesheet" href="/css/fuentes.css">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <script>
   tailwind.config = {
     darkMode: "class",
@@ -136,8 +135,6 @@
 <li><a class="nav-item {{ $route == 'admin' ? 'active' : '' }} flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 active:scale-95" href="{{ route('admin.dashboard') }}"><span class="material-symbols-outlined">dashboard</span>Inicio</a></li>
 <li><a class="nav-item {{ str_contains($route, 'configuracion') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 active:scale-95" href="{{ route('admin.settings') }}"><span class="material-symbols-outlined">settings</span>Parámetros</a></li>
 <li><a class="nav-item {{ str_contains($route, 'estudiantes') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 active:scale-95" href="{{ route('admin.students') }}"><span class="material-symbols-outlined">person</span>Estudiantes</a></li>
-<li><a class="nav-item {{ str_contains($route, 'resultados') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 active:scale-95" href="{{ route('admin.resultados') }}"><span class="material-symbols-outlined">bar_chart</span>Resultados</a></li>
-<li><a class="nav-item {{ str_contains($route, 'integridad') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 active:scale-95" href="{{ route('admin.integridad') }}"><span class="material-symbols-outlined">verified_user</span>Integridad</a></li>
 <li><a class="nav-item {{ str_contains($route, 'respaldar') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 active:scale-95" href="{{ route('admin.backup') }}"><span class="material-symbols-outlined">backup</span>Respaldar Base de Datos</a></li>
 <li><a class="nav-item {{ str_contains($route, 'bitacora') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 active:scale-95" href="{{ route('admin.bitacora') }}"><span class="material-symbols-outlined">history</span>Consultar bitácora</a></li>
 <li><a class="nav-item {{ str_contains($route, 'usuarios') ? 'active' : '' }} flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high transition-colors transition-all duration-200 active:scale-95" href="{{ route('admin.usuarios') }}"><span class="material-symbols-outlined">group</span>Usuarios</a></li>
@@ -168,7 +165,6 @@
 <div class="max-w-7xl mx-auto space-y-section-margin pb-20">
 @yield('content')
 </div>
-<x-creditos class="mt-10 pb-4" />
 </main>
 <!-- Logout Modal -->
 <div class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" id="logout-modal">

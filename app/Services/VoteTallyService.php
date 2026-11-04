@@ -33,7 +33,7 @@ class VoteTallyService
         return Party::where('estado', 1)->pluck('id')->map(fn($id) => (string)$id)->toArray();
     }
 
-    public function tallyVotes(Collection|array|null $votes = null): VoteTallyResult
+    public function tallyVotes(Collection|array $votes = null): VoteTallyResult
     {
         if ($votes === null) {
             $votes = Vote::select('encrypted_party', 'id_mesa')->get();
@@ -69,7 +69,7 @@ class VoteTallyService
             } else {
                 if (in_array($decrypted, $this->validPartyIds, true)) {
                     $partyVotes[$decrypted] = ($partyVotes[$decrypted] ?? 0) + 1;
-                } elseif ($decrypted === '' || $decrypted === '0') {
+                } elseif ($decrypted === '') {
                     $blancos++;
                 } else {
                     $nulos++;
@@ -101,55 +101,7 @@ class VoteTallyService
             return null;
         }
 
-        $top = $results[0];
-
-        $requisito = \App\Models\Setting::where('nombre', 'requisito_ganar')->value('detalle') ?? 'mayoria_simple';
-        if ($requisito !== 'porcentaje_minimo') {
-            return $top;
-        }
-
-        $porcMinimo = (float) (\App\Models\Setting::where('nombre', 'porc_minimo')->value('detalle') ?? 0);
-        if ($porcMinimo <= 0) {
-            return $top;
-        }
-
-        if ($this->isConsultaPopular) {
-            $validos = $tally->votosValidos();
-            if ($validos <= 0) {
-                return null;
-            }
-            return ($top['votos'] * 100 / $validos) >= $porcMinimo ? $top : null;
-        }
-
-        $baseEsEmpadronados = \App\Models\Setting::where('nombre', 'base_porcentaje')->value('detalle') === 'empadronados';
-        $base = $baseEsEmpadronados
-            ? \App\Models\Student::where('estado', 1)->count()
-            : $tally->totalVotes;
-        $base += (int) (\App\Models\Setting::where('nombre', 'sumar_n')->value('detalle') ?? 0);
-
-        if ($base <= 0) {
-            return null;
-        }
-
-        return ($top['votos'] * 100 / $base) >= $porcMinimo ? $top : null;
-    }
-
-    public function tallyMesa(int $mesaId): array
-    {
-        $votes = Vote::where('id_mesa', $mesaId)->get();
-        $result = $this->tallyVotesCollection($votes);
-        $mesa = \App\Models\Mesa::find($mesaId);
-
-        return [
-            'mesa_id' => $mesaId,
-            'mesa_nombre' => $mesa?->nombre,
-            'mesa_numero' => $mesa?->numero,
-            'total' => $result->totalVotes,
-            'blancos' => $result->blancos,
-            'nulos' => $result->nulos,
-            'votos_validos' => $result->votosValidos(),
-            'partidos' => $this->formatPartyResults($result),
-        ];
+        return $results[0];
     }
 
     public function tallyVotesByMesa(): array
@@ -269,7 +221,7 @@ class VoteTallyService
             } else {
                 if (in_array($decrypted, $this->validPartyIds, true)) {
                     $partyVotes[$decrypted] = ($partyVotes[$decrypted] ?? 0) + 1;
-                } elseif ($decrypted === '' || $decrypted === '0') {
+                } elseif ($decrypted === '') {
                     $blancos++;
                 } else {
                     $nulos++;

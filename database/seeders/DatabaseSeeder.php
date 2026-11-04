@@ -26,11 +26,7 @@ class DatabaseSeeder extends Seeder
         foreach ($users as $user) {
             User::updateOrCreate(
                 ['name' => $user['name']],
-                [
-                    'password' => $user['password'],
-                    'role' => $user['role'],
-                    'mesa_id' => $user['mesa_id'] ?? null,
-                ],
+                ['password' => $user['password'], 'role' => $user['role']],
             );
         }
 
@@ -88,8 +84,6 @@ class DatabaseSeeder extends Seeder
             Mesa::updateOrCreate(['nombre' => $m['nombre']], $m);
         }
 
-        User::where('name', 'jrv')->update(['mesa_id' => 1]);
-
         $secciones = [
             [1, '11-1'],
             [1, '11-2'],
@@ -113,7 +107,5 @@ class DatabaseSeeder extends Seeder
         foreach ($urnas as $u) {
             Urna::updateOrCreate(['codigo' => $u['codigo']], $u);
         }
-
-        \App\Models\Setting::updateOrCreate(['nombre' => 'tiempo_votacion'], ['detalle' => '90']);
     }
 }

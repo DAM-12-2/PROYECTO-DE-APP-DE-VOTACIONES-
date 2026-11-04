@@ -25,43 +25,20 @@ Laravel 12 + SQLite + Tailwind CSS + JavaScript vanilla. Las vistas Blade reempl
 | tee | tee | tee (Tribunal) | /tribunal |
 | jrv | jrv | jrv (JRV) | /jrv |
 
-## Flujo de operación
-
-1. **PC1 registro** (`/registro`): el votante ingresa su identificación; se crea una solicitud `pendiente`.
-2. **PC2 JRV** (`/jrv`): recibe la solicitud en vivo, la aprueba y asigna una urna libre.
-3. **PC3 urna** (`/kiosko`): se activa con código `U001` + usuario/contraseña JRV, recibe al estudiante y registra el voto.
-4. **Cierre**: el voto marca la solicitud como `votada`, libera la urna y PC1 lo refleja; al cerrar la elección se sella el conteo (`/admin/integridad`, `php artisan tally:verify`).
-
-La comunicación entre terminales usa **Laravel Reverb** (WebSocket local): `php artisan reverb:start --host=0.0.0.0 --port=8080`.
-Si el WebSocket cae, el polling de 2–3 segundos mantiene el ciclo operativo.
-
-## Seguridad local
-
-- `/api/*` exige sesión y rol; el padrón ya no es público.
-- La JRV solo puede buscar y registrar estudiantes de su mesa.
-- Cabeceras CSP, X-Frame-Options y nosniff en todas las respuestas.
-- Contraseñas con Argon2id y cambio obligatorio inicial.
-- CSV neutralizado contra fórmulas y limitado a 10 000 filas.
-- Todos los assets (Tailwind, Chart.js, iconos y fuentes) son locales: funciona sin internet.
-
 ## Estructura clave
-- `app/Http/Controllers/KioskoController.php` -- activación, estado y cierre de urna
-- `public/js/voting.js` -- kiosco: polling, cronómetro, voto en blanco
-- `assets/js/jrv.js` -- portal JRV: búsqueda, urnas, asignación
-- `resources/views/layouts/tribunal.blade.php` -- navegación server-side del panel TEE
-- `resources/views/layouts/voting.blade.php` -- layout del kiosco
+- `assets/js/app.js` -- SPA del Tribunal (616 lns, 10 secciones vía templates JS + modal system)
+- `assets/js/login.js` -- Lógica login standalone
+- `assets/js/tailwind-config.js` -- Config Tailwind
+- `assets/css/styles.css` -- Estilos nav-link.active
+- `resources/views/layouts/tribunal.blade.php` -- Layout Tribunal (incluye app.js como SPA)
+- `resources/views/layouts/admin.blade.php` -- Layout admin Laravel
+- `resources/views/layouts/voting.blade.php` -- Layout kiosko/urna
 - `public/assets` -> `../../assets` (symlink)
+- `public/css/admin.css` -- CSS admin
+- `public/js/admin-config.js` -- tailwind.config admin
 
-## Usuarios y urnas
-Las contraseñas reales están en `~/.config/votaciones/credenciales.txt` (no versionado).
-Usuarios: `admin` (administrador), `tee` (Tribunal), `jrv` (Junta, Mesa 1).
-Urnas sembradas: `U001` (Mesa 1), `U002` (Mesa 2), `U003` (Mesa 3, inactiva).
-
-Para las pruebas automatizadas se pasan por variables de entorno:
-
-```bash
-JRV_USER=jrv JRV_PASS=... node scripts/e2e-tres-terminales.mjs https://127.0.0.1
-```
+## Tribunal SPA
+El layout `tribunal.blade.php` incluye `assets/js/app.js` que maneja toda la navegación del lado cliente (SPA). Las rutas `/tribunal`, `/tribunal/estudiantes`, `/tribunal/configuracion` cargan el mismo layout y app.js determina qué sección mostrar según el pathname. Los enlaces del sidebar usan `data-target` para navegación SPA con `e.preventDefault()`.
 
 ## Cambios recientes
 - `/Html/` eliminado (login.html, Tribunal_est.html, admin.html) — convertido a Blade

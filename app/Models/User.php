@@ -37,29 +37,6 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
-    /**
-     * Verifica la contraseña y migra el hash al algoritmo configurado.
-     */
-    public function verificarPassword(string $plain): bool
-    {
-        try {
-            if (\Illuminate\Support\Facades\Hash::check($plain, $this->password)) {
-                return true;
-            }
-        } catch (\Throwable $e) {
-            // Hash de otro algoritmo (p. ej. bcrypt con HASH_DRIVER=argon2id)
-        }
-
-        if (password_verify($plain, $this->password)) {
-            $this->password = $plain;
-            $this->save();
-
-            return true;
-        }
-
-        return false;
-    }
-
     public function isTee(): bool
     {
         return $this->role === 'tee';
