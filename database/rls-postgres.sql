@@ -48,7 +48,7 @@ LANGUAGE sql SECURITY DEFINER SET search_path = public
 AS $$
   SELECT u.id, u.codigo, u.estado, u.id_mesa FROM urnas u WHERE u.codigo = p_codigo;
 $$;
-GRANT EXECUTE ON FUNCTION urna_por_codigo(text) TO CURRENT_USER;
+GRANT EXECUTE ON FUNCTION urna_por_codigo(text) TO votaciones;
 
 -- La JRV puede marcar el voto de estudiantes de su mesa (solo la fila).
 CREATE POLICY students_update_jrv ON students FOR UPDATE

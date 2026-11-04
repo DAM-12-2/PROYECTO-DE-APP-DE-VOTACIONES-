@@ -1,0 +1,17 @@
++----------------------------+--------+---------------------------------------------------------------+
+| Verificación               | Estado | Detalle                                                       |
++----------------------------+--------+---------------------------------------------------------------+
+| APP_ENV                    | OK     | production                                                    |
+| APP_DEBUG                  | OK     | false                                                         |
+| APP_KEY                    | OK     | definida                                                      |
+| APP_URL HTTPS              | OK     | https://192.168.1.222                                         |
+| SESSION_ENCRYPT            | OK     | true                                                          |
+| LOG_LEVEL                  | OK     |                                                               |
+| Base de datos              | OK     | pgsql                                                         |
+| storage escribible         | OK     | /home/jeffer_gr/PROYECTO-DE-APP-DE-VOTACIONES/storage         |
+| bootstrap/cache escribible | OK     | /home/jeffer_gr/PROYECTO-DE-APP-DE-VOTACIONES/bootstrap/cache |
+| Credenciales por defecto   | OK     | ninguna                                                       |
+| Tablas base                | OK     | students/votes/tally_seals                                    |
++----------------------------+--------+---------------------------------------------------------------+
+
+Configuración apta para producción.

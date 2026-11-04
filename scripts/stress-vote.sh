@@ -2,6 +2,8 @@
 # Prueba de carga del flujo de voto.
 # Uso: ./scripts/stress-vote.sh <base_url> <cantidad> <concurrencia> [identificacion_inicial]
 set -euo pipefail
+JRV_USER="${JRV_USER:-jrv}"
+JRV_PASS="${JRV_PASS:-jrv}"
 export LC_ALL=C
 
 BASE="${1:-http://127.0.0.1:8124}"
@@ -18,7 +20,7 @@ mkdir -p "$OUT_DIR"
 curl -s -c "$COOKIES" "$BASE/login" -o /tmp/login.html
 TOKEN=$(grep -o 'name="_token" value="[^"]*"' /tmp/login.html | head -1 | cut -d'"' -f4)
 curl -s -b "$COOKIES" -c "$COOKIES" -X POST "$BASE/login" \
-  -d "_token=$TOKEN&username=jrv&password=jrv" -o /dev/null
+  -d "_token=$TOKEN&username=$JRV_USER&password=$JRV_PASS" -o /dev/null
 
 curl -s -b "$COOKIES" "$BASE/jrv" -o /tmp/jrv.html
 TOKEN=$(grep -o 'name="csrf-token" content="[^"]*"' /tmp/jrv.html | head -1 | cut -d'"' -f4)

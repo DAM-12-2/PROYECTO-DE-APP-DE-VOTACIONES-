@@ -99,3 +99,18 @@ Apto funcionalmente y con capacidad de sobra (~35 votos/s medidos para una
 necesidad de ~0,05 votos/s). No apto aún para producción sin: MySQL/PostgreSQL,
 HTTPS, `APP_DEBUG=false`, credenciales por defecto eliminadas y servidor
 Nginx + PHP-FPM. La lista completa está en el informe.
+
+## Servidor local ya configurado
+
+| Componente | Estado |
+|---|---|
+| Apache + HTTPS (443) | Activo, vhost `votaciones.conf` |
+| PostgreSQL 17 | Activo, base `votaciones`, RLS aplicado |
+| Reverb (WebSocket) | Servicio `votaciones-reverb`, proxy `wss://IP/app` |
+| Respaldo cifrado | Cron diario 22:00 → `/var/backups/votaciones` |
+| `.env` | `APP_ENV=production`, `APP_DEBUG=false`, sesiones cifradas |
+| `php artisan app:check` | Configuración apta para producción |
+
+Las contraseñas de admin, TEE y JRV están en
+`~/.config/votaciones/credenciales.txt` (permisos 600) y no se versionan.
+La clave de respaldo está en `/etc/votaciones-backup.key`.

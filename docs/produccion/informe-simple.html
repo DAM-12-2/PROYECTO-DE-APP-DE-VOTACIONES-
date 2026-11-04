@@ -36,10 +36,11 @@
 Explicación sencilla para el Tribunal Electoral · 4 de noviembre de 2026</p>
 
 <div class="big">
-<p class="pct">90 %</p>
-<p><strong>Sí sirve, y ya se puede probar con estudiantes.</strong> El ciclo completo funciona: un estudiante se
+<p class="pct">98 %</p>
+<p><strong>Sí sirve, y está listo para una prueba con estudiantes.</strong> El ciclo completo funciona: un estudiante se
 registra en una computadora, la Junta lo aprueba en otra y vota en una tercera. El voto queda guardado y protegido.
-Lo que falta no es programar más: es preparar los equipos del colegio (base de datos, certificado y respaldos).</p>
+El servidor local ya tiene base de datos PostgreSQL, HTTPS, WebSocket, respaldos automáticos y reglas de acceso por mesa.
+Solo falta confirmar la matrícula real del colegio.</p>
 </div>
 
 <h2>1. ¿Qué funciona hoy?</h2>
@@ -85,15 +86,17 @@ dirección IP del router del colegio. No hace falta internet.
 
 <h2>3. ¿Qué falta para usarlo en el colegio?</h2>
 <table>
-<tr><th>Pendiente</th><th>Dificultad</th><th>Por qué importa</th></tr>
-<tr><td>Cambiar las contraseñas de prueba</td><td class="ok">Fácil</td><td>Hoy existen admin/admin, tee/tee y jrv/jrv.</td></tr>
-<tr><td>Poner el sistema en modo producción</td><td class="ok">Fácil</td><td>Para que no muestre errores internos a los usuarios.</td></tr>
-<tr><td>Instalar un certificado HTTPS</td><td class="warn">Media</td><td>Para que la conexión sea cifrada en la red del colegio.</td></tr>
-<tr><td>Base de datos PostgreSQL</td><td class="warn">Media</td><td>Más robusta que SQLite para varias urnas a la vez.</td></tr>
-<tr><td>Servidor web (Nginx/Apache)</td><td class="warn">Media</td><td>El servidor de pruebas no es para un evento real.</td></tr>
-<tr><td>Respaldos automáticos</td><td class="warn">Media</td><td>Para no perder la votación si falla un equipo.</td></tr>
-<tr><td>Confirmar la matrícula real</td><td class="ok">Fácil</td><td>Para saber cuántas urnas comprar.</td></tr>
-<tr><td>Reglas de base de datos (RLS)</td><td class="warn">Media</td><td>El control por mesa ya existe en el programa; RLS lo refuerza en la base.</td></tr>
+<tr><th>Punto</th><th>Estado</th><th>Detalle</th></tr>
+<tr><td>Contraseñas de prueba</td><td class="ok">HECHO</td><td>Se generaron contraseñas nuevas; están en un archivo privado del servidor.</td></tr>
+<tr><td>Modo producción</td><td class="ok">HECHO</td><td>El sistema ya no muestra errores internos.</td></tr>
+<tr><td>Certificado HTTPS</td><td class="ok">HECHO</td><td>La conexión está cifrada; el certificado debe instalarse en las 3 computadoras.</td></tr>
+<tr><td>Base de datos PostgreSQL</td><td class="ok">HECHO</td><td>Instalada y probada con aislamiento por mesa (RLS).</td></tr>
+<tr><td>Servidor web</td><td class="ok">HECHO</td><td>Apache con HTTPS sirviendo la aplicación.</td></tr>
+<tr><td>Respaldos automáticos</td><td class="ok">HECHO</td><td>Respaldo diario cifrado a las 22:00.</td></tr>
+<tr><td>Reglas de acceso (RLS)</td><td class="ok">HECHO</td><td>Cada Junta solo ve su mesa; los votos no son visibles.</td></tr>
+<tr><td>WebSocket en vivo</td><td class="ok">HECHO</td><td>Servicio local activo, con respaldo automático si se cae.</td></tr>
+<tr><td>Matrícula real del centro</td><td class="warn">PENDIENTE</td><td>Solo para decidir cuántas urnas usar.</td></tr>
+<tr><td>Foto/huella del votante</td><td class="warn">OPCIONAL</td><td>No se usa; se puede eliminar o dejar para después.</td></tr>
 </table>
 
 <h2>4. ¿Es seguro?</h2>

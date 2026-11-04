@@ -43,17 +43,17 @@ try {
     const anon = await abrir();
     await captura(anon, '/login', '01-login.png');
 
-    const admin = await abrir('admin', 'admin');
+    const admin = await abrir(process.env.ADMIN_USER || 'admin', process.env.ADMIN_PASS || 'admin');
     await captura(admin, '/admin', '02-admin-dashboard.png');
     await captura(admin, '/admin/estudiantes', '03-admin-estudiantes.png');
     await captura(admin, '/admin/resultados', '04-admin-resultados.png');
     await captura(admin, '/admin/integridad', '05-admin-integridad.png');
     await captura(admin, '/admin/reportes', '06-admin-reportes.png');
 
-    const tee = await abrir('tee', 'tee');
+    const tee = await abrir(process.env.TEE_USER || 'tee', process.env.TEE_PASS || 'tee');
     await captura(tee, '/tribunal', '07-tribunal-dashboard.png');
 
-    const jrv = await abrir('jrv', 'jrv');
+    const jrv = await abrir(process.env.JRV_USER || 'jrv', process.env.JRV_PASS || 'jrv');
     await captura(jrv, '/registro', '08-pc1-registro.png');
     await captura(jrv, '/jrv', '09-pc2-jrv.png');
 

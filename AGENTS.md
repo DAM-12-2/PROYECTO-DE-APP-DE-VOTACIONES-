@@ -52,14 +52,16 @@ Si el WebSocket cae, el polling de 2–3 segundos mantiene el ciclo operativo.
 - `resources/views/layouts/voting.blade.php` -- layout del kiosco
 - `public/assets` -> `../../assets` (symlink)
 
-## Usuarios y urnas de prueba
-| Usuario | Contraseña | Rol | Mesa |
-|---------|-----------|-----|------|
-| admin | admin | admin | — |
-| tee | tee | TEE | — |
-| jrv | jrv | JRV | Mesa 1 |
-
+## Usuarios y urnas
+Las contraseñas reales están en `~/.config/votaciones/credenciales.txt` (no versionado).
+Usuarios: `admin` (administrador), `tee` (Tribunal), `jrv` (Junta, Mesa 1).
 Urnas sembradas: `U001` (Mesa 1), `U002` (Mesa 2), `U003` (Mesa 3, inactiva).
+
+Para las pruebas automatizadas se pasan por variables de entorno:
+
+```bash
+JRV_USER=jrv JRV_PASS=... node scripts/e2e-tres-terminales.mjs https://127.0.0.1
+```
 
 ## Cambios recientes
 - `/Html/` eliminado (login.html, Tribunal_est.html, admin.html) — convertido a Blade

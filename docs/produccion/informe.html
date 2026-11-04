@@ -242,12 +242,12 @@ no será el software sino la logística: cantidad de urnas, filas y tiempo por e
 <tr><td>9</td><td>Prueba de carga</td><td class="ok">CUMPLE</td><td>~35 votos/s sin errores 5xx</td></tr>
 <tr><td>10</td><td>Uso de recursos</td><td class="ok">CUMPLE</td><td>68 MB RAM, CPU &lt; 50 %</td></tr>
 <tr><td>11</td><td>Credenciales hardcodeadas en código</td><td class="ok">CUMPLE</td><td>Ninguna en la aplicación</td></tr>
-<tr><td>12</td><td>Credenciales por defecto eliminadas</td><td class="fail">PENDIENTE</td><td>Ejecutar <code>app:create-admin</code> y borrar admin/tee/jrv de prueba</td></tr>
-<tr><td>13</td><td>APP_ENV=production y APP_DEBUG=false</td><td class="fail">PENDIENTE</td><td>Usar <code>.env.production.example</code></td></tr>
-<tr><td>14</td><td>HTTPS y cookies seguras</td><td class="fail">PENDIENTE</td><td>Certificado + <code>SESSION_SECURE_COOKIE=true</code></td></tr>
-<tr><td>15</td><td>Base de datos MySQL/PostgreSQL</td><td class="fail">PENDIENTE</td><td>Migrar antes del evento</td></tr>
-<tr><td>16</td><td>Servidor web de producción</td><td class="fail">PENDIENTE</td><td>Nginx + PHP-FPM</td></tr>
-<tr><td>17</td><td>Respaldos automáticos</td><td class="fail">PENDIENTE</td><td>Programar y probar restauración</td></tr>
+<tr><td>12</td><td>Credenciales por defecto eliminadas</td><td class="ok">CUMPLE</td><td>Contraseñas nuevas en archivo privado del servidor</td></tr>
+<tr><td>13</td><td>APP_ENV=production y APP_DEBUG=false</td><td class="ok">CUMPLE</td><td>Aplicado en el servidor local</td></tr>
+<tr><td>14</td><td>HTTPS y cookies seguras</td><td class="ok">CUMPLE</td><td>Apache con certificado y cookies Secure</td></tr>
+<tr><td>15</td><td>Base de datos PostgreSQL</td><td class="ok">CUMPLE</td><td>PostgreSQL 17 + RLS probado</td></tr>
+<tr><td>16</td><td>Servidor web de producción</td><td class="ok">CUMPLE</td><td>Apache + PHP 8.4</td></tr>
+<tr><td>17</td><td>Respaldos automáticos</td><td class="ok">CUMPLE</td><td>Respaldo diario cifrado a las 22:00</td></tr>
 <tr><td>18</td><td>Matrícula real del centro</td><td class="fail">PENDIENTE</td><td>Confirmar con el MEP para dimensionar urnas</td></tr>
 <tr><td>19</td><td>Dependencias sin vulnerabilidades</td><td class="ok">CUMPLE</td><td><code>composer audit</code> limpio</td></tr>
 <tr><td>20</td><td>Funciona sin internet</td><td class="ok">CUMPLE</td><td>Assets locales</td></tr>

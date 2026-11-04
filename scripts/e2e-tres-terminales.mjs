@@ -7,6 +7,8 @@ const { chromium } = require('playwright');
 const BASE = process.argv[2] || 'http://127.0.0.1:8124';
 const OUT = process.argv[3] || 'docs/produccion/evidencias';
 const ID = process.argv[4] || '1000001';
+const JRV_USER = process.env.JRV_USER || 'jrv';
+const JRV_PASS = process.env.JRV_PASS || 'jrv';
 
 fs.mkdirSync(OUT, { recursive: true });
 
@@ -24,16 +26,16 @@ const marcar = (paso, extra = {}) => {
 
 const login = async (page) => {
     await page.goto(`${BASE}/login`);
-    await page.fill('#username', 'jrv');
-    await page.fill('#password', 'jrv');
+    await page.fill('#username', JRV_USER);
+    await page.fill('#password', JRV_PASS);
     await page.click('button[type="submit"]');
     await page.waitForURL('**/jrv', { timeout: 15000 });
 };
 
 try {
-    const c1 = await browser.newContext({ viewport: { width: 1280, height: 800 } });
-    const c2 = await browser.newContext({ viewport: { width: 1280, height: 800 } });
-    const c3 = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+    const c1 = await browser.newContext({ viewport: { width: 1280, height: 800 }, ignoreHTTPSErrors: true });
+    const c2 = await browser.newContext({ viewport: { width: 1280, height: 800 }, ignoreHTTPSErrors: true });
+    const c3 = await browser.newContext({ viewport: { width: 1280, height: 800 }, ignoreHTTPSErrors: true });
 
     const pc1 = await c1.newPage();
     const pc2 = await c2.newPage();
@@ -43,8 +45,8 @@ try {
     // PC3: activar urna
     await pc3.goto(`${BASE}/kiosko`);
     await pc3.fill('#codigo', 'U001');
-    await pc3.fill('#usuario', 'jrv');
-    await pc3.fill('#password', 'jrv');
+    await pc3.fill('#usuario', JRV_USER);
+    await pc3.fill('#password', JRV_PASS);
     await Promise.all([pc3.waitForNavigation(), pc3.click('button[type="submit"]')]);
     await pc3.waitForSelector('#pantalla-espera:not(.hidden)', { timeout: 15000 });
     await pc3.screenshot({ path: `${OUT}/3pc-01-urna-espera.png` });
