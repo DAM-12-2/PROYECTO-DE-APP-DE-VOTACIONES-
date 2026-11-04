@@ -39,6 +39,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const pantallaExito =
         document.getElementById('pantalla-exito');
 
+    const tiempoRestante =
+        document.getElementById('tiempo-restante');
+
+    const barraTiempo =
+        document.getElementById('barra-tiempo');
+
+    const btnBlanco =
+        document.getElementById('btn-blanco');
+
+    const tiempoLimite =
+        Number(document.body.dataset.tiempoVotacion) || 90;
+
+    let temporizador = null;
+    let segundosRestantes = tiempoLimite;
+
     let identificacionActual = '';
     let partidoSeleccionado = null;
 
@@ -103,34 +118,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
         elemento.classList.remove(
             'hidden',
-            'bg-red-900',
-            'text-red-300',
-            'bg-green-900',
-            'text-green-300',
-            'bg-yellow-900',
-            'text-yellow-300'
+            'bg-red-50',
+            'text-red-700',
+            'border-red-200',
+            'bg-emerald-50',
+            'text-emerald-700',
+            'border-emerald-200',
+            'bg-amber-50',
+            'text-amber-800',
+            'border-amber-200'
         );
 
+        elemento.classList.add('border');
 
         if (tipo === 'success') {
 
             elemento.classList.add(
-                'bg-green-900',
-                'text-green-300'
+                'bg-emerald-50',
+                'text-emerald-700',
+                'border-emerald-200'
             );
 
         } else if (tipo === 'warning') {
 
             elemento.classList.add(
-                'bg-yellow-900',
-                'text-yellow-300'
+                'bg-amber-50',
+                'text-amber-800',
+                'border-amber-200'
             );
 
         } else {
 
             elemento.classList.add(
-                'bg-red-900',
-                'text-red-300'
+                'bg-red-50',
+                'text-red-700',
+                'border-red-200'
             );
         }
     }
@@ -153,6 +175,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         pantalla.classList.remove('hidden');
+
+        if (pantalla === pantallaVotacion) {
+            iniciarTemporizador();
+        }
+
+        if (pantalla === pantallaExito) {
+            detenerTemporizador();
+        }
+    }
+
+    function iniciarTemporizador() {
+        detenerTemporizador();
+        segundosRestantes = tiempoLimite;
+        actualizarCronometro();
+        temporizador = setInterval(() => {
+            segundosRestantes--;
+            actualizarCronometro();
+            if (segundosRestantes <= 0) {
+                detenerTemporizador();
+                emitirPorTiempoAgotado();
+            }
+        }, 1000);
+    }
+
+    function detenerTemporizador() {
+        if (temporizador !== null) {
+            clearInterval(temporizador);
+            temporizador = null;
+        }
+    }
+
+    function actualizarCronometro() {
+        if (!tiempoRestante || !barraTiempo) return;
+        const segundos = Math.max(segundosRestantes, 0);
+        tiempoRestante.textContent = segundos + ' s';
+        barraTiempo.style.width = (segundos / tiempoLimite * 100) + '%';
+        barraTiempo.classList.toggle('bg-red-600', segundos <= 20);
+        barraTiempo.classList.toggle('bg-primary', segundos > 20);
+        tiempoRestante.classList.toggle('text-red-600', segundos <= 20);
+    }
+
+    async function emitirPorTiempoAgotado() {
+        const radioSeleccionado = document.querySelector('input[name="partido"]:checked');
+        partidoSeleccionado = radioSeleccionado
+            ? { id: Number(radioSeleccionado.value), nombre: radioSeleccionado.dataset.nombre }
+            : { id: 0, nombre: 'Voto en blanco' };
+
+        if (identificacionActual) {
+            await registrarVoto();
+        }
     }
 
     function mostrarPartidos(partidos) {
@@ -163,25 +235,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const opcion =
             document.createElement('label');
         opcion.className =
-            'block bg-gray-700 border border-gray-600 rounded-xl p-5 cursor-pointer hover:border-blue-500 transition';
+            'group flex cursor-pointer items-center justify-between gap-4 rounded-xl border-2 border-outline bg-white p-5 transition hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5';
         opcion.innerHTML = `
-            <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-surface-variant text-sm font-bold uppercase text-primary">
+                    ${(partido.siglas ?? '?').slice(0, 3)}
+                </div>
                 <div>
-                    <p class="font-semibold text-lg">
+                    <p class="text-lg font-semibold text-primary">
                         ${partido.nombre}
                     </p>
-                    <p class="text-gray-400 text-sm mt-1">
+                    <p class="mt-0.5 text-sm text-on-surface-variant">
                         ${partido.siglas ?? ''}
                     </p>
                 </div>
-                <input
-                    type="radio"
-                    name="partido"
-                    value="${partido.id}"
-                    data-nombre="${partido.nombre}"
-                    class="w-5 h-5"
-                >
             </div>
+            <input
+                type="radio"
+                name="partido"
+                value="${partido.id}"
+                data-nombre="${partido.nombre}"
+                class="h-6 w-6 accent-primary"
+            >
         `;
         listaCandidatos.appendChild(opcion);
     });
@@ -283,10 +358,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Mostramos al usuario
             // qué opción seleccionó.
             opcionConfirmacion.innerHTML = `
-                <p class="text-gray-400 text-sm">
+                <p class="text-sm text-on-surface-variant">
                     Usted seleccionó:
                 </p>
-                <p class="text-xl font-bold mt-2">
+                <p class="mt-2 text-xl font-bold">
                     ${partidoSeleccionado.nombre}
                 </p>
             `;
@@ -295,6 +370,27 @@ document.addEventListener('DOMContentLoaded', () => {
             );
         }
     );
+    btnBlanco.addEventListener(
+        'click',
+        () => {
+            partidoSeleccionado = {
+                id: 0,
+                nombre: 'Voto en blanco',
+            };
+
+            opcionConfirmacion.innerHTML = `
+                <p class="text-sm text-on-surface-variant">
+                    Usted seleccionó:
+                </p>
+                <p class="mt-2 text-xl font-bold">
+                    ${partidoSeleccionado.nombre}
+                </p>
+            `;
+
+            mostrarPantalla(pantallaConfirmacion);
+        }
+    );
+
     btnVolver.addEventListener(
         'click',
         () => {
@@ -466,6 +562,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     function reiniciarKiosco() {
+        detenerTemporizador();
         identificacionActual = '';
         partidoSeleccionado = null;
         studentForm.reset();

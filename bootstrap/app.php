@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'block.reports' => \App\Http\Middleware\BlockReportsDuringVoting::class,
+            'block.padron' => \App\Http\Middleware\BlockPadronDuringVoting::class,
         ]);
         $middleware->api(remove: 'Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful');
     })

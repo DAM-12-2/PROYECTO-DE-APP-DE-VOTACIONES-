@@ -26,7 +26,11 @@ class DatabaseSeeder extends Seeder
         foreach ($users as $user) {
             User::updateOrCreate(
                 ['name' => $user['name']],
-                ['password' => $user['password'], 'role' => $user['role']],
+                [
+                    'password' => $user['password'],
+                    'role' => $user['role'],
+                    'mesa_id' => $user['mesa_id'] ?? null,
+                ],
             );
         }
 
@@ -83,6 +87,8 @@ class DatabaseSeeder extends Seeder
         foreach ($mesas as $m) {
             Mesa::updateOrCreate(['nombre' => $m['nombre']], $m);
         }
+
+        User::where('name', 'jrv')->update(['mesa_id' => 1]);
 
         $secciones = [
             [1, '11-1'],

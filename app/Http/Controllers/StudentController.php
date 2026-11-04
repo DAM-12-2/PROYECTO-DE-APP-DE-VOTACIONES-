@@ -53,6 +53,25 @@ class StudentController extends Controller
         return back()->with('success', 'Estudiante eliminado exitosamente.');
     }
 
+    public function desbloquear(Request $request, $id, \App\Services\BitacoraService $bitacora)
+    {
+        $estudiante = Student::findOrFail($id);
+
+        if (!$estudiante->voto) {
+            return back()->with('error', 'Este estudiante no ha votado; no requiere desbloqueo.');
+        }
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($estudiante) {
+            $estudiante->voto = false;
+            $estudiante->save();
+            \App\Models\Vote::where('student_id', $estudiante->id)->delete();
+        });
+
+        $bitacora->registrar('desbloqueo de estudiante', $estudiante->identificacion);
+
+        return back()->with('success', "Se desbloqueó a {$estudiante->nombre} {$estudiante->apellidos} y se anuló su voto.");
+    }
+
     public function import(Request $request)
     {
         $request->validate([

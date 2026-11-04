@@ -1,0 +1,17 @@
+| Controlador | Lineas Local vs Remoto | Metodos Local | Metodos Remoto | Extra Local | Extra Remoto | Notas Local | Notas Remoto | Estado |
+|---|---|---|---|---|---|---|---|---|
+| StudentController | 139 vs 133 | index,store,edit,update,destroy,import,export,search | __construct,index,store,edit,update,destroy,import,search | export | __construct | StoreStudent | StoreStudent,Bitacora | DIVERGE |
+| SettingsController | 75 vs 175 | __construct,settings,updateSettings,toggleEleccion,resetVotos,resetCompleto,backupDownload,backupRestore | __construct,settings,updateSettings,toggleEleccion,resetVotos,resetCompleto,backupDownload,backupRestore | - | - | Bitacora | Bitacora | DIVERGE |
+| ResultController | 240 vs 167 | __construct,checkElectionClosed,apiResultados,apiResultadosPorMesa,apiResultadosPorSeccion,apiResumen,apiVerificarGanador,exportarResultadosCsv,resultados,verificarGanadorAutomatico,calculateGanador | __construct,resultados,verificarGanadorAutomatico,apiVerificarGanador,exportarResultadosCsv | apiResultadosPorSeccion,apiResultados,calculateGanador,checkElectionClosed,apiResultadosPorMesa,apiResumen | - | Bitacora | Bitacora | DIVERGE |
+| MesaController | 111 vs 115 | __construct,index,store,edit,update,destroy,storeSeccion,destroySeccion,moverSeccion | __construct,index,store,edit,update,destroy,storeSeccion,destroySeccion,moverSeccion | - | - | Bitacora | Bitacora | DIVERGE |
+| VoteController | 48 vs 88 | store | store | - | - | - | - | DIVERGE |
+| JrvController | 83 vs 86 | __construct,index,searchStudents,partidos,activarUrna,desactivarUrna | __construct,index,searchStudents,activarUrna,desactivarUrna | partidos | - | - | - | DIVERGE |
+| UrnaController | 121 vs 100 | __construct,index,create,store,edit,update,destroy,activar,desactivar | __construct,index,store,edit,update,destroy,activar,desactivar | create | - | StoreUrnaRequest,Bitacora | StoreUrnaRequest,Bitacora | DIVERGE |
+| PartyController | 112 vs 84 | __construct,index,store,edit,update,destroy | __construct,index,store,edit,update,destroy | - | - | Bitacora | Bitacora | DIVERGE |
+| AuthController | 42 vs 52 | showLogin,login,logout | showLogin,login,logout | - | - | - | - | DIVERGE |
+| CandidatoController | 135 vs 103 | __construct,index,storePuesto,editPuesto,updatePuesto,destroyPuesto,storeCandidato,destroyCandidato | __construct,index,storePuesto,editPuesto,updatePuesto,destroyPuesto,storeCandidato,destroyCandidato | - | - | Bitacora | Bitacora | DIVERGE |
+| IncidenteController | 72 vs 45 | __construct,index,store,destroy | __construct,index,store,destroy | - | - | Bitacora | Bitacora | DIVERGE |
+| ReportController | 148 vs 232 | __construct,index,padron,padronFirmas,padronVotos,conteoCero,actaApertura,actaCierre,actaResultados,incidentes,carteles,instrucciones,resultados,consultaPopularResumen,consultaPopularPorMesa,consultaPopularPorSeccion | __construct,index,padron,padronFirmas,padronVotos,conteoCero,actaApertura,actaCierre,actaResultados,incidentes,carteles,instrucciones,resultados,consultaPopularResumen,consultaPopularPorMesa,consultaPopularPorSeccion | - | - | - | - | DIVERGE |
+| TeeController | 39 vs 47 | index,store,destroy | __construct,index,store,destroy | - | __construct | - | Bitacora | DIVERGE |
+| UsuarioController | 80 vs 89 | index,store,edit,update,destroy,changePassword | __construct,index,store,edit,update,destroy,changePassword | - | __construct | - | HashMake2x,Bitacora | DIVERGE |
+| DashboardController | 41 vs 68 | dashboard,dashboardData | dashboard,dashboardData | - | - | - | - | DIVERGE |

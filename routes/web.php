@@ -19,7 +19,8 @@ use App\Http\Controllers\JrvController;
 use App\Http\Controllers\TribunalController;
 
 Route::get('/kiosko', function () {
-    return view('voting.urna');
+    $tiempoVotacion = (int) (\App\Models\Setting::where('nombre', 'tiempo_votacion')->value('detalle') ?? 90);
+    return view('voting.urna', compact('tiempoVotacion'));
 })->name('kiosko');
 
 Route::get('/', function () {
@@ -45,11 +46,12 @@ Route::middleware(['auth', 'role:admin,tee'])->prefix('admin')->group(function (
     Route::get('/dashboard/data', [DashboardController::class, 'dashboardData'])->name('admin.dashboard.data');
 
     Route::get('/estudiantes', [StudentController::class, 'index'])->name('admin.students');
-    Route::post('/estudiantes', [StudentController::class, 'store']);
+    Route::post('/estudiantes', [StudentController::class, 'store'])->middleware('block.padron');
     Route::get('/estudiantes/{id}/edit', [StudentController::class, 'edit'])->name('admin.students.edit');
-    Route::put('/estudiantes/{id}', [StudentController::class, 'update'])->name('admin.students.update');
-    Route::delete('/estudiantes/{id}', [StudentController::class, 'destroy']);
-    Route::post('/estudiantes/importar', [StudentController::class, 'import'])->name('admin.students.import');
+    Route::put('/estudiantes/{id}', [StudentController::class, 'update'])->middleware('block.padron')->name('admin.students.update');
+    Route::delete('/estudiantes/{id}', [StudentController::class, 'destroy'])->middleware('block.padron');
+    Route::post('/estudiantes/importar', [StudentController::class, 'import'])->middleware('block.padron')->name('admin.students.import');
+    Route::post('/estudiantes/{id}/desbloquear', [StudentController::class, 'desbloquear'])->name('admin.students.desbloquear');
 
     Route::get('/partidos', [PartyController::class, 'index'])->name('admin.parties');
     Route::post('/partidos', [PartyController::class, 'store']);
