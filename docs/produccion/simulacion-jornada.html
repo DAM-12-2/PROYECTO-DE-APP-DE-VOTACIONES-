@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Simulación de una jornada electoral — CTP AIRA</title>
+<style>
+  @page { size: A4; margin: 15mm 14mm; @bottom-center { content: "Simulación de jornada electoral · CTP AIRA · página " counter(page) " de " counter(pages); font-size: 8pt; color: #666; } }
+  body { font-family: "DejaVu Sans", sans-serif; font-size: 10pt; color: #1b1b1b; line-height: 1.45; }
+  h1 { font-size: 24pt; color: #001e40; margin: 0 0 3mm; }
+  h2 { font-size: 14pt; color: #001e40; border-bottom: 1.5pt solid #001e40; padding-bottom: 1.5mm; margin-top: 7mm; page-break-after: avoid; }
+  h3 { font-size: 11.5pt; color: #003366; margin: 0 0 1.5mm; }
+  p { margin: 1.5mm 0; }
+  table { width: 100%; border-collapse: collapse; margin: 3mm 0; font-size: 9pt; }
+  th { background: #001e40; color: #fff; text-align: left; padding: 2mm; }
+  td { border-bottom: 0.5pt solid #d5d8dd; padding: 2mm; vertical-align: top; }
+  tr:nth-child(even) td { background: #f7f9fb; }
+  .ok { color: #0a7a3d; font-weight: bold; }
+  .bad { color: #a11; font-weight: bold; }
+  .box { border: 1pt solid #c3c6d1; background: #f7f9fb; padding: 4mm; border-radius: 2mm; margin: 4mm 0; }
+  .big { border-left: 5pt solid #0a7a3d; background: #eef8f1; padding: 4mm; }
+  .warn { border-left: 5pt solid #9a6700; background: #fff8e6; padding: 4mm; }
+  .ficticio { border-left: 5pt solid #a11; background: #fdf0f0; padding: 4mm; font-size: 9pt; }
+  img { width: 100%; border: 0.5pt solid #c3c6d1; border-radius: 2mm; }
+  .small { font-size: 8.5pt; color: #555; }
+  .cover { text-align: center; padding-top: 24mm; }
+  .cover img { width: 90px; height: 90px; border-radius: 50%; border: 2pt solid #001e40; }
+  .firma { margin-top: 14mm; display: flex; justify-content: space-around; }
+  .firma div { width: 40%; border-top: 1pt solid #333; padding-top: 2mm; text-align: center; font-size: 9pt; }
+
+  .paso { display: flex; gap: 4mm; margin: 5mm 0; page-break-inside: avoid; }
+  .paso-num { flex: 0 0 12mm; height: 12mm; border-radius: 50%; background: #001e40; color: #fff; font-size: 16pt; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+  .paso-body { flex: 1; }
+  .meta { display: flex; gap: 2mm; margin-bottom: 1.5mm; flex-wrap: wrap; }
+  .chip { display: inline-block; font-size: 8pt; font-weight: bold; padding: 0.5mm 2mm; border-radius: 2mm; }
+  .chip.pc { background: #e7eef9; color: #001e40; }
+  .chip.hora { background: #eef8f1; color: #0a7a3d; }
+  .paso img { margin-top: 2mm; }
+  .paso .resultado { margin-top: 1.5mm; font-size: 8.5pt; color: #0a7a3d; font-weight: bold; }
+
+  .incidente { page-break-inside: avoid; border: 1pt solid #e0b4b4; border-radius: 2mm; padding: 3mm 4mm; margin: 4mm 0; background: #fffafa; }
+  .incidente h3 { color: #a11; }
+  .incidente .respuesta { font-size: 9pt; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+    <img src="../../public/img/logo.png" alt="CTP AIRA">
+    <h1>Simulación de una jornada electoral</h1>
+    <p style="font-size:13pt">Sistema Electoral Estudiantil</p>
+    <p style="font-size:12pt"><strong>CTP Ambientalista Isaías Retana Arias</strong></p>
+    <p class="small">Pedregoso · Buenos Aires · Puntarenas · Costa Rica</p>
+    <p style="margin-top:8mm; font-size:12pt">Cómo se vería el ciclo completo un día de votación</p>
+    <p class="small">Documento de demostración · 4 de noviembre de 2026</p>
+    <div class="box" style="margin-top:14mm; text-align:left">
+        <strong>Autores</strong><br>
+        Jefferson G. — Desarrollo, base de datos y seguridad<br>
+        Sahir M. — Diseño de interfaz y pruebas
+    </div>
+</div>
+
+<h2>Aviso sobre este documento</h2>
+<div class="ficticio">
+<p><strong>Este documento es una simulación con fines demostrativos.</strong> Los horarios, cantidades, participantes y
+resultados electorales son <strong>ficticios</strong> y sirven únicamente para mostrar cómo se vería una jornada de
+votación.</p>
+<p>Las <strong>capturas de pantalla sí son reales</strong> y provienen del sistema funcionando en el servidor local del
+colegio, durante las pruebas del ciclo de tres computadoras.</p>
+</div>
+
+<h2>1. El escenario de la simulación</h2>
+<table>
+<tr><th>Elemento</th><th>Detalle simulado</th></tr>
+<tr><td>Centro educativo</td><td>CTP Ambientalista Isaías Retana Arias</td></tr>
+<tr><td>Jornada</td><td>7:00 a. m. a 2:00 p. m.</td></tr>
+<tr><td>Computadoras</td><td>PC1 registro y servidor · PC2 Junta Receptora · PC3 urna</td></tr>
+<tr><td>Mesas</td><td>3 mesas (M1, M2, M3)</td></tr>
+<tr><td>Urnas</td><td>4 urnas: U001, U002, U003 y U004</td></tr>
+<tr><td>Padrón</td><td>600 estudiantes (cifra estimada)</td></tr>
+<tr><td>Red</td><td>Local, por IP del router, sin internet</td></tr>
+<tr><td>Cierre</td><td>Conteo sellado con SHA-256 y acta de la Junta</td></tr>
+</table>
+
+<h2>2. Puesta en marcha (6:30 a. m.)</h2>
+<p>Antes de abrir la votación, el sistema debe estar encendido y verificado. Esta es la lista que se revisa:</p>
+<table>
+<tr><th>Verificación</th><th>Resultado esperado</th></tr>
+<tr><td>Servidor encendido y con IP fija</td><td class="ok">OK</td></tr>
+<tr><td>Base de datos PostgreSQL activa</td><td class="ok">OK</td></tr>
+<tr><td>Servicio de tiempo real (Reverb) activo</td><td class="ok">OK</td></tr>
+<tr><td>Las tres computadoras abren el sistema por HTTPS</td><td class="ok">OK</td></tr>
+<tr><td>Padrón cargado y elección creada</td><td class="ok">OK</td></tr>
+<tr><td>Respaldos del día programados</td><td class="ok">OK</td></tr>
+</table>
+
+<h2>3. El ciclo, paso a paso</h2>
+<p class="small">Cada paso indica la hora simulada, la terminal que interviene, lo que ocurre y la captura real del sistema en ese momento.</p>
+
+<div class="paso">
+    <div class="paso-num">1</div>
+    <div class="paso-body">
+        <div class="meta"><span class="chip hora">7:00 a. m.</span><span class="chip pc">ADMINISTRACIÓN</span></div>
+        <h3>Se abre la elección</h3>
+        <p>El administrador abre la elección desde el panel. A partir de este momento el sistema acepta votos y las
+        urnas pueden activarse. Antes de abrir, el padrón queda bloqueado para evitar cambios durante la jornada.</p>
+        <img src="capturas/02-admin-dashboard.png" alt="Panel de administración">
+        <p class="resultado">Resultado: elección abierta · padrón bloqueado</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">2</div>
+    <div class="paso-body">
+        <div class="meta"><span class="chip hora">7:05 a. m.</span><span class="chip pc">PC3 · URNA</span></div>
+        <h3>Se activa la urna</h3>
+        <p>La Junta digita el código de la urna y su contraseña. La urna queda “en espera”, lista para recibir al
+        siguiente estudiante. Si el código no corresponde a la mesa, el sistema no permite activarla.</p>
+        <img src="evidencias/3pc-01-urna-espera.png" alt="Urna en espera">
+        <p class="resultado">Resultado: urna U001 activa y en espera</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">3</div>
+    <div class="paso-body">
+        <div class="meta"><span class="chip hora">7:15 a. m.</span><span class="chip pc">PC1 · REGISTRO</span></div>
+        <h3>Llega el primer votante</h3>
+        <p>El estudiante presenta su identificación. El sistema busca en el padrón, confirma que pertenece a la mesa,
+        que no ha votado y crea una solicitud pendiente para la Junta.</p>
+        <img src="evidencias/3pc-02-registro-solicitud.png" alt="Solicitud enviada">
+        <p class="resultado">Resultado: solicitud enviada · 0,63 s</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">4</div>
+    <div class="paso-body">
+        <div class="meta"><span class="chip hora">7:16 a. m.</span><span class="chip pc">PC2 · JUNTA RECEPTORA</span></div>
+        <h3>La Junta recibe la solicitud</h3>
+        <p>Sin recargar la página, la solicitud aparece en la pantalla de la Junta con los datos del votante y las urnas
+        disponibles de su mesa. Solo la mesa correspondiente puede verla.</p>
+        <img src="evidencias/3pc-03-jrv-cola.png" alt="Cola de solicitudes">
+        <p class="resultado">Resultado: solicitud visible para la mesa correcta</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">5</div>
+    <div class="paso-body">
+        <div class="meta"><span class="chip hora">7:16 a. m.</span><span class="chip pc">PC2 · JUNTA RECEPTORA</span></div>
+        <h3>La Junta aprueba y asigna la urna</h3>
+        <p>La Junta revisa la identidad y aprueba. El sistema indica al estudiante a qué urna debe pasar y marca esa urna
+        como ocupada, para que nadie más la use al mismo tiempo.</p>
+        <img src="evidencias/3pc-04-jrv-aprobada.png" alt="Solicitud aprobada">
+        <p class="resultado">Resultado: solicitud aprobada · urna U001 asignada</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">6</div>
+    <div class="paso-body">
+        <div class="meta"><span class="chip hora">7:17 a. m.</span><span class="chip pc">PC1 · REGISTRO</span></div>
+        <h3>El registro confirma la aprobación</h3>
+        <p>La PC1 cambia sola al estado “Solicitud aprobada” y muestra el código de la urna. El estudiante ya sabe
+        exactamente a dónde dirigirse.</p>
+        <img src="evidencias/3pc-05-registro-aprobada.png" alt="Aprobación en PC1">
+        <p class="resultado">Resultado: aprobación recibida · 0,67–0,71 s</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">7</div>
+    <div class="paso-body">
+        <div class="meta"><span class="chip hora">7:18 a. m.</span><span class="chip pc">PC3 · URNA</span></div>
+        <h3>El estudiante vota</h3>
+        <p>La urna muestra la papeleta con los partidos y un cronómetro. El estudiante elige, confirma y emite su voto.
+        El sistema guarda el voto y lo asocia a un solo estudiante.</p>
+        <img src="evidencias/3pc-06-urna-papeleta.png" alt="Papeleta">
+        <p class="resultado">Resultado: voto registrado · 0,34–0,56 s</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">8</div>
+    <div class="paso-body">
+        <div class="meta"><span class="chip hora">7:18 a. m.</span><span class="chip pc">PC3 · URNA</span></div>
+        <h3>La urna confirma el voto</h3>
+        <p>La urna muestra el comprobante de que el voto fue recibido y se prepara para el siguiente estudiante.
+        La urna se libera automáticamente.</p>
+        <img src="evidencias/3pc-08-urna-exito.png" alt="Voto exitoso">
+        <p class="resultado">Resultado: voto confirmado y urna liberada</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">9</div>
+    <div class="paso-body">
+        <div class="meta"><span class="chip hora">7:19 a. m.</span><span class="chip pc">PC1 · REGISTRO</span></div>
+        <h3>El registro marca “votó”</h3>
+        <p>La PC1 recibe el aviso y marca al estudiante como “votó”. Si esa persona intenta registrarse otra vez, el
+        sistema la rechaza.</p>
+        <img src="evidencias/3pc-09-registro-votada.png" alt="Voto confirmado en PC1">
+        <p class="resultado">Resultado: voto confirmado en el padrón · 0,62–1,79 s</p>
+    </div>
+</div>
+
+<h2>4. La jornada continúa (7:30 a. m. a 2:00 p. m.)</h2>
+<p>El ciclo se repite con cada estudiante. La Junta trabaja con la cola de solicitudes y las urnas rotan según su
+disponibilidad. Mientras haya una urna libre, el flujo no se detiene.</p>
+<table>
+<tr><th>Hora simulada</th><th>Estudiantes registrados</th><th>Votos emitidos</th><th>Observación</th></tr>
+<tr><td>8:00 a. m.</td><td>48</td><td>46</td><td>Arranque normal</td></tr>
+<tr><td>9:30 a. m.</td><td>140</td><td>136</td><td>Mayor afluencia</td></tr>
+<tr><td>11:00 a. m.</td><td>245</td><td>239</td><td>Sin esperas mayores a 2 minutos</td></tr>
+<tr><td>12:00 m.</td><td>290</td><td>283</td><td>Pausa de almuerzo escalonada</td></tr>
+<tr><td>1:30 p. m.</td><td>440</td><td>430</td><td>Última hora fuerte</td></tr>
+<tr><td>2:00 p. m.</td><td>468</td><td>468</td><td>Cierre de la votación</td></tr>
+</table>
+
+<h2>5. Incidentes simulados y cómo responde el sistema</h2>
+<p class="small">Estos casos no son fallas del sistema: son situaciones que ocurren en una votación real y que el sistema debe manejar.</p>
+
+<div class="incidente">
+    <h3>Incidente 1 — Un estudiante intenta votar dos veces</h3>
+    <p><strong>Qué pasó:</strong> un estudiante que ya había votado volvió a la fila de registro e intentó pasar de nuevo.</p>
+    <p class="respuesta"><strong>Qué hizo el sistema:</strong> el registro detectó que ya tenía un voto y respondió con un
+    rechazo (código 409). La solicitud no se creó y la urna nunca se activó para esa persona.</p>
+    <p><strong>Resultado:</strong> <span class="ok">doble voto bloqueado en la base de datos</span>, no solo en la pantalla.</p>
+</div>
+
+<div class="incidente">
+    <h3>Incidente 2 — Todas las urnas de una mesa están ocupadas</h3>
+    <p><strong>Qué pasó:</strong> llegaron tres estudiantes al mismo tiempo y las urnas de la mesa estaban en uso.</p>
+    <p class="respuesta"><strong>Qué hizo el sistema:</strong> la Junta aprobó las solicitudes en orden y el sistema puso
+    cada una en espera de urna. Ninguna urna se asignó a dos estudiantes a la vez.</p>
+    <p><strong>Resultado:</strong> <span class="ok">cola ordenada, sin urnas duplicadas</span>.</p>
+</div>
+
+<div class="incidente">
+    <h3>Incidente 3 — Se interrumpe la red por unos segundos</h3>
+    <p><strong>Qué pasó:</strong> un cable suelto cortó la comunicación entre la PC2 y el servidor durante unos segundos.</p>
+    <p class="respuesta"><strong>Qué hizo el sistema:</strong> la actualización en vivo se detuvo, pero la pantalla siguió
+    consultando cada pocos segundos. Al volver la red, la Junta vio la solicitud actualizada sin haber perdido nada.</p>
+    <p><strong>Resultado:</strong> <span class="ok">ningún voto perdido; el respaldo por consulta mantuvo el ciclo</span>.</p>
+</div>
+
+<h2>6. Cierre de la votación (2:00 p. m.)</h2>
+<div class="paso">
+    <div class="paso-num">10</div>
+    <div class="paso-body">
+        <div class="meta"><span class="chip hora">2:00 p. m.</span><span class="chip pc">ADMINISTRACIÓN</span></div>
+        <h3>Se cierra la elección y se sella el conteo</h3>
+        <p>Al cerrar, el sistema deja de aceptar votos, cuenta los resultados por mesa y genera una huella digital
+        (SHA-256) de cada conteo. Si alguien altera un voto después del cierre, la verificación lo detecta.</p>
+        <img src="capturas/05-admin-integridad.png" alt="Integridad del conteo">
+        <p class="resultado">Resultado: conteo cerrado y sellado · verificación disponible</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">11</div>
+    <div class="paso-body">
+        <div class="meta"><span class="chip hora">2:10 p. m.</span><span class="chip pc">ADMINISTRACIÓN</span></div>
+        <h3>Se generan las actas y los reportes</h3>
+        <p>El sistema produce el acta de cierre por mesa, el reporte de participación y los carteles de resultados
+        para publicar en el colegio.</p>
+        <img src="capturas/06-admin-reportes.png" alt="Reportes y actas">
+        <p class="resultado">Resultado: actas y reportes listos para imprimir</p>
+    </div>
+</div>
+
+<h2>7. Resultados de la simulación</h2>
+<div class="ficticio">
+<strong>Datos ficticios.</strong> Estas cifras no corresponden a ninguna elección real; existen solo para mostrar
+cómo presenta el sistema los resultados.
+</div>
+
+<table>
+<tr><th>Partido</th><th>Votos</th><th>Porcentaje</th></tr>
+<tr><td>Partido A</td><td>210</td><td>44,9 %</td></tr>
+<tr><td>Partido B</td><td>165</td><td>35,3 %</td></tr>
+<tr><td>Partido C</td><td>78</td><td>16,7 %</td></tr>
+<tr><td>Votos en blanco</td><td>10</td><td>2,1 %</td></tr>
+<tr><td>Votos nulos</td><td>5</td><td>1,1 %</td></tr>
+<tr><th>Total emitido</th><th>468</th><th>78 % del padrón</th></tr>
+</table>
+
+<table>
+<tr><th>Mesa</th><th>Padrón</th><th>Votaron</th><th>Participación</th></tr>
+<tr><td>Mesa 1</td><td>200</td><td>160</td><td>80 %</td></tr>
+<tr><td>Mesa 2</td><td>200</td><td>158</td><td>79 %</td></tr>
+<tr><td>Mesa 3</td><td>200</td><td>150</td><td>75 %</td></tr>
+</table>
+
+<h2>8. Qué demuestra esta simulación</h2>
+<div class="big">
+<ul>
+<li>El ciclo completo funciona de principio a fin en tres computadoras conectadas solo por la red local.</li>
+<li>El voto es único: la base de datos impide que un estudiante vote dos veces.</li>
+<li>La Junta ve únicamente los datos de su mesa; las demás mesas le son invisibles.</li>
+<li>El conteo se puede auditar con el sello digital y no depende de la memoria de nadie.</li>
+<li>El sistema resiste incidentes normales de una jornada: doble voto, urnas ocupadas y cortes breves de red.</li>
+</ul>
+</div>
+
+<div class="warn">
+<p><strong>Lo que esta simulación no demuestra:</strong> no sustituye una prueba con estudiantes reales. Para eso se
+recomienda una prueba piloto con 30 a 50 estudiantes, un acta firmada por la Junta y la confirmación de la matrícula
+del centro.</p>
+</div>
+
+<h2>9. Conclusión</h2>
+<p>El Sistema Electoral Estudiantil del CTP AIRA está <strong>funcionalmente completo y probado técnicamente</strong>.
+Esta simulación muestra cómo se vería una jornada real: apertura, registro, aprobación, voto, cierre y auditoría, con
+tiempos de respuesta de menos de dos segundos y sin dependencia de internet.</p>
+<p>La recomendación es realizar la prueba piloto antes del evento general, instalar el certificado de seguridad en las
+tres computadoras y confirmar la cantidad de urnas según la matrícula real.</p>
+
+<div class="firma">
+<div>Jefferson G.<br><span class="small">Desarrollo y seguridad</span></div>
+<div>Sahir M.<br><span class="small">Diseño y pruebas</span></div>
+</div>
+
+<p class="small" style="margin-top:8mm">
+Anexos: <code>dossier-pruebas.pdf</code>, <code>informe-produccion.pdf</code>, <code>informe-simple.pdf</code>,
+capturas y evidencias en <code>docs/produccion/</code>.
+</p>
+
+</body>
+</html>
