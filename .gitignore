@@ -1,6 +1,5 @@
 *.log
 .DS_Store
-/composer.lock
 /package-lock.json
 /bootstrap/cache/
 /storage/*
@@ -34,3 +33,22 @@ Thumbs.db
 *.sqlite3
 opencode.jsonc
 *.pdf
+
+# Herramientas y binarios locales
+/composer.phar
+/composer-setup.php
+*.bak
+*.out
+
+# Artefactos de análisis/volcados (no versionar)
+/*.txt
+/.raw/
+/_show/
+/audit_part_*
+/CA_*
+/FA_*
+/IC_*
+/RD_*
+/*_copy.*
+/.dump_*
+
