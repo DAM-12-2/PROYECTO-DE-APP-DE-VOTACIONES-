@@ -7,9 +7,12 @@ CTP AIRA de Pedregoso.
 
 | Archivo | Contenido |
 |---|---|
-| `informe-produccion.pdf` | Informe completo (10 páginas): veredicto, configuración, casos límite, carga, recursos, capturas y checklist |
-| `informe.html` | Fuente del informe (editable) |
-| `evidencias/01..08-*.png` | Ciclo completo de un votante real |
+| `informe-produccion.pdf` | Informe técnico completo (12 páginas): veredicto, configuración, casos límite, carga, recursos, capturas y checklist |
+| `informe-simple.pdf` | Guía sencilla (7 páginas) para el Tribunal: qué sirve, qué falta y capturas de cada pantalla |
+| `informe.html` / `informe-simple.html` | Fuentes editables de ambos informes |
+| `capturas/01..10-*.png` | Pantallas del sistema (login, admin, estudiantes, resultados, integridad, reportes, tribunal, registro, JRV y urna) |
+| `evidencias/01..08-*.png` | Ciclo completo de un votante |
+| `evidencias/3pc-01..09-*.png` | Ciclo completo de tres terminales |
 | `evidencias/e2e-resultado.json` | Resultado de la simulación E2E con tiempos |
 | `evidencias/carga-votos.txt` | Resumen de la prueba de carga |
 
@@ -50,6 +53,28 @@ cd docs/produccion && weasyprint informe.html informe-produccion.pdf
 La comunicación en vivo usa **Laravel Reverb** (WebSocket local) con canales privados
 `mesa.{id}` y `urna.{id}`; si el WebSocket no está disponible, el polling de 2–3 s
 mantiene el flujo operativo.
+
+## HTTPS local
+
+```bash
+# Certificado autofirmado para la IP del servidor (una vez)
+openssl req -x509 -newkey rsa:2048 -nodes \
+  -keyout storage/certs/server.key -out storage/certs/server.crt \
+  -days 825 -subj "/CN=192.168.1.222" \
+  -addext "subjectAltName=IP:192.168.1.222,IP:127.0.0.1,DNS:localhost"
+
+# Proxy TLS hacia el servidor de la aplicación
+socat OPENSSL-LISTEN:8443,cert=storage/certs/server.crt,key=storage/certs/server.key,verify=0,fork TCP:127.0.0.1:8000
+```
+
+Con `APP_URL=https://IP:8443` la aplicación fuerza URLs HTTPS y envía HSTS.
+El certificado debe instalarse como confiable en las tres computadoras.
+
+## RLS y PostgreSQL
+
+El control por mesa ya funciona en la aplicación. Para activar Row Level Security
+en el motor, seguir `docs/despliegue-postgres-rls.md` y aplicar
+`database/rls-postgres.sql`.
 
 ## Veredicto resumido
 

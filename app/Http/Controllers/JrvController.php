@@ -183,6 +183,8 @@ class JrvController extends Controller
             return response()->json(['success' => false, 'message' => 'La urna no pertenece a su mesa.'], 404);
         }
 
+        $this->authorize('operate', $urna);
+
         $urna->update(['id_estudiante' => null, 'estado' => 1]);
 
         return response()->json(['success' => true, 'message' => 'Urna liberada.']);

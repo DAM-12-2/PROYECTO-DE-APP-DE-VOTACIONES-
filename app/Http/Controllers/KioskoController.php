@@ -35,7 +35,7 @@ class KioskoController extends Controller
 
         $usuario = User::where('name', $data['usuario'])->where('role', 'jrv')->first();
 
-        if (!$usuario || !Hash::check($data['password'], $usuario->password)) {
+        if (!$usuario || !$usuario->verificarPassword($data['password'])) {
             return back()->withErrors(['usuario' => 'Usuario o contraseña de JRV inválidos.'])->withInput();
         }
 

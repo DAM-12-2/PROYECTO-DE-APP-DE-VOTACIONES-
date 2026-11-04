@@ -84,4 +84,20 @@ class SeguridadLocalTest extends TestCase
         $this->postJson('/registro/solicitud', ['identificacion' => '1000005'])
             ->assertStatus(403);
     }
+
+    public function test_jrv_no_puede_ver_solicitud_de_otra_mesa(): void
+    {
+        $jrv = User::where('name', 'jrv')->first();
+        $this->actingAs($jrv);
+
+        $estudiante = \App\Models\Student::where('identificacion', '1000005')->first();
+        $solicitud = \App\Models\VoteRequest::create([
+            'student_id' => $estudiante->id,
+            'mesa_id' => 2,
+            'estado' => 'pendiente',
+            'created_by' => $jrv->id,
+        ]);
+
+        $this->getJson("/registro/solicitud/{$solicitud->id}/estado")->assertStatus(403);
+    }
 }

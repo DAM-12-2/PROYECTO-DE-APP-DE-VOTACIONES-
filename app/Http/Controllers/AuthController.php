@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -13,20 +14,22 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'username' => 'required',
             'password' => 'required',
         ]);
 
-        if (Auth::attempt(['name' => $request->username, 'password' => $request->password])) {
-            $request->session()->regenerate();
-            $user = Auth::user();
+        $usuario = User::where('name', $request->username)->first();
 
-            if ($user->must_change_password) {
+        if ($usuario && $usuario->verificarPassword($request->password)) {
+            Auth::login($usuario);
+            $request->session()->regenerate();
+
+            if ($usuario->must_change_password) {
                 return redirect()->route('password.change');
             }
 
-            return redirect($this->homeFor($user));
+            return redirect($this->homeFor($usuario));
         }
 
         return back()->withErrors(['error' => 'Credenciales incorrectas']);
@@ -46,7 +49,7 @@ class AuthController extends Controller
 
         $user = $request->user();
 
-        if (!Hash::check($data['current_password'], $user->password)) {
+        if (!$user->verificarPassword($data['current_password'])) {
             return back()->withErrors(['current_password' => 'La contraseña actual no es correcta.']);
         }
 

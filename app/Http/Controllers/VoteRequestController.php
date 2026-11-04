@@ -99,6 +99,8 @@ class VoteRequestController extends Controller
             return response()->json(['success' => false, 'message' => 'Solicitud no encontrada.'], 404);
         }
 
+        $this->authorize('view', $solicitud);
+
         return response()->json([
             'success' => true,
             'data' => $this->payload($solicitud),

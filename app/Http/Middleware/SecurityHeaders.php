@@ -30,7 +30,7 @@ class SecurityHeaders
             "form-action 'self'",
         ]));
 
-        if ($request->secure()) {
+        if ($request->secure() || str_starts_with((string) config('app.url'), 'https://')) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
