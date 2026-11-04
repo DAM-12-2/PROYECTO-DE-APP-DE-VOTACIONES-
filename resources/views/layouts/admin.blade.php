@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es"><head>
 <meta charset="utf-8"/>
+<link rel="icon" type="image/png" href="/img/logo.png">
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <title>@yield('title', 'Admin Dashboard — Sistema Electoral')</title>
