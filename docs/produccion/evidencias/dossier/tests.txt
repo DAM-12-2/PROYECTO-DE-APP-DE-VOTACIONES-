@@ -1,0 +1,171 @@
+
+   PASS  Tests\Unit\ControllerDependencyInjectionTest
+  ✓ report controller assigns injected services in constructor           0.64s  
+
+   PASS  Tests\Unit\CsvTest
+  ✓ neutraliza formulas
+  ✓ quita saltos de linea
+  ✓ no altera texto normal
+
+   PASS  Tests\Unit\ExampleTest
+  ✓ that true is true
+
+   PASS  Tests\Unit\NumeroALetrasTest
+  ✓ zero
+  ✓ small number
+  ✓ hundred
+  ✓ thousand
+  ✓ complex number
+  ✓ with decimals
+
+   PASS  Tests\Feature\AdminPagesTest
+  ✓ dashboard                                                            2.33s  
+  ✓ students index                                                       2.09s  
+  ✓ parties index                                                        2.08s  
+  ✓ urnas index                                                          2.09s  
+  ✓ mesas index                                                          2.00s  
+  ✓ candidatos index                                                     1.88s  
+  ✓ incidentes index                                                     1.81s  
+  ✓ tee index                                                            1.83s  
+  ✓ reportes index                                                       1.77s  
+  ✓ configuracion index                                                  1.70s  
+  ✓ edit estudiante page                                                 1.49s  
+  ✓ edit partido page                                                    1.73s  
+  ✓ edit urna page                                                       1.51s  
+  ✓ edit mesa page                                                       1.68s  
+  ✓ edit usuario page                                                    1.58s  
+
+   PASS  Tests\Feature\ApiProtegidaTest
+  ✓ padron api requiere autenticacion                                    1.59s  
+  ✓ votar api requiere autenticacion                                     1.54s  
+  ✓ ganador requiere autenticacion                                       1.54s  
+
+   PASS  Tests\Feature\AuthTest
+  ✓ login page renders                                                   1.44s  
+  ✓ login with valid credentials                                         1.96s  
+  ✓ login with invalid credentials                                       2.47s  
+  ✓ logout redirects to login                                            1.56s  
+  ✓ unauthenticated access redirected                                    1.56s  
+
+   PASS  Tests\Feature\BloqueoPadronTest
+  ✓ edicion bloqueada con eleccion abierta                               1.68s  
+  ✓ importacion bloqueada con eleccion abierta                           1.71s  
+  ✓ edicion permitida con eleccion cerrada                               1.58s  
+
+   PASS  Tests\Feature\CasosLimiteTest
+  ✓ no permite votar con eleccion cerrada                                1.62s  
+  ✓ no permite partido inexistente                                       1.59s  
+  ✓ no permite activar urna con eleccion cerrada                         2.02s  
+  ✓ usuario con cambio pendiente no activa urna                          2.26s  
+  ✓ login con cambio pendiente redirige a cambiar password               2.37s  
+  ✓ cambio de password funciona                                          2.86s  
+  ✓ middleware bloquea api si debe cambiar password                      1.74s  
+
+   PASS  Tests\Feature\CrudPersistenciaTest
+  ✓ store estudiante persists                                            1.74s  
+  ✓ store mesa persists                                                  1.78s  
+  ✓ store partido persists                                               1.62s  
+  ✓ store tee member persists                                            1.74s  
+  ✓ store incidente persists                                             1.85s  
+  ✓ store seccion persists                                               1.86s  
+  ✓ update mesa persists                                                 2.01s  
+  ✓ update partido persists                                              1.91s  
+  ✓ delete estudiante removes                                            2.00s  
+  ✓ delete mesa removes                                                  1.92s  
+  ✓ delete tee member removes                                            1.85s  
+
+   PASS  Tests\Feature\CsvSeguridadTest
+  ✓ importacion sanea html y digitos                                     1.96s  
+  ✓ exportacion neutraliza formulas                                      1.87s  
+
+   PASS  Tests\Feature\DesbloqueoTest
+  ✓ desbloquear reinicia voto y elimina registro                         1.95s  
+  ✓ desbloquear sin voto previo                                          1.74s  
+
+   PASS  Tests\Feature\ExampleTest
+  ✓ the application returns a successful response                        0.04s  
+
+   PASS  Tests\Feature\FormRequestsTest
+  ✓ store mesa request rejects empty                                     1.80s  
+  ✓ store mesa request accepts numero                                    1.79s  
+  ✓ store incidente request rejects empty                                1.81s  
+  ✓ store tee request rejects empty                                      1.85s  
+  ✓ update student request accepts valid                                 1.80s  
+
+   PASS  Tests\Feature\IntegridadConteoTest
+  ✓ sellado y verificacion sin incidencias                               1.80s  
+  ✓ detecta voto alterado tras el sello                                  1.83s  
+  ✓ cerrar eleccion sella el conteo                                      1.81s  
+  ✓ comando detecta alteracion                                           1.92s  
+  ✓ vista de integridad renderiza                                        1.89s  
+  ✓ vista de resultados renderiza                                        1.87s  
+
+   PASS  Tests\Feature\KioscoTest
+  ✓ kiosco renderiza cronometro con tiempo por defecto                   0.05s  
+  ✓ kiosco usa el tiempo configurado                                     0.04s  
+
+   PASS  Tests\Feature\KioskoFlujoTest
+  ✓ activacion exitosa crea sesion de urna                               2.31s  
+  ✓ activacion rechaza contraseña incorrecta                             3.07s  
+  ✓ activacion rechaza urna de otra mesa                                 2.44s  
+  ✓ asignacion de estudiante y estado del kiosko                         2.13s  
+  ✓ voto libera la urna                                                  2.22s  
+  ✓ no asigna estudiante que ya voto                                     2.45s  
+
+   PASS  Tests\Feature\ReglaGanadorTest
+  ✓ mayoria simple por defecto                                           1.92s  
+  ✓ umbral porcentaje minimo no alcanzado                                1.99s  
+  ✓ umbral porcentaje minimo alcanzado                                   1.94s  
+  ✓ base empadronados y sumar n                                          1.97s  
+
+   PASS  Tests\Feature\ReportesTest
+  ✓ padron report                                                        2.00s  
+  ✓ acta apertura report                                                 2.09s  
+  ✓ incidentes report                                                    1.98s  
+  ✓ instrucciones report                                                 2.11s  
+  ✓ acta cierre report                                                   2.14s  
+  ✓ acta resultados report                                               1.97s  
+
+   PASS  Tests\Feature\SeguridadLocalTest
+  ✓ headers de seguridad presentes                                       1.78s  
+  ✓ vistas sin recursos externos                                         2.00s  
+  ✓ assets locales existen                                               2.10s  
+  ✓ hash usa argon2id                                                    2.92s  
+  ✓ jrv no ve estudiantes de otra mesa                                   2.15s  
+  ✓ registro rechaza estudiante de otra mesa                             2.02s  
+  ✓ jrv no puede ver solicitud de otra mesa                              2.23s  
+
+   PASS  Tests\Feature\StudentsPageTest
+  ✓ lista estudiantes del padron                                         2.32s  
+  ✓ busqueda filtra por identificacion                                   2.29s  
+  ✓ alta de estudiante                                                   2.40s  
+
+   PASS  Tests\Feature\TribunalNavegacionTest
+  ✓ tribunal renderiza navegacion real                                   2.09s  
+  ✓ tee puede abrir padron                                               1.71s  
+
+   PASS  Tests\Feature\VotacionJrvTest
+  ✓ jrv index                                                            1.16s  
+  ✓ jrv search student found                                             1.45s  
+  ✓ jrv search student not found                                         1.45s  
+  ✓ jrv list partidos                                                    2.27s  
+
+   PASS  Tests\Feature\VoteRequestFlowTest
+  ✓ registro crea solicitud pendiente                                    1.89s  
+  ✓ registro es idempotente                                              0.82s  
+  ✓ no permite estudiante que ya voto                                    0.69s  
+  ✓ jrv ve la cola de su mesa                                            0.71s  
+  ✓ aprobar asigna urna                                                  0.75s  
+  ✓ no aprueba si la urna esta ocupada                                   0.84s  
+  ✓ votar cierra la solicitud y libera la urna                           0.96s  
+  ✓ rechazar elimina la solicitud                                        0.87s  
+  ✓ pantalla de registro renderiza                                       1.03s  
+
+   PASS  Tests\Feature\VotoIntegridadTest
+  ✓ voto registra estudiante y marca padrón                              0.86s  
+  ✓ doble voto es rechazado                                              0.76s  
+  ✓ voto con estudiante inexistente                                      0.85s  
+
+  Tests:    117 passed (232 assertions)
+  Duration: 187.91s
+

@@ -1,0 +1,4 @@
+PHP 8.4.27 (cli) (built: Oct 21 2026 07:53:46) (NTS)
+Laravel Framework 12.71.0
+psql (PostgreSQL) 17.11 (Debian 17.11-0+deb13u1)
+v22.23.2
