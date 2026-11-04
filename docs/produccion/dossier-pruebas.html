@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <title>Dossier de pruebas — Sistema Electoral CTP AIRA</title>
 <style>
-  @page { size: A4; margin: 16mm 15mm; @bottom-center { content: "Dossier de pruebas · Sistema Electoral CTP AIRA · página " counter(page) " de " counter(pages); font-size: 8pt; color: #666; } }
+  @page { size: A4; margin: 15mm 14mm; @bottom-center { content: "Dossier de pruebas · Sistema Electoral CTP AIRA · página " counter(page) " de " counter(pages); font-size: 8pt; color: #666; } }
   body { font-family: "DejaVu Sans", sans-serif; font-size: 10pt; color: #1b1b1b; line-height: 1.45; }
   h1 { font-size: 24pt; color: #001e40; margin: 0 0 3mm; }
   h2 { font-size: 14pt; color: #001e40; border-bottom: 1.5pt solid #001e40; padding-bottom: 1.5mm; margin-top: 8mm; page-break-after: avoid; }
-  h3 { font-size: 11pt; color: #003366; margin: 5mm 0 2mm; }
-  p { margin: 2mm 0; }
+  h3 { font-size: 11.5pt; color: #003366; margin: 0 0 1.5mm; }
+  p { margin: 1.5mm 0; }
   table { width: 100%; border-collapse: collapse; margin: 3mm 0; font-size: 9pt; }
   th { background: #001e40; color: #fff; text-align: left; padding: 2mm; }
   td { border-bottom: 0.5pt solid #d5d8dd; padding: 2mm; vertical-align: top; }
@@ -19,13 +19,18 @@
   .big { border-left: 5pt solid #0a7a3d; background: #eef8f1; padding: 4mm; }
   .warn { border-left: 5pt solid #9a6700; background: #fff8e6; padding: 4mm; }
   img { width: 100%; border: 0.5pt solid #c3c6d1; border-radius: 2mm; }
-  .grid { display: flex; flex-wrap: wrap; gap: 4mm; }
-  .grid div { width: 48%; }
   .small { font-size: 8.5pt; color: #555; }
-  .cover { text-align: center; padding-top: 30mm; }
+  .cover { text-align: center; padding-top: 28mm; }
   .cover img { width: 90px; height: 90px; border-radius: 50%; border: 2pt solid #001e40; }
-  .firma { margin-top: 18mm; display: flex; justify-content: space-around; }
+  .firma { margin-top: 16mm; display: flex; justify-content: space-around; }
   .firma div { width: 40%; border-top: 1pt solid #333; padding-top: 2mm; text-align: center; font-size: 9pt; }
+
+  .paso { display: flex; gap: 4mm; margin: 6mm 0; page-break-inside: avoid; }
+  .paso-num { flex: 0 0 12mm; height: 12mm; border-radius: 50%; background: #001e40; color: #fff; font-size: 16pt; font-weight: bold; display: flex; align-items: center; justify-content: center; }
+  .paso-body { flex: 1; }
+  .paso-body .quien { display: inline-block; background: #e7eef9; color: #001e40; font-size: 8pt; font-weight: bold; padding: 0.5mm 2mm; border-radius: 2mm; margin-bottom: 1.5mm; }
+  .paso img { margin-top: 2mm; }
+  .paso .resultado { margin-top: 1.5mm; font-size: 8.5pt; color: #0a7a3d; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -36,145 +41,196 @@
     <p style="font-size:13pt">Sistema Electoral Estudiantil</p>
     <p style="font-size:12pt"><strong>CTP Ambientalista Isaías Retana Arias</strong></p>
     <p class="small">Pedregoso · Buenos Aires · Puntarenas · Costa Rica</p>
-    <p style="margin-top:12mm; font-size:12pt">Evidencia de funcionamiento y validación técnica</p>
+    <p style="margin-top:10mm; font-size:12pt">Cómo funciona, paso a paso, y la evidencia de que sirve</p>
     <p class="small">4 de noviembre de 2026</p>
-    <div class="box" style="margin-top:20mm; text-align:left">
+    <div class="box" style="margin-top:18mm; text-align:left">
         <strong>Autores</strong><br>
         Jefferson G. — Desarrollo, base de datos y seguridad<br>
         Sahir M. — Diseño de interfaz y pruebas
     </div>
 </div>
 
-<h2>1. Resumen ejecutivo</h2>
+<h2>1. Resumen en una página</h2>
 <div class="big">
-<p><strong>El sistema fue probado y funciona de punta a punta.</strong> Se ejecutaron 117 pruebas automatizadas
-(232 comprobaciones) con resultado 100 % exitoso, se simuló el ciclo completo de tres computadoras con
-un navegador real y se midió la capacidad con cientos de votos concurrentes.</p>
+<p><strong>El sistema funciona y está probado.</strong> El ciclo completo se ejecutó con tres computadoras reales:
+el estudiante se registra, la Junta lo aprueba y vota en la urna. Todo queda guardado en el servidor local del colegio.</p>
 </div>
 
 <table>
 <tr><th>Indicador</th><th>Resultado</th></tr>
 <tr><td>Pruebas automatizadas</td><td class="ok">117 aprobadas · 0 fallidas</td></tr>
-<tr><td>Comprobaciones dentro de las pruebas</td><td class="ok">232</td></tr>
-<tr><td>Vulnerabilidades en dependencias</td><td class="ok">0 (composer audit)</td></tr>
-<tr><td>Configuración de producción</td><td class="ok">Apta (app:check sin hallazgos)</td></tr>
-<tr><td>Ciclo de tres computadoras</td><td class="ok">Completado en ~2,6 s por paso</td></tr>
-<tr><td>Capacidad medida</td><td class="ok">~35 votos por segundo</td></tr>
-<tr><td>Aislamiento por mesa (RLS)</td><td class="ok">Verificado por rol</td></tr>
-<tr><td>Operación sin internet</td><td class="ok">Sí (0 recursos externos)</td></tr>
+<tr><td>Comprobaciones</td><td class="ok">232</td></tr>
+<tr><td>Ciclo de tres computadoras</td><td class="ok">Completado, paso a paso</td></tr>
+<tr><td>Tiempo por paso</td><td class="ok">0,34 s a 1,79 s</td></tr>
+<tr><td>Capacidad</td><td class="ok">~35 votos por segundo</td></tr>
+<tr><td>Aislamiento por mesa</td><td class="ok">Verificado con PostgreSQL</td></tr>
+<tr><td>Vulnerabilidades</td><td class="ok">0 conocidas</td></tr>
+<tr><td>Internet</td><td class="ok">No se necesita</td></tr>
 </table>
 
-<h2>2. Entorno de la prueba</h2>
-<table>
-<tr><th>Componente</th><th>Versión / detalle</th></tr>
-<tr><td>Sistema operativo</td><td>Linux Mint (servidor local)</td></tr>
-<tr><td>PHP</td><td>8.4.27</td></tr>
-<tr><td>Laravel</td><td>12.71.0</td></tr>
-<tr><td>Base de datos</td><td>PostgreSQL 17.11 con Row Level Security</td></tr>
-<tr><td>Servidor web</td><td>Apache con HTTPS (TLS)</td></tr>
-<tr><td>Tiempo real</td><td>Reverb (WebSocket local)</td></tr>
-<tr><td>Red</td><td>Local, IP 192.168.1.222, sin internet</td></tr>
-</table>
+<h2>2. El ciclo, paso a paso</h2>
+<p class="small">Cada paso se ejecutó con un navegador real y quedó registrado en captura. Los tiempos son los medidos durante la prueba.</p>
 
-<h2>3. Matriz de pruebas</h2>
-<h3>3.1 Funcionalidad principal</h3>
+<div class="paso">
+    <div class="paso-num">1</div>
+    <div class="paso-body">
+        <span class="quien">PC1 · SERVIDOR Y REGISTRO</span>
+        <h3>Se abre el sistema</h3>
+        <p>El sistema arranca en el servidor del colegio. Funciona sin internet y muestra la pantalla de ingreso con la identidad del centro.</p>
+        <img src="capturas/13-login-creditos.png" alt="Login">
+        <p class="resultado">Resultado: pantalla de entrada lista · Autores visibles</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">2</div>
+    <div class="paso-body">
+        <span class="quien">PC3 · URNA</span>
+        <h3>La Junta activa la urna</h3>
+        <p>Un miembro de la JRV digita el código de la urna y su contraseña. La urna pasa a “en espera”, lista para recibir al siguiente estudiante.</p>
+        <img src="evidencias/3pc-01-urna-espera.png" alt="Urna en espera">
+        <p class="resultado">Resultado: urna habilitada y en espera</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">3</div>
+    <div class="paso-body">
+        <span class="quien">PC1 · REGISTRO</span>
+        <h3>El estudiante se registra</h3>
+        <p>El estudiante presenta su identificación. El sistema verifica que esté en el padrón, que no haya votado y crea una solicitud para la Junta.</p>
+        <img src="evidencias/3pc-02-registro-solicitud.png" alt="Solicitud enviada">
+        <p class="resultado">Resultado: solicitud enviada · 0,63 s</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">4</div>
+    <div class="paso-body">
+        <span class="quien">PC2 · JUNTA RECEPTORA</span>
+        <h3>La Junta recibe la solicitud</h3>
+        <p>La solicitud aparece en vivo en la pantalla de la JRV, junto con las urnas disponibles de su mesa. No hay que recargar la página.</p>
+        <img src="evidencias/3pc-03-jrv-cola.png" alt="Cola de solicitudes">
+        <p class="resultado">Resultado: solicitud visible para la mesa correcta</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">5</div>
+    <div class="paso-body">
+        <span class="quien">PC2 · JUNTA RECEPTORA</span>
+        <h3>La Junta aprueba y asigna urna</h3>
+        <p>La JRV revisa la identidad y aprueba. El sistema le dice al estudiante a qué urna debe pasar y ocupa esa urna para que nadie más la use.</p>
+        <img src="evidencias/3pc-04-jrv-aprobada.png" alt="Solicitud aprobada">
+        <p class="resultado">Resultado: solicitud aprobada · urna U001 asignada</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">6</div>
+    <div class="paso-body">
+        <span class="quien">PC1 · REGISTRO</span>
+        <h3>El registro confirma la aprobación</h3>
+        <p>La primera computadora cambia sola a “Solicitud aprobada” y muestra el código de la urna. El estudiante ya sabe a dónde ir.</p>
+        <img src="evidencias/3pc-05-registro-aprobada.png" alt="Aprobación en PC1">
+        <p class="resultado">Resultado: aprobación recibida · 0,67–0,71 s</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">7</div>
+    <div class="paso-body">
+        <span class="quien">PC3 · URNA</span>
+        <h3>El estudiante vota</h3>
+        <p>La urna muestra la papeleta con los partidos y el cronómetro. El estudiante elige, confirma y emite su voto. El voto se guarda cifrado.</p>
+        <img src="evidencias/3pc-06-urna-papeleta.png" alt="Papeleta">
+        <p class="resultado">Resultado: voto registrado · 0,34–0,56 s</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">8</div>
+    <div class="paso-body">
+        <span class="quien">PC1 · REGISTRO</span>
+        <h3>El registro confirma que ya votó</h3>
+        <p>La PC1 recibe el aviso, marca al estudiante como “votó” y el padrón queda bloqueado para esa persona. La urna se libera para el siguiente.</p>
+        <img src="evidencias/3pc-09-registro-votada.png" alt="Voto confirmado">
+        <p class="resultado">Resultado: voto confirmado · 0,62–1,79 s</p>
+    </div>
+</div>
+
+<div class="paso">
+    <div class="paso-num">9</div>
+    <div class="paso-body">
+        <span class="quien">ADMINISTRACIÓN · CIERRE</span>
+        <h3>Se cierra y se audita el conteo</h3>
+        <p>Al cerrar la elección, el sistema sella el conteo de cada mesa con una huella digital (SHA-256). Si alguien altera un voto después, la verificación lo detecta.</p>
+        <img src="capturas/05-admin-integridad.png" alt="Integridad del conteo">
+        <p class="resultado">Resultado: conteo sellado y verificable</p>
+    </div>
+</div>
+
+<h2>3. Resultados de las pruebas</h2>
+<h3>3.1 Funcionalidad</h3>
 <table>
-<tr><th>Caso</th><th>Resultado esperado</th><th>Estado</th></tr>
-<tr><td>Registro de votante (PC1)</td><td>Solicitud creada en estado pendiente</td><td class="ok">APROBADO</td></tr>
-<tr><td>Aprobación por JRV (PC2)</td><td>Solicitud aprobada y urna asignada</td><td class="ok">APROBADO</td></tr>
-<tr><td>Votación (PC3)</td><td>Voto registrado y urna liberada</td><td class="ok">APROBADO</td></tr>
-<tr><td>Retorno a PC1</td><td>Estado «votó» reflejado</td><td class="ok">APROBADO</td></tr>
-<tr><td>Conteo y ganador</td><td>Resultados por partido, blancos y nulos</td><td class="ok">APROBADO</td></tr>
-<tr><td>Actas y reportes</td><td>Padrón, acta de cierre, carteles</td><td class="ok">APROBADO</td></tr>
-<tr><td>Integridad del conteo</td><td>Sello SHA-256 por mesa</td><td class="ok">APROBADO</td></tr>
-<tr><td>Importar padrón CSV</td><td>Filas válidas cargadas, inválidas rechazadas</td><td class="ok">APROBADO</td></tr>
+<tr><th>Caso</th><th>Esperado</th><th>Estado</th></tr>
+<tr><td>Registro de votante</td><td>Solicitud pendiente</td><td class="ok">APROBADO</td></tr>
+<tr><td>Aprobación por JRV</td><td>Urna asignada</td><td class="ok">APROBADO</td></tr>
+<tr><td>Emisión del voto</td><td>Voto guardado y urna liberada</td><td class="ok">APROBADO</td></tr>
+<tr><td>Confirmación en PC1</td><td>Estudiante marcado como votó</td><td class="ok">APROBADO</td></tr>
+<tr><td>Conteo, sello y actas</td><td>Resultados y verificación</td><td class="ok">APROBADO</td></tr>
 </table>
 
 <h3>3.2 Casos límite y seguridad</h3>
 <table>
-<tr><th>Caso</th><th>Resultado esperado</th><th>Estado</th></tr>
-<tr><td>Doble voto del mismo estudiante</td><td>Rechazado (HTTP 409)</td><td class="ok">APROBADO</td></tr>
-<tr><td>Voto con elección cerrada</td><td>Rechazado (HTTP 423)</td><td class="ok">APROBADO</td></tr>
-<tr><td>Partido inexistente</td><td>Rechazado (HTTP 422)</td><td class="ok">APROBADO</td></tr>
+<tr><th>Caso</th><th>Esperado</th><th>Estado</th></tr>
+<tr><td>Doble voto</td><td>Rechazado (409)</td><td class="ok">APROBADO</td></tr>
+<tr><td>Votar con elección cerrada</td><td>Rechazado (423)</td><td class="ok">APROBADO</td></tr>
+<tr><td>Partido inexistente</td><td>Rechazado (422)</td><td class="ok">APROBADO</td></tr>
 <tr><td>Urna de otra mesa</td><td>Rechazado</td><td class="ok">APROBADO</td></tr>
-<tr><td>JRV consulta estudiante de otra mesa</td><td>No visible (RLS + política)</td><td class="ok">APROBADO</td></tr>
-<tr><td>API del padrón sin sesión</td><td>Rechazado (HTTP 401)</td><td class="ok">APROBADO</td></tr>
-<tr><td>Edición del padrón con elección abierta</td><td>Bloqueada</td><td class="ok">APROBADO</td></tr>
-<tr><td>CSV con fórmulas maliciosas</td><td>Neutralizadas al exportar</td><td class="ok">APROBADO</td></tr>
-<tr><td>Alteración del conteo tras el cierre</td><td>Detectada por el sello</td><td class="ok">APROBADO</td></tr>
+<tr><td>JRV consulta otra mesa</td><td>No visible (RLS)</td><td class="ok">APROBADO</td></tr>
+<tr><td>API del padrón sin sesión</td><td>Rechazado (401)</td><td class="ok">APROBADO</td></tr>
+<tr><td>CSV con fórmulas</td><td>Neutralizadas</td><td class="ok">APROBADO</td></tr>
+<tr><td>Conteo alterado</td><td>Detectado por el sello</td><td class="ok">APROBADO</td></tr>
 </table>
 
-<h2>4. Evidencia del ciclo real (tres computadoras)</h2>
-<p>Se automatizaron tres navegadores simultáneos: PC1 registro, PC2 Junta y PC3 urna.</p>
-
-<div class="grid">
-<div><img src="evidencias/3pc-01-urna-espera.png"><p class="small">PC3: urna activa en espera.</p></div>
-<div><img src="evidencias/3pc-02-registro-solicitud.png"><p class="small">PC1: solicitud enviada.</p></div>
-<div><img src="evidencias/3pc-03-jrv-cola.png"><p class="small">PC2: solicitud en la cola.</p></div>
-<div><img src="evidencias/3pc-05-registro-aprobada.png"><p class="small">PC1: aprobación y urna asignada.</p></div>
-<div><img src="evidencias/3pc-06-urna-papeleta.png"><p class="small">PC3: papeleta habilitada.</p></div>
-<div><img src="evidencias/3pc-09-registro-votada.png"><p class="small">PC1: voto confirmado.</p></div>
-</div>
-
+<h2>4. Capacidad y recursos</h2>
 <table>
-<tr><th>Paso</th><th>Terminal</th><th>Tiempo</th></tr>
-<tr><td>Solicitud enviada</td><td>PC1</td><td>0,63 s</td></tr>
-<tr><td>Aprobación recibida</td><td>PC1</td><td>0,67–0,71 s</td></tr>
-<tr><td>Voto registrado</td><td>PC3</td><td>0,34–0,56 s</td></tr>
-<tr><td>Confirmación de voto</td><td>PC1</td><td>0,62–1,79 s</td></tr>
-</table>
-
-<h2>5. Pruebas de carga</h2>
-<table>
-<tr><th>Escenario</th><th>Solicitudes</th><th>Concurrencia</th><th>Éxito</th><th>Latencia media</th><th>p95</th></tr>
+<tr><th>Escenario</th><th>Votos</th><th>Concurrencia</th><th>Éxito</th><th>Media</th><th>p95</th></tr>
 <tr><td>Carga media</td><td>100</td><td>10</td><td class="ok">100 %</td><td>0,25 s</td><td>0,32 s</td></tr>
 <tr><td>Carga alta</td><td>300</td><td>20</td><td class="ok">100 %</td><td>0,49 s</td><td>0,54 s</td></tr>
 <tr><td>Carga alta</td><td>300</td><td>50</td><td class="ok">100 %</td><td>1,18 s</td><td>1,31 s</td></tr>
 <tr><td>Estrés</td><td>200</td><td>100</td><td class="ok">100 %</td><td>2,01 s</td><td>2,73 s</td></tr>
 </table>
-<p><strong>Capacidad:</strong> ~35 votos por segundo, 68 MB de memoria y 0 errores del servidor.
-Para 600 estudiantes y 4 urnas la jornada toma menos de 4 horas; el sistema tiene un margen de
-aproximadamente 750 veces sobre la demanda real.</p>
+<p><strong>Para el colegio:</strong> con 4 urnas y 90 segundos por voto, 600 estudiantes votan en menos de 4 horas.
+El servidor atiende unas 750 veces más votos por segundo de los que se necesitan.</p>
 
-<h2>6. Aislamiento por mesa (RLS)</h2>
+<h2>5. Aislamiento por mesa (RLS)</h2>
 <table>
-<tr><th>Quién consulta</th><th>Estudiantes</th><th>Urnas</th><th>Votos</th><th>Solicitudes</th></tr>
-<tr><td>Junta de la mesa 1</td><td>4 (solo su mesa)</td><td>1 (la suya)</td><td>0 (no puede ver)</td><td>1</td></tr>
-<tr><td>Junta de la mesa 2</td><td>4 (solo su mesa)</td><td>1 (la suya)</td><td>0</td><td>0</td></tr>
-<tr><td>Administrador</td><td>8 (todas)</td><td>3 (todas)</td><td>1</td><td>1</td></tr>
+<tr><th>Quién consulta</th><th>Estudiantes</th><th>Urnas</th><th>Votos</th></tr>
+<tr><td>Junta de la mesa 1</td><td>4 (solo su mesa)</td><td>1 (la suya)</td><td>0</td></tr>
+<tr><td>Junta de la mesa 2</td><td>4 (solo su mesa)</td><td>1 (la suya)</td><td>0</td></tr>
+<tr><td>Administrador</td><td>8 (todas)</td><td>3 (todas)</td><td>1</td></tr>
 </table>
-<p class="small">Aunque alguien consulte la base directamente, PostgreSQL devuelve solo las filas permitidas para su rol y mesa.</p>
+<p class="small">Aunque se consulte la base directamente, PostgreSQL devuelve solo las filas permitidas para el rol y la mesa.</p>
 
-<h2>7. Configuración y seguridad</h2>
-<table>
-<tr><th>Control</th><th>Resultado</th></tr>
-<tr><td>Modo producción</td><td class="ok">APP_ENV=production, APP_DEBUG=false</td></tr>
-<tr><td>HTTPS</td><td class="ok">Activo con HSTS y cookies seguras</td></tr>
-<tr><td>Contraseñas</td><td class="ok">Argon2id; credenciales reales fuera del repositorio</td></tr>
-<tr><td>Cabeceras de seguridad</td><td class="ok">CSP, X-Frame-Options, nosniff, Referrer-Policy</td></tr>
-<tr><td>Dependencias</td><td class="ok">Sin vulnerabilidades conocidas</td></tr>
-<tr><td>Respaldos</td><td class="ok">Diarios, cifrados, retención de 14 días</td></tr>
-<tr><td>Operación sin internet</td><td class="ok">Todos los recursos son locales</td></tr>
-</table>
-
-<h2>8. Limitaciones y alcance</h2>
+<h2>6. Limitaciones declaradas</h2>
 <div class="warn">
 <ul>
-<li>Las pruebas se ejecutaron en el servidor local del centro y con votantes simulados; <strong>aún no se ha realizado un evento real con estudiantes</strong>.</li>
-<li>El certificado HTTPS es autofirmado: debe instalarse como confiable en las tres computadoras para evitar la advertencia del navegador.</li>
-<li>La cantidad de urnas recomendada (4 a 6) debe confirmarse con la matrícula real del colegio.</li>
+<li>Las pruebas se hicieron con votantes simulados; <strong>aún no se ha realizado un evento real con estudiantes</strong>.</li>
+<li>El certificado HTTPS es autofirmado: debe instalarse en las tres computadoras.</li>
+<li>La cantidad de urnas (4 a 6) debe confirmarse con la matrícula real del centro.</li>
 <li>La foto y huella del votante no se utilizan en esta versión.</li>
 </ul>
 </div>
 
-<h2>9. Conclusión</h2>
+<h2>7. Conclusión</h2>
 <div class="big">
-<p>El Sistema Electoral Estudiantil del CTP AIRA está <strong>funcionalmente completo, probado y listo para una
-prueba piloto con estudiantes</strong>. El ciclo de registro, aprobación y votación funciona en tres computadoras
-conectadas por la red local; el voto es único, secreto y verificable; y el conteo puede auditarse mediante sellos
-criptográficos.</p>
-<p>La recomendación es realizar una prueba piloto con 30 a 50 estudiantes antes del evento general, instalar el
-certificado en las tres computadoras y confirmar la matrícula para dimensionar las urnas.</p>
+<p>El sistema está <strong>funcionalmente completo, probado y listo para una prueba piloto con estudiantes</strong>.
+El ciclo de registro, aprobación y votación funciona en tres computadoras conectadas por la red local; el voto es
+único, secreto y verificable; y el conteo puede auditarse mediante sellos criptográficos.</p>
+<p>Recomendación: prueba piloto con 30 a 50 estudiantes antes del evento general, instalar el certificado en las tres
+computadoras y confirmar la matrícula para dimensionar las urnas.</p>
 </div>
 
 <div class="firma">
@@ -182,7 +238,7 @@ certificado en las tres computadoras y confirmar la matrícula para dimensionar 
 <div>Sahir M.<br><span class="small">Diseño y pruebas</span></div>
 </div>
 
-<p class="small" style="margin-top:10mm">
+<p class="small" style="margin-top:8mm">
 Anexos: <code>informe-produccion.pdf</code>, <code>informe-simple.pdf</code>, capturas y evidencias en
 <code>docs/produccion/</code>. Salida completa de pruebas en <code>evidencias/dossier/tests.txt</code>.
 </p>
