@@ -44,6 +44,18 @@ class JrvController extends Controller
             return response()->json(['success' => false, 'message' => 'Estudiante no encontrado'], 404);
         }
 
+        $mesaId = auth()->user()->mesa_id;
+        $pertenece = \App\Models\SeccionMesa::where('seccion', $estudiante->seccion)
+            ->where('mesa_id', $mesaId)
+            ->exists();
+
+        if (!$pertenece) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El estudiante no pertenece a su mesa.',
+            ], 404);
+        }
+
         return response()->json([
             'success' => true,
             'data' => [[

@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Cambiar contraseña — Sistema Electoral</title>
     <script src="/js/tailwind.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/fuentes.css">
     <style>body { font-family: Inter, system-ui, sans-serif; }</style>
 </head>
 <body class="min-h-screen bg-slate-100 flex items-center justify-center p-4">

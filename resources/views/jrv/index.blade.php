@@ -54,6 +54,17 @@
                 Su usuario no tiene una mesa asignada. Contacte al Tribunal Electoral Estudiantil.
             </div>
         @else
+            <div class="rounded-xl border border-outline-variant bg-surface-container-lowest p-gutter mb-card-gap">
+                <div class="flex items-center justify-between mb-base">
+                    <h2 class="font-headline-sm text-headline-sm text-primary flex items-center gap-2">
+                        <span class="material-symbols-outlined">pending_actions</span>
+                        Solicitudes pendientes
+                    </h2>
+                    <span class="text-xs text-on-surface-variant">Actualización automática</span>
+                </div>
+                <div id="cola-solicitudes" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter"></div>
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-card-gap">
                 <div class="lg:col-span-1 space-y-card-gap">
                     <div class="rounded-xl border border-outline-variant bg-surface-container-lowest p-gutter">

@@ -5,6 +5,7 @@ const jrv = {
     },
 
     estudianteSeleccionado: null,
+    urnasActuales: [],
 
     async request(url, options = {}) {
         try {
@@ -28,6 +29,21 @@ const jrv = {
 
     async urnas() {
         return this.request('/jrv/api/urnas');
+    },
+
+    async cola() {
+        return this.request('/jrv/api/cola');
+    },
+
+    async aprobar(id, urnaId) {
+        return this.request(`/jrv/api/solicitud/${id}/aprobar`, {
+            method: 'POST',
+            body: JSON.stringify({ urna_id: urnaId }),
+        });
+    },
+
+    async rechazar(id) {
+        return this.request(`/jrv/api/solicitud/${id}/rechazar`, { method: 'POST' });
     },
 
     async asignar(urnaId, identificacion) {
@@ -88,6 +104,8 @@ const jrv = {
         const contenedor = document.getElementById('lista-urnas');
         if (!contenedor) return;
 
+        this.urnasActuales = urnas;
+
         if (!urnas.length) {
             contenedor.innerHTML = '<p class="text-sm text-on-surface-variant">No hay urnas asignadas a esta mesa.</p>';
             return;
@@ -130,6 +148,73 @@ const jrv = {
         });
     },
 
+    renderCola(solicitudes) {
+        const contenedor = document.getElementById('cola-solicitudes');
+        if (!contenedor) return;
+
+        const libre = this.urnasActuales.find(u => !u.estudiante);
+
+        if (!solicitudes.length) {
+            contenedor.innerHTML = '<p class="text-sm text-on-surface-variant">No hay solicitudes pendientes.</p>';
+            return;
+        }
+
+        contenedor.innerHTML = solicitudes.map((s) => `
+            <div class="rounded-xl border border-outline-variant bg-surface-container-lowest p-4">
+                <div class="flex items-start justify-between gap-3">
+                    <div>
+                        <p class="font-semibold text-primary">${s.estudiante.nombre}</p>
+                        <p class="text-xs text-on-surface-variant">${s.estudiante.identificacion} · ${s.estudiante.seccion ?? ''}</p>
+                    </div>
+                    <span class="rounded-full px-3 py-1 text-xs font-semibold ${s.estado === 'aprobada' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                        ${s.estado}
+                    </span>
+                </div>
+                ${s.estado === 'pendiente' ? `
+                    <div class="mt-3 flex gap-2">
+                        <button type="button" data-aprobar="${s.id}"
+                            class="flex-1 rounded-lg bg-primary px-3 py-2 text-sm font-semibold text-on-primary hover:bg-primary-container ${libre ? '' : 'opacity-50 cursor-not-allowed'}"
+                            ${libre ? '' : 'disabled'}>
+                            ${libre ? `Aprobar en ${libre.codigo}` : 'Sin urna libre'}
+                        </button>
+                        <button type="button" data-rechazar="${s.id}"
+                            class="rounded-lg border border-outline px-3 py-2 text-sm font-semibold hover:border-red-400 hover:text-red-600">
+                            Rechazar
+                        </button>
+                    </div>
+                ` : `
+                    <p class="mt-3 text-sm text-emerald-700">Aprobada · urna ${s.urna?.codigo ?? ''}</p>
+                `}
+            </div>
+        `).join('');
+
+        contenedor.querySelectorAll('[data-aprobar]').forEach((boton) => {
+            boton.addEventListener('click', () => jrv.aprobarSolicitud(Number(boton.dataset.aprobar)));
+        });
+
+        contenedor.querySelectorAll('[data-rechazar]').forEach((boton) => {
+            boton.addEventListener('click', () => jrv.rechazarSolicitud(Number(boton.dataset.rechazar)));
+        });
+    },
+
+    async aprobarSolicitud(id) {
+        const libre = this.urnasActuales.find(u => !u.estudiante);
+        if (!libre) {
+            this.mensaje('No hay urnas libres.', 'warning');
+            return;
+        }
+
+        const resultado = await this.aprobar(id, libre.id);
+        this.mensaje(resultado.message || 'Solicitud procesada.', resultado.success ? 'success' : 'error');
+        await this.cargarTodo();
+    },
+
+    async rechazarSolicitud(id) {
+        const resultado = await this.rechazar(id);
+        this.mensaje(resultado.message || 'Solicitud rechazada.', resultado.success ? 'success' : 'error');
+        await this.cargarTodo();
+    },
+
     async asignarSeleccionado(urnaId) {
         if (!this.estudianteSeleccionado) {
             this.mensaje('Primero busque y seleccione un estudiante.', 'warning');
@@ -146,19 +231,31 @@ const jrv = {
             this.mensaje(resultado.message || 'No se pudo asignar el estudiante.');
         }
 
-        await this.cargarUrnas();
+        await this.cargarTodo();
     },
 
     async liberarUrna(urnaId) {
         const resultado = await this.liberar(urnaId);
         this.mensaje(resultado.message || 'Urna liberada.', resultado.success ? 'success' : 'error');
-        await this.cargarUrnas();
+        await this.cargarTodo();
     },
 
     async cargarUrnas() {
         const resultado = await this.urnas();
         if (resultado.success) {
             this.renderUrnas(resultado.data);
+        }
+    },
+
+    async cargarTodo() {
+        const urnas = await this.urnas();
+        if (urnas.success) {
+            this.renderUrnas(urnas.data);
+        }
+
+        const cola = await this.cola();
+        if (cola.success) {
+            this.renderCola(cola.data);
         }
     },
 
@@ -194,9 +291,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (document.getElementById('lista-urnas')) {
-        jrv.cargarUrnas();
-        setInterval(() => jrv.cargarUrnas(), 4000);
+        jrv.cargarTodo();
+        setInterval(() => jrv.cargarTodo(), 3000);
     }
+
+    document.addEventListener('rea:solicitud-creada', () => jrv.cargarTodo());
+    document.addEventListener('rea:solicitud-aprobada', () => jrv.cargarTodo());
+    document.addEventListener('rea:voto-emitido', () => jrv.cargarTodo());
 });
 
 window.jrv = jrv;

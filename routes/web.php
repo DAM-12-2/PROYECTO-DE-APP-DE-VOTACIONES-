@@ -17,6 +17,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\VoteController;
 use App\Http\Controllers\JrvController;
 use App\Http\Controllers\TribunalController;
+use App\Http\Controllers\VoteRequestController;
 
 Route::get('/kiosko', [\App\Http\Controllers\KioskoController::class, 'show'])->name('kiosko');
 Route::post('/kiosko/activar', [\App\Http\Controllers\KioskoController::class, 'activar'])->middleware('throttle:10,1');
@@ -39,6 +40,12 @@ Route::middleware('auth')->group(function () {
 Route::get('/manual', function () {
     return view('admin.manual');
 })->name('admin.manual');
+
+Route::middleware(['auth', 'password.changed', 'role:admin,tee,jrv'])->prefix('registro')->group(function () {
+    Route::get('/', [VoteRequestController::class, 'registro'])->name('registro');
+    Route::post('/solicitud', [VoteRequestController::class, 'store'])->middleware('throttle:60,1')->name('registro.solicitud');
+    Route::get('/solicitud/{id}/estado', [VoteRequestController::class, 'estado'])->name('registro.estado');
+});
 
 Route::middleware(['auth', 'password.changed', 'role:tee'])->prefix('tribunal')->group(function () {
     Route::get('/', [TribunalController::class, 'index'])->name('tribunal.dashboard');
@@ -162,6 +169,9 @@ Route::middleware(['auth', 'password.changed', 'role:jrv'])->prefix('jrv')->grou
     Route::get('/api/buscar', [JrvController::class, 'searchStudents'])->middleware('throttle:120,1');
     Route::get('/api/partidos', [JrvController::class, 'partidos'])->middleware('throttle:120,1');
     Route::get('/api/urnas', [JrvController::class, 'urnas'])->middleware('throttle:120,1');
+    Route::get('/api/cola', [VoteRequestController::class, 'cola'])->middleware('throttle:120,1');
+    Route::post('/api/solicitud/{id}/aprobar', [VoteRequestController::class, 'aprobar'])->middleware('throttle:60,1');
+    Route::post('/api/solicitud/{id}/rechazar', [VoteRequestController::class, 'rechazar'])->middleware('throttle:60,1');
     Route::post('/api/asignar', [JrvController::class, 'asignar'])->middleware('throttle:60,1');
     Route::post('/api/liberar', [JrvController::class, 'liberar'])->middleware('throttle:60,1');
     Route::post('/api/activar-urna', [JrvController::class, 'activarUrna'])->middleware('throttle:60,1');

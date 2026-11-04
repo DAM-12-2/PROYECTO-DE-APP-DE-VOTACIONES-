@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consulta Popular — Resumen — {{ $institucion }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/js/tailwind.js"></script>
     <style>
         @media print { .no-print { display: none !important; } body { background: white; } }
         body { font-family: 'Inter', sans-serif; }

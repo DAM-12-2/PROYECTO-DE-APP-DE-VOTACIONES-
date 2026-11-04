@@ -27,10 +27,22 @@ Laravel 12 + SQLite + Tailwind CSS + JavaScript vanilla. Las vistas Blade reempl
 
 ## Flujo de operación
 
-1. **Admin/TEE** (`/login` → `/admin` o `/tribunal`): configura institución, partidos, mesas, secciones, candidatos, usuarios y abre/cierra la elección.
-2. **JRV** (`/login` → `/jrv`): busca al estudiante, lo asigna a una urna disponible y la urna se libera al votar.
-3. **Urna** (`/kiosko`): se activa con código de urna (`U001`) + usuario/contraseña JRV, espera la asignación y muestra la papeleta.
-4. **Cierre**: al cerrar la elección se sella el conteo por mesa (SHA-256); `/admin/integridad` y `php artisan tally:verify` detectan alteraciones.
+1. **PC1 registro** (`/registro`): el votante ingresa su identificación; se crea una solicitud `pendiente`.
+2. **PC2 JRV** (`/jrv`): recibe la solicitud en vivo, la aprueba y asigna una urna libre.
+3. **PC3 urna** (`/kiosko`): se activa con código `U001` + usuario/contraseña JRV, recibe al estudiante y registra el voto.
+4. **Cierre**: el voto marca la solicitud como `votada`, libera la urna y PC1 lo refleja; al cerrar la elección se sella el conteo (`/admin/integridad`, `php artisan tally:verify`).
+
+La comunicación entre terminales usa **Laravel Reverb** (WebSocket local): `php artisan reverb:start --host=0.0.0.0 --port=8080`.
+Si el WebSocket cae, el polling de 2–3 segundos mantiene el ciclo operativo.
+
+## Seguridad local
+
+- `/api/*` exige sesión y rol; el padrón ya no es público.
+- La JRV solo puede buscar y registrar estudiantes de su mesa.
+- Cabeceras CSP, X-Frame-Options y nosniff en todas las respuestas.
+- Contraseñas con Argon2id y cambio obligatorio inicial.
+- CSV neutralizado contra fórmulas y limitado a 10 000 filas.
+- Todos los assets (Tailwind, Chart.js, iconos y fuentes) son locales: funciona sin internet.
 
 ## Estructura clave
 - `app/Http/Controllers/KioskoController.php` -- activación, estado y cierre de urna

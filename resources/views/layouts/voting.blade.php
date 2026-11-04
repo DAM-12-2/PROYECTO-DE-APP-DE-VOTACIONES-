@@ -4,13 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="reverb-key" content="{{ env('REVERB_APP_KEY') }}">
+    <meta name="reverb-host" content="{{ env('REVERB_HOST', request()->getHost()) }}">
+    <meta name="reverb-port" content="{{ env('REVERB_PORT', 8080) }}">
+    <meta name="reverb-scheme" content="{{ env('REVERB_SCHEME', 'http') }}">
+    <meta name="rea-urna-id" content="{{ $urna?->id ?? '' }}">
 
     <title>Urna Electoral — CTP AIRA</title>
 
     <script src="/js/tailwind.js"></script>
+    <script src="/js/pusher.min.js" defer></script>
+    <script src="/js/echo.iife.js" defer></script>
+    <script src="/js/realtime.js" defer></script>
     <script src="/js/voting.js" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/fuentes.css">
+    <link rel="stylesheet" href="/css/fuentes.css">
     <script>
         tailwind.config = {
             theme: {

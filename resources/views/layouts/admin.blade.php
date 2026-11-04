@@ -5,8 +5,8 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <title>@yield('title', 'Admin Dashboard — Sistema Electoral')</title>
 <script src="/js/tailwind.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/css/fuentes.css">
+<link rel="stylesheet" href="/css/fuentes.css">
 <script>
   tailwind.config = {
     darkMode: "class",

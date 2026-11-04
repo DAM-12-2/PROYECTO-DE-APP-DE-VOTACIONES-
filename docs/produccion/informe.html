@@ -91,6 +91,19 @@ por defecto) y debe corregirse antes de exponerlo a estudiantes.
 <p class="small">No se encontraron credenciales hardcodeadas en el código de la aplicación. Las únicas credenciales
 fijas están en el seeder de desarrollo, que no debe ejecutarse en producción.</p>
 
+<h3>Endurecimiento aplicado en esta iteración</h3>
+<table>
+<tr><th>Control</th><th>Resultado</th></tr>
+<tr><td>Dependencias vulnerables</td><td class="ok">23 avisos corregidos · Laravel 12.71 · <code>composer audit</code> sin hallazgos</td></tr>
+<tr><td>Operación sin internet</td><td class="ok">0 recursos externos; Tailwind, Chart.js, iconos y tipografías locales</td></tr>
+<tr><td>Cabeceras de seguridad</td><td class="ok">CSP, X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy</td></tr>
+<tr><td>Contraseñas</td><td class="ok">Argon2id + cambio obligatorio inicial</td></tr>
+<tr><td>API legada</td><td class="ok">Padrón, votación y urnas exigen sesión y rol</td></tr>
+<tr><td>Acceso por mesa</td><td class="ok">La JRV no puede consultar ni registrar estudiantes de otra mesa</td></tr>
+<tr><td>CSV / Excel</td><td class="ok">CSV injection neutralizada, límite de 10 000 filas, tipo y tamaño validados</td></tr>
+<tr><td>Tiempo real</td><td class="ok">Reverb local con canales privados y respaldo por polling</td></tr>
+</table>
+
 <h2>4. Casos límite validados</h2>
 <table>
 <tr><th>Caso</th><th>Resultado esperado</th><th>Estado</th></tr>
@@ -154,6 +167,32 @@ puede limitar. <em>Ajustable con <code>VOTE_THROTTLE</code>.</em></li>
 <div><img src="evidencias/08-jrv-urna-liberada.png"><p class="small">8. La urna se libera automáticamente.</p></div>
 </div>
 
+<h3>6.1 Ciclo completo de tres terminales</h3>
+<p>Se automatizaron tres navegadores simultáneos: <strong>PC1 registro</strong>, <strong>PC2 aprobación</strong> y
+<strong>PC3 urna</strong>, comunicados por WebSocket local (Reverb).</p>
+
+<table>
+<tr><th>Paso</th><th>Terminal</th><th>Resultado</th><th>Latencia</th></tr>
+<tr><td>1</td><td>PC3</td><td>Urna activada y en espera</td><td>—</td></tr>
+<tr><td>2</td><td>PC1</td><td>Solicitud de voto enviada</td><td>0,63 s</td></tr>
+<tr><td>3</td><td>PC2</td><td>Recibe la solicitud en la cola</td><td>≤ 3 s</td></tr>
+<tr><td>4</td><td>PC1</td><td>Recibe la aprobación con la urna asignada</td><td>0,71 s</td></tr>
+<tr><td>5</td><td>PC3</td><td>Muestra la papeleta</td><td>≤ 2,5 s</td></tr>
+<tr><td>6</td><td>PC3</td><td>Voto registrado</td><td>0,56 s</td></tr>
+<tr><td>7</td><td>PC1</td><td>Recibe el estado «votó»</td><td>0,62 s</td></tr>
+</table>
+
+<div class="grid">
+<div><img src="evidencias/3pc-01-urna-espera.png"><p class="small">PC3: urna activa en espera.</p></div>
+<div><img src="evidencias/3pc-02-registro-solicitud.png"><p class="small">PC1: solicitud enviada.</p></div>
+<div><img src="evidencias/3pc-03-jrv-cola.png"><p class="small">PC2: solicitud en la cola.</p></div>
+<div><img src="evidencias/3pc-04-jrv-aprobada.png"><p class="small">PC2: solicitud aprobada.</p></div>
+<div><img src="evidencias/3pc-05-registro-aprobada.png"><p class="small">PC1: aprobación y urna asignada.</p></div>
+<div><img src="evidencias/3pc-06-urna-papeleta.png"><p class="small">PC3: papeleta habilitada.</p></div>
+<div><img src="evidencias/3pc-08-urna-exito.png"><p class="small">PC3: voto registrado.</p></div>
+<div><img src="evidencias/3pc-09-registro-votada.png"><p class="small">PC1: voto confirmado.</p></div>
+</div>
+
 <div class="page-break"></div>
 <h2>7. Capacidad para el CTP AIRA de Pedregoso</h2>
 <div class="risk">
@@ -209,6 +248,12 @@ no será el software sino la logística: cantidad de urnas, filas y tiempo por e
 <tr><td>16</td><td>Servidor web de producción</td><td class="fail">PENDIENTE</td><td>Nginx + PHP-FPM</td></tr>
 <tr><td>17</td><td>Respaldos automáticos</td><td class="fail">PENDIENTE</td><td>Programar y probar restauración</td></tr>
 <tr><td>18</td><td>Matrícula real del centro</td><td class="fail">PENDIENTE</td><td>Confirmar con el MEP para dimensionar urnas</td></tr>
+<tr><td>19</td><td>Dependencias sin vulnerabilidades</td><td class="ok">CUMPLE</td><td><code>composer audit</code> limpio</td></tr>
+<tr><td>20</td><td>Funciona sin internet</td><td class="ok">CUMPLE</td><td>Assets locales</td></tr>
+<tr><td>21</td><td>Cabeceras de seguridad</td><td class="ok">CUMPLE</td><td>Middleware activo</td></tr>
+<tr><td>22</td><td>Contraseñas con Argon2id</td><td class="ok">CUMPLE</td><td>Hash verificado</td></tr>
+<tr><td>23</td><td>API protegida</td><td class="ok">CUMPLE</td><td>Pruebas de 401</td></tr>
+<tr><td>24</td><td>CSV/Excel sin inyección</td><td class="ok">CUMPLE</td><td>Pruebas unitarias y de exportación</td></tr>
 </table>
 
 <h2>9. Comandos de operación</h2>

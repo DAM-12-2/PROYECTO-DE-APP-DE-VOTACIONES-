@@ -86,27 +86,50 @@ class StudentController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,txt|max:10240',
+            'csv_file' => 'required|file|mimes:csv,txt|mimetypes:text/plain,text/csv,application/csv,application/vnd.ms-excel|max:10240',
         ]);
 
         $file = $request->file('csv_file');
         $handle = fopen($file->getRealPath(), 'r');
-        $insertados = 0;
 
-        // Skip header
+        if (!$handle) {
+            return response()->json(['success' => false, 'message' => 'No se pudo leer el archivo.'], 422);
+        }
+
+        $insertados = 0;
+        $rechazados = 0;
+        $filas = 0;
+        $limite = 10000;
+
         fgetcsv($handle);
 
         while (($data = fgetcsv($handle)) !== false) {
-            if (count($data) < 2) continue;
+            $filas++;
+
+            if ($filas > $limite || count($data) < 2) {
+                $rechazados++;
+                continue;
+            }
+
+            $identificacion = $this->limpiar($data[0] ?? '', 20, true);
+            $nombre = $this->limpiar($data[1] ?? '', 80);
+            $apellidos = $this->limpiar($data[2] ?? '', 80);
+            $seccion = $this->limpiar($data[3] ?? '', 10);
+
+            if ($identificacion === '' || $nombre === '') {
+                $rechazados++;
+                continue;
+            }
 
             Student::updateOrCreate(
-                ['identificacion' => $data[0]],
+                ['identificacion' => $identificacion],
                 [
-                    'nombre' => $data[1] ?? '',
-                    'apellidos' => $data[2] ?? '',
-                    'seccion' => $data[3] ?? null,
+                    'nombre' => $nombre,
+                    'apellidos' => $apellidos,
+                    'seccion' => $seccion !== '' ? $seccion : null,
                 ]
             );
+
             $insertados++;
         }
 
@@ -114,38 +137,53 @@ class StudentController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => "Se procesaron {$insertados} estudiantes correctamente."
+            'message' => "Se procesaron {$insertados} estudiantes. Filas rechazadas: {$rechazados}.",
+            'insertados' => $insertados,
+            'rechazados' => $rechazados,
         ], 200);
+    }
+
+    private function limpiar(string $valor, int $max, bool $soloDigitos = false): string
+    {
+        $valor = trim($valor);
+        $valor = str_replace("\xEF\xBB\xBF", '', $valor);
+
+        if (!mb_check_encoding($valor, 'UTF-8')) {
+            $valor = mb_convert_encoding($valor, 'UTF-8', 'Windows-1252');
+        }
+
+        $valor = strip_tags($valor);
+        $valor = preg_replace('/\s+/', ' ', $valor);
+
+        if ($soloDigitos) {
+            $valor = preg_replace('/\D/', '', $valor);
+        }
+
+        return mb_substr(trim($valor), 0, $max);
     }
 
     public function export()
     {
-        $students = Student::all();
         $fileName = 'estudiantes_ctp_aira.csv';
 
-        $headers = [
-            'Content-Type' => 'text/csv',
-            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
-        ];
+        $rows = Student::query()
+            ->orderBy('apellidos')
+            ->orderBy('nombre')
+            ->limit(20000)
+            ->get()
+            ->map(fn (Student $student) => [
+                $student->identificacion,
+                $student->nombre,
+                $student->apellidos,
+                $student->seccion,
+                $student->voto ? 'Votó' : 'Pendiente',
+            ]);
 
-        $callback = function () use ($students) {
-            $file = fopen('php://output', 'w');
-            fputcsv($file, ['Identificacion', 'Nombre', 'Apellidos', 'Seccion', 'Estado']);
-
-            foreach ($students as $student) {
-                fputcsv($file, [
-                    $student->identificacion,
-                    $student->nombre,
-                    $student->apellidos,
-                    $student->seccion,
-                    $student->estado,
-                ]);
-            }
-
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return \App\Support\Csv::download(
+            $fileName,
+            ['Identificacion', 'Nombre', 'Apellidos', 'Seccion', 'Estado'],
+            $rows
+        );
     }
 
     public function search(Request $request)

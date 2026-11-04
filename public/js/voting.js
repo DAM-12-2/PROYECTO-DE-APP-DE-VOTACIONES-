@@ -660,4 +660,6 @@ document.addEventListener('DOMContentLoaded', () => {
         consultarEstado();
         setInterval(consultarEstado, 2500);
     }
+
+    document.addEventListener('rea:solicitud-aprobada', () => consultarEstado());
 });

@@ -121,42 +121,27 @@ class ResultController extends Controller
         $parties = $this->voteTallyService->formatPartyResults($result);
 
         $filename = 'resultados_' . now()->format('Y-m-d_H-i-s') . '.csv';
+        $rows = [];
 
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => "attachment; filename=\"{$filename}\"",
-        ];
-
-        $callback = function () use ($parties, $result) {
-            $file = fopen('php://output', 'w');
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
-            if ($this->electionService->isConsultaPopular()) {
-                fputcsv($file, ['Opción', 'Votos', 'Porcentaje']);
-                foreach ($parties as $party) {
-                    fputcsv($file, [$party['nombre'], $party['votos'], $party['porcentaje'] . '%']);
-                }
-                fputcsv($file, []);
-                fputcsv($file, ['Total Votos', $result->totalVotes]);
-                fputcsv($file, ['Blancos', $result->blancos]);
-                fputcsv($file, ['Nulos', $result->nulos]);
-                fputcsv($file, ['Votos Válidos', $result->votosValidos()]);
-            } else {
-                fputcsv($file, ['Partido', 'Siglas', 'Votos', 'Porcentaje']);
-                foreach ($parties as $party) {
-                    fputcsv($file, [$party['nombre'], $party['siglas'], $party['votos'], $party['porcentaje'] . '%']);
-                }
-                fputcsv($file, []);
-                fputcsv($file, ['Total Votos', $result->totalVotes]);
-                fputcsv($file, ['Blancos', $result->blancos]);
-                fputcsv($file, ['Nulos', $result->nulos]);
-                fputcsv($file, ['Votos Válidos', $result->votosValidos()]);
+        if ($this->electionService->isConsultaPopular()) {
+            $headers = ['Opción', 'Votos', 'Porcentaje'];
+            foreach ($parties as $party) {
+                $rows[] = [$party['nombre'], $party['votos'], $party['porcentaje'] . '%'];
             }
-            
-            fclose($file);
-        };
+        } else {
+            $headers = ['Partido', 'Siglas', 'Votos', 'Porcentaje'];
+            foreach ($parties as $party) {
+                $rows[] = [$party['nombre'], $party['siglas'], $party['votos'], $party['porcentaje'] . '%'];
+            }
+        }
 
-        return response()->stream($callback, 200, $headers);
+        $rows[] = [];
+        $rows[] = ['Total Votos', $result->totalVotes];
+        $rows[] = ['Blancos', $result->blancos];
+        $rows[] = ['Nulos', $result->nulos];
+        $rows[] = ['Votos Válidos', $result->votosValidos()];
+
+        return \App\Support\Csv::download($filename, $headers, $rows);
     }
 
     // ===== WEB ENDPOINTS (original) =====

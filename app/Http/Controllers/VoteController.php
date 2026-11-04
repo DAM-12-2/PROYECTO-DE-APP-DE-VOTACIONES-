@@ -11,6 +11,8 @@ use App\Models\Vote;
 use App\Models\Urna;
 use App\Models\Party;
 use App\Models\Setting;
+use App\Models\VoteRequest;
+use App\Events\VoteCast;
 use App\Services\BitacoraService;
 
 class VoteController extends Controller
@@ -32,7 +34,7 @@ class VoteController extends Controller
         $user = $request->user();
 
         try {
-            [$status, $message] = DB::transaction(function () use ($request, $user) {
+            $resultado = DB::transaction(function () use ($request, $user) {
                 if (Setting::where('nombre', 'eleccion_abierta')->value('detalle') !== '1') {
                     return [423, 'La votación está cerrada.'];
                 }
@@ -92,7 +94,15 @@ class VoteController extends Controller
                 Urna::where('id_estudiante', $estudiante->id)
                     ->update(['id_estudiante' => null, 'estado' => 1]);
 
-                return [201, 'Voto registrado correctamente'];
+                // Cierra la solicitud del ciclo de tres terminales
+                VoteRequest::where('student_id', $estudiante->id)
+                    ->whereIn('estado', [VoteRequest::APROBADA, VoteRequest::VOTANDO])
+                    ->update([
+                        'estado' => VoteRequest::VOTADA,
+                        'voted_at' => now(),
+                    ]);
+
+                return [201, 'Voto registrado correctamente', $urna->id_mesa];
             });
         } catch (UniqueConstraintViolationException $e) {
             return response()->json([
@@ -101,8 +111,19 @@ class VoteController extends Controller
             ], 409);
         }
 
+        [$status, $message] = $resultado;
+        $mesaId = $resultado[2] ?? null;
+
         if ($status === 201) {
-            $this->bitacora->registrar('emisión de voto', 'Mesa ' . $user?->mesa_id);
+            $this->bitacora->registrar('emisión de voto', 'Mesa ' . $mesaId);
+
+            if ($mesaId) {
+                try {
+                    broadcast(new VoteCast((int) $mesaId));
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('No se pudo emitir voto.emitido: ' . $e->getMessage());
+                }
+            }
         }
 
         return response()->json([

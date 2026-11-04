@@ -90,6 +90,10 @@ class KioskoController extends Controller
         $urna = $urna->fresh();
         $estudiante = $urna->estudiante;
 
+        $solicitud = \App\Models\VoteRequest::where('urna_id', $urna->id)
+            ->whereIn('estado', [\App\Models\VoteRequest::APROBADA, \App\Models\VoteRequest::VOTANDO])
+            ->first();
+
         return response()->json([
             'autenticado' => true,
             'urna' => [
@@ -102,6 +106,10 @@ class KioskoController extends Controller
                 'identificacion' => $estudiante->identificacion,
                 'nombre' => trim($estudiante->nombre . ' ' . $estudiante->apellidos),
                 'seccion' => $estudiante->seccion,
+            ] : null,
+            'solicitud' => $solicitud ? [
+                'id' => $solicitud->id,
+                'estado' => $solicitud->estado,
             ] : null,
             'eleccion_abierta' => Setting::where('nombre', 'eleccion_abierta')->value('detalle') === '1',
             'tiempo_votacion' => $this->tiempoVotacion(),

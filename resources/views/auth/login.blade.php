@@ -2,8 +2,8 @@
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet">
+<link rel="stylesheet" href="/css/fuentes.css">
+<link rel="stylesheet" href="/css/fuentes.css">
 <script src="/js/tailwind.js"></script>
 <script src="/assets/js/tailwind-config.js"></script>
 <link rel="stylesheet" href="/assets/css/styles.css">
