@@ -165,11 +165,30 @@ class ResultController extends Controller
     {
         try {
             $ganador = $this->voteTallyService->verificarGanador();
-            return view('admin.resultados', compact('ganador'));
+            $resultados = $this->voteTallyService->obtenerResultados();
+
+            return view('admin.resultados', compact('ganador', 'resultados'));
         } catch (\Exception $e) {
             Log::error('Error al cargar los resultados: ' . $e->getMessage());
             return back()->withErrors('Error al cargar los resultados.');
         }
+    }
+
+    public function integridad(\App\Services\TallySealService $sealService)
+    {
+        $sellos = \App\Models\TallySeal::with('mesa')->orderBy('mesa_id')->get();
+        $incidencias = $sealService->verifyAll();
+        $sinSellar = $sealService->sinSellar();
+
+        return view('admin.integridad', compact('sellos', 'incidencias', 'sinSellar'));
+    }
+
+    public function sellar(\App\Services\TallySealService $sealService)
+    {
+        $selladas = $sealService->sealAll();
+        $this->bitacoraService->registrar('sellado de conteo', "Se sellaron {$selladas} mesas");
+
+        return back()->with('success', "Se selló el conteo de {$selladas} mesas.");
     }
 
     public function verificarGanadorAutomatico()

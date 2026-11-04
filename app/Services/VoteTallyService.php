@@ -134,6 +134,24 @@ class VoteTallyService
         return ($top['votos'] * 100 / $base) >= $porcMinimo ? $top : null;
     }
 
+    public function tallyMesa(int $mesaId): array
+    {
+        $votes = Vote::where('id_mesa', $mesaId)->get();
+        $result = $this->tallyVotesCollection($votes);
+        $mesa = \App\Models\Mesa::find($mesaId);
+
+        return [
+            'mesa_id' => $mesaId,
+            'mesa_nombre' => $mesa?->nombre,
+            'mesa_numero' => $mesa?->numero,
+            'total' => $result->totalVotes,
+            'blancos' => $result->blancos,
+            'nulos' => $result->nulos,
+            'votos_validos' => $result->votosValidos(),
+            'partidos' => $this->formatPartyResults($result),
+        ];
+    }
+
     public function tallyVotesByMesa(): array
     {
         $votes = Vote::select('encrypted_party', 'id_mesa')->get();

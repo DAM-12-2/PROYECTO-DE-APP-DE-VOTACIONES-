@@ -43,16 +43,26 @@ class VoteController extends Controller
                     return [409, 'Este estudiante ya votó'];
                 }
 
-                $urnas = Urna::where('estado', 1)->lockForUpdate();
+                $mesaId = null;
 
                 if ($user && $user->isJrv()) {
                     if (!$user->mesa_id) {
                         return [403, 'Su usuario no tiene una mesa asignada'];
                     }
-                    $urnas->where('id_mesa', $user->mesa_id);
+                    $mesaId = $user->mesa_id;
                 }
 
-                $urna = $urnas->first();
+                $urna = Urna::where('id_estudiante', $estudiante->id)
+                    ->when($mesaId, fn ($q) => $q->where('id_mesa', $mesaId))
+                    ->lockForUpdate()
+                    ->first();
+
+                if (!$urna) {
+                    $urna = Urna::where('estado', 1)
+                        ->when($mesaId, fn ($q) => $q->where('id_mesa', $mesaId))
+                        ->lockForUpdate()
+                        ->first();
+                }
 
                 if (!$urna) {
                     return [400, 'No hay una urna activa para su mesa'];
@@ -66,6 +76,10 @@ class VoteController extends Controller
 
                 $estudiante->voto = true;
                 $estudiante->save();
+
+                // Libera la urna que atendió a este estudiante
+                Urna::where('id_estudiante', $estudiante->id)
+                    ->update(['id_estudiante' => null, 'estado' => 1]);
 
                 return [201, 'Voto registrado correctamente'];
             });

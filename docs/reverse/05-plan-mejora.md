@@ -60,6 +60,29 @@ Fase 1 ✅ → Fase 2.1-2.2 ✅ → Fase 3 (kiosco ✅, admin pendiente)
 → Fase 2.3-2.5 → Fase 4
 ```
 
+## Fase 5 — Cableado de interfaz ✅ aplicada
+
+1. **Kiosco con sesión propia**: activación por código de urna + usuario/contraseña JRV,
+   validación de mesa, polling de estado y cierre de urna.
+2. **Asignación de estudiante a urna**: `urnas.id_estudiante`, endpoints
+   `/jrv/api/asignar` y `/jrv/api/liberar`; el voto libera la urna.
+3. **Portal JRV real**: búsqueda de estudiantes, tarjetas de urna, asignación y
+   liberación con refresco automático.
+4. **Padrón administrable**: listado paginado, búsqueda server-side, alta,
+   edición, importación CSV y desbloqueo con anulación de voto.
+5. **Resultados e integridad en el menú admin**; vista de resultados con
+   ganador, blancos, nulos y tabla por partido.
+6. **Tribunal sin SPA roto**: el sidebar navega a las vistas server-side
+   funcionales; se retiró `app.js` del layout.
+
+## Pendiente no bloqueante
+
+- WebSocket real (hoy polling cada 2,5–4 s).
+- Foto/huella del votante.
+- Voto nulo multi-selección.
+- Migración a MySQL/PostgreSQL.
+- Purga del `composer.phar` en el historial de git.
+
 ## Cambios aplicados en esta iteración
 
 | Archivo | Cambio |

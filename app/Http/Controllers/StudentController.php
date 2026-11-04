@@ -12,16 +12,27 @@ class StudentController extends Controller
 {
     public function index(Request $request)
     {
-        $students = Student::all();
+        $query = Student::query();
+
+        $busqueda = trim((string) $request->input('q'));
+        if ($busqueda !== '') {
+            $query->where(function ($q) use ($busqueda) {
+                $q->where('identificacion', 'like', "%{$busqueda}%")
+                    ->orWhere('nombre', 'like', "%{$busqueda}%")
+                    ->orWhere('apellidos', 'like', "%{$busqueda}%");
+            });
+        }
+
+        $students = $query->orderBy('apellidos')->orderBy('nombre')->paginate(20)->withQueryString();
 
         if ($request->expectsJson()) {
             return response()->json([
                 'success' => true,
-                'data' => $students
+                'data' => $students->items(),
             ], 200);
         }
 
-        return view('admin.students', compact('students'));
+        return view('admin.students', compact('students', 'busqueda'));
     }
 
     public function store(StoreStudentRequest $request)

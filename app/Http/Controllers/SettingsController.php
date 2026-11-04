@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Services\InstitutionService;
+use App\Services\TallySealService;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
     private InstitutionService $institutionService;
+    private TallySealService $tallySealService;
 
-    public function __construct(InstitutionService $institutionService)
+    public function __construct(InstitutionService $institutionService, TallySealService $tallySealService)
     {
         $this->institutionService = $institutionService;
+        $this->tallySealService = $tallySealService;
     }
 
     public function settings()
@@ -42,7 +45,13 @@ class SettingsController extends Controller
         $new = $current === '1' ? '0' : '1';
         Setting::updateOrCreate(['nombre' => 'eleccion_abierta'], ['detalle' => $new]);
 
-        return back()->with('success', $new === '1' ? 'Elección abierta.' : 'Elección cerrada.');
+        if ($new === '0') {
+            $selladas = $this->tallySealService->sealAll();
+
+            return back()->with('success', "Elección cerrada. Se selló el conteo de {$selladas} mesas para verificación de integridad.");
+        }
+
+        return back()->with('success', 'Elección abierta.');
     }
 
     public function resetVotos(Request $request)

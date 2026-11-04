@@ -43,15 +43,20 @@ repositorio. Base: `routes/web.php`, `app/Http/Controllers/` y `resources/views/
 | # | Función legada | Situación actual | Impacto |
 |---|---|---|---|
 | 1 | Tiempo máximo de sesión de voto (`TiempoVotacion = 90` s) y auto-emisión al agotarse | ✅ Implementado: `tiempo_votacion` en `settings`, cronómetro y barra en el kiosco | — |
-| 2 | Verificación cruzada del conteo (`tajustes` vs `tcomp`) | ❌ Pendiente (Fase 2.3) | Sin detección de alteración del conteo |
-| 3 | Sincronización en tiempo real por WebSocket | ❌ Polling/HTTP | Latencia al abrir/cerrar y al liberar la urna |
+| 2 | Verificación cruzada del conteo (`tajustes` vs `tcomp`) | ✅ Implementado con sello SHA-256 por mesa (`tally_seals`), vista `/admin/integridad` y comando `tally:verify` | — |
+| 3 | Sincronización en tiempo real por WebSocket | ⚠️ Polling (kiosco 2,5 s · JRV 4 s). Funcional, no instantáneo | Latencia perceptible |
 | 4 | Bloqueo de padrón durante la votación (`BloqueoLista`) | ✅ Implementado: middleware `block.padron` | — |
 | 5 | Garantía de un voto por estudiante a nivel de BD | ✅ Implementado: `votes.student_id` único + transacción | — |
-| 6 | Voto en blanco / nulo explícitos | ✅ Parcial: blanco (`party_id = 0`) contabilizado aparte; nulo = partido inexistente | Falta UI de voto nulo multi-selección |
-| 7 | Desbloquear estudiante (anular su voto) | ✅ Implementado: `POST /admin/estudiantes/{id}/desbloquear` | — |
-| 8 | Regla de ganador configurable (% mínimo, base padrón/votantes, sumar N) | ✅ Implementado en `VoteTallyService::verificarGanador()` | — |
-| 9 | Foto/huella del votante | Campos en `students`, sin uso operativo | Función anunciada pero inerte |
-| 10 | Voto por puesto (plancha completa) | Un solo `party_id` por voto | Ambos sistemas lo resuelven igual; decisión de producto pendiente |
+| 6 | Voto en blanco / nulo explícitos | ✅ Blanco (`party_id = 0`) contabilizado aparte | Falta UI de voto nulo multi-selección |
+| 7 | Desbloquear estudiante (anular su voto) | ✅ Implementado: botón en el padrón | — |
+| 8 | Regla de ganador configurable | ✅ Implementado en `VoteTallyService::verificarGanador()` | — |
+| 9 | Activación de urna con código + credencial JRV | ✅ Implementado: `/kiosko` con sesión de terminal | — |
+| 10 | Asignación de estudiante a urna por la JRV | ✅ Implementado: `urnas.id_estudiante` + `POST /jrv/api/asignar` | — |
+| 11 | Portal JRV operativo | ✅ Implementado: búsqueda, urnas, asignar y liberar | — |
+| 12 | Padrón administrable desde la UI | ✅ Implementado: listado, búsqueda, alta, edición, importación, desbloqueo | — |
+| 13 | Resultados e integridad visibles | ✅ Implementado en el panel admin | — |
+| 14 | Foto/huella del votante | Campos en `students`, sin uso operativo | Función anunciada pero inerte |
+| 15 | Voto por puesto (plancha completa) | Un solo `party_id` por voto | Decisión de producto pendiente |
 
 ### Hallazgos del manual de usuario original
 

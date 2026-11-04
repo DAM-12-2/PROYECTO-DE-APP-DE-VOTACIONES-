@@ -38,7 +38,7 @@
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
-<body class="h-full bg-surface text-primary antialiased" data-tiempo-votacion="{{ $tiempoVotacion ?? 90 }}">
+<body class="h-full bg-surface text-primary antialiased" data-tiempo-votacion="{{ $tiempoVotacion ?? 90 }}" data-urna-id="{{ $urna?->id ?? '' }}">
 
     <div class="min-h-full flex flex-col">
         <header class="no-print border-b border-outline bg-white">

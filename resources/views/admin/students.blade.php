@@ -1,82 +1,151 @@
 @extends('layouts.admin')
-@section('title', 'Gestión de Estudiantes')
+
+@section('title', 'Estudiantes — Sistema Electoral')
+
 @section('content')
-<div class="mb-section-margin">
-<h2 class="font-headline-lg text-headline-lg text-primary mb-1">Gestión de Estudiantes</h2>
-<p class="font-body-lg text-body-lg text-on-surface-variant">Administración del padrón electoral.</p>
-</div>
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-<div class="bg-surface-container-low border border-outline-variant rounded-xl p-6">
-<h3 class="font-headline-sm text-headline-sm text-primary mb-4 flex items-center gap-2">
-<span class="material-symbols-outlined">person_add</span> Añadir Estudiante Manual
-</h3>
-<form class="space-y-4">
-<div>
-<label class="block font-label-lg text-label-lg text-on-surface mb-1">Cédula</label>
-<input class="w-full px-3 py-2 bg-surface rounded border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="Ej: 101110111" type="text"/>
-</div>
-<div>
-<label class="block font-label-lg text-label-lg text-on-surface mb-1">Nombre Completo</label>
-<input class="w-full px-3 py-2 bg-surface rounded border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="Ej: Juan Pérez" type="text"/>
-</div>
-<div>
-<label class="block font-label-lg text-label-lg text-on-surface mb-1">Sección</label>
-<input class="w-full px-3 py-2 bg-surface rounded border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="Ej: 10-1" type="text"/>
-</div>
-<button class="bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg px-4 py-2 rounded-lg transition-colors w-full" type="button">Guardar Estudiante</button>
-</form>
-</div>
-<div class="bg-surface-container-low border border-outline-variant rounded-xl p-6 flex flex-col">
-<h3 class="font-headline-sm text-headline-sm text-primary mb-4 flex items-center gap-2">
-<span class="material-symbols-outlined">upload_file</span> Importar desde Excel (PIAD)
-</h3>
-<p class="font-body-md text-body-md text-on-surface-variant mb-4">Puede cargar masivamente a los estudiantes utilizando el formato exportado del sistema PIAD.</p>
-<div class="border-2 border-dashed border-outline-variant rounded-lg p-8 flex flex-col items-center justify-center text-center bg-surface hover:bg-surface-container-lowest transition-colors cursor-pointer flex-1 min-h-[160px]">
-<span class="material-symbols-outlined text-4xl text-on-surface-variant mb-2">cloud_upload</span>
-<p class="font-label-lg text-label-lg text-on-surface mb-1">Haga clic o arrastre un archivo .xlsx aquí</p>
-<p class="font-body-md text-body-md text-on-surface-variant text-sm">Máximo 5MB</p>
-</div>
-</div>
-</div>
-<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden mb-8">
-<div class="border-b border-outline-variant px-6 py-4 bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-<div class="flex items-center gap-4 flex-1">
-<div class="relative w-full sm:max-w-md">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
-<input class="w-full pl-10 pr-4 py-2 bg-surface rounded border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none font-body-md text-body-md text-on-surface transition-all" placeholder="Buscar por cédula o nombre..." type="text"/>
-</div>
-<button class="bg-surface hover:bg-surface-container border border-outline font-label-lg text-label-lg text-on-surface px-4 py-2 rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap">
-<span class="material-symbols-outlined" style="font-size:18px">filter_list</span> Filtros
-</button>
-</div>
-</div>
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-surface border-b border-outline-variant font-label-lg text-label-lg text-on-surface-variant">
-<th class="px-6 py-3 font-semibold">Cédula</th>
-<th class="px-6 py-3 font-semibold">Nombre Completo</th>
-<th class="px-6 py-3 font-semibold">Sección</th>
-<th class="px-6 py-3 font-semibold">Estado Voto</th>
-<th class="px-6 py-3 font-semibold text-right">Acciones</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="px-6 py-8 text-center text-on-surface-variant font-body-md" colspan="5">
-<span class="material-symbols-outlined block text-4xl mb-2 opacity-50">person_off</span>
-No hay estudiantes registrados.
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="border-t border-outline-variant px-6 py-3 bg-surface flex items-center justify-between">
-<span class="font-body-md text-body-md text-on-surface-variant">Mostrando 0 de 0</span>
-<div class="flex items-center gap-2">
-<button class="p-1 rounded hover:bg-surface-container disabled:opacity-50" disabled=""><span class="material-symbols-outlined">chevron_left</span></button>
-<button class="p-1 rounded hover:bg-surface-container disabled:opacity-50" disabled=""><span class="material-symbols-outlined">chevron_right</span></button>
-</div>
-</div>
+<div class="p-6 space-y-6">
+    <x-flash-messages />
+
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-primary">Estudiantes</h1>
+            <p class="text-sm text-on-surface-variant mt-1">Padrón electoral del centro educativo.</p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {{-- Alta --}}
+        <div class="bg-surface-container-low border border-outline-variant rounded-xl p-6">
+            <h3 class="font-headline-sm text-headline-sm text-primary mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined">person_add</span> Agregar estudiante
+            </h3>
+            <form method="POST" action="{{ route('admin.students.store') }}" class="space-y-4">
+                @csrf
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-on-surface-variant mb-1">Identificación</label>
+                    <input type="text" name="identificacion" required value="{{ old('identificacion') }}"
+                        class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 outline-none focus:border-primary">
+                    @error('identificacion') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-on-surface-variant mb-1">Nombre</label>
+                    <input type="text" name="nombre" required value="{{ old('nombre') }}"
+                        class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 outline-none focus:border-primary">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-on-surface-variant mb-1">Apellidos</label>
+                    <input type="text" name="apellidos" value="{{ old('apellidos') }}"
+                        class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 outline-none focus:border-primary">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wide text-on-surface-variant mb-1">Sección</label>
+                    <input type="text" name="seccion" value="{{ old('seccion') }}"
+                        class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 outline-none focus:border-primary">
+                </div>
+                <button type="submit"
+                    class="w-full rounded-lg bg-primary px-4 py-2 font-semibold text-on-primary hover:bg-primary-container transition">
+                    Guardar estudiante
+                </button>
+            </form>
+        </div>
+
+        {{-- Importación --}}
+        <div class="bg-surface-container-low border border-outline-variant rounded-xl p-6 lg:col-span-2">
+            <h3 class="font-headline-sm text-headline-sm text-primary mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined">upload_file</span> Importar padrón (PIAD)
+            </h3>
+            <p class="text-sm text-on-surface-variant mb-4">
+                Formato CSV con columnas <code>identificacion,nombre,apellidos,seccion</code>. Máximo 10 MB.
+            </p>
+            <form method="POST" action="{{ route('admin.students.import') }}" enctype="multipart/form-data"
+                class="flex flex-col sm:flex-row gap-3">
+                @csrf
+                <input type="file" name="csv_file" accept=".csv,.txt" required
+                    class="flex-1 rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm">
+                <button type="submit"
+                    class="rounded-lg bg-primary px-4 py-2 font-semibold text-on-primary hover:bg-primary-container transition">
+                    Importar
+                </button>
+            </form>
+            @error('csv_file') <p class="mt-2 text-xs text-red-600">{{ $message }}</p> @enderror
+        </div>
+    </div>
+
+    {{-- Listado --}}
+    <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+        <div class="border-b border-outline-variant px-6 py-4 bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <form method="GET" action="{{ route('admin.students') }}" class="flex gap-2 w-full sm:max-w-md">
+                <input type="text" name="q" value="{{ $busqueda }}" placeholder="Buscar por cédula o nombre..."
+                    class="w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 outline-none focus:border-primary">
+                <button type="submit"
+                    class="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-container">
+                    Buscar
+                </button>
+            </form>
+            <span class="text-sm text-on-surface-variant">
+                {{ $students->total() }} estudiante(s)
+            </span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-surface border-b border-outline-variant text-sm text-on-surface-variant">
+                        <th class="px-6 py-3 font-semibold">Cédula</th>
+                        <th class="px-6 py-3 font-semibold">Nombre completo</th>
+                        <th class="px-6 py-3 font-semibold">Sección</th>
+                        <th class="px-6 py-3 font-semibold">Estado voto</th>
+                        <th class="px-6 py-3 font-semibold text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($students as $student)
+                        <tr class="border-b border-outline-variant/50 hover:bg-surface-container-low/50">
+                            <td class="px-6 py-3 font-mono text-sm">{{ $student->identificacion }}</td>
+                            <td class="px-6 py-3">{{ $student->nombre }} {{ $student->apellidos }}</td>
+                            <td class="px-6 py-3">{{ $student->seccion ?? '—' }}</td>
+                            <td class="px-6 py-3">
+                                @if($student->voto)
+                                    <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700">Votó</span>
+                                @else
+                                    <span class="rounded-full bg-surface-variant px-3 py-1 text-xs font-semibold text-on-surface-variant">Pendiente</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-3">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ route('admin.students.edit', $student->id) }}"
+                                       class="rounded-lg p-2 text-primary hover:bg-primary/10" title="Editar">
+                                        <span class="material-symbols-outlined text-lg">edit</span>
+                                    </a>
+
+                                    @if($student->voto)
+                                        <form method="POST" action="{{ route('admin.students.desbloquear', $student->id) }}"
+                                              class="inline" onsubmit="return confirm('¿Anular el voto de este estudiante y desbloquearlo?')">
+                                            @csrf
+                                            <button type="submit" class="rounded-lg p-2 text-amber-600 hover:bg-amber-50" title="Desbloquear">
+                                                <span class="material-symbols-outlined text-lg">lock_open</span>
+                                            </button>
+                                        </form>
+                                    @endif
+
+                                    <x-delete-form :action="route('admin.students.destroy', $student->id)" confirmMessage="¿Eliminar este estudiante del padrón?" />
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-6 py-10 text-center text-on-surface-variant">
+                                No hay estudiantes registrados.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div class="border-t border-outline-variant px-6 py-3 bg-surface">
+            {{ $students->links() }}
+        </div>
+    </div>
 </div>
 @endsection

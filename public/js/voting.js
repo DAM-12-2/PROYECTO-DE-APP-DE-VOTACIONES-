@@ -48,7 +48,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnBlanco =
         document.getElementById('btn-blanco');
 
-    const tiempoLimite =
+    const pantallaActivacion =
+        document.getElementById('pantalla-activacion');
+
+    const pantallaEspera =
+        document.getElementById('pantalla-espera');
+
+    const nombreVotante =
+        document.getElementById('nombre-votante');
+
+    const urnaId =
+        document.body.dataset.urnaId || '';
+
+    let tiempoLimite =
         Number(document.body.dataset.tiempoVotacion) || 90;
 
     let temporizador = null;
@@ -172,6 +184,9 @@ document.addEventListener('DOMContentLoaded', () => {
         pantallaConfirmacion.classList.add('hidden');
 
         pantallaExito.classList.add('hidden');
+
+        if (pantallaActivacion) pantallaActivacion.classList.add('hidden');
+        if (pantallaEspera) pantallaEspera.classList.add('hidden');
 
 
         pantalla.classList.remove('hidden');
@@ -568,15 +583,74 @@ document.addEventListener('DOMContentLoaded', () => {
         studentForm.reset();
         listaCandidatos.innerHTML = '';
         opcionConfirmacion.innerHTML = '';
+        if (nombreVotante) nombreVotante.textContent = '';
         ocultarMensaje(
             mensajeIdentificacion
         );
         ocultarMensaje(
             mensajeVotacion
         );
+        if (urnaId && pantallaEspera) {
+            mostrarPantalla(pantallaEspera);
+            return;
+        }
         mostrarPantalla(
             pantallaIdentificacion
         );
         identificacionInput.focus();
+    }
+
+    async function consultarEstado() {
+        if (!urnaId) return;
+
+        try {
+            const response = await fetch('/kiosko/estado', {
+                headers: { 'Accept': 'application/json' },
+            });
+            const data = await response.json();
+
+            if (!data.autenticado) {
+                window.location.reload();
+                return;
+            }
+
+            tiempoLimite = data.tiempo_votacion || tiempoLimite;
+
+            if (data.estudiante) {
+                if (identificacionActual === '') {
+                    identificacionActual = data.estudiante.identificacion;
+                    if (nombreVotante) {
+                        nombreVotante.textContent =
+                            data.estudiante.nombre + ' · ' + (data.estudiante.seccion || '');
+                    }
+                    const partidos = await cargarPartidos();
+                    if (partidos.length > 0) {
+                        mostrarPartidos(partidos);
+                        mostrarPantalla(pantallaVotacion);
+                    }
+                }
+                return;
+            }
+
+            if (identificacionActual !== '') {
+                const enExito = !pantallaExito.classList.contains('hidden');
+                const enConfirmacion = !pantallaConfirmacion.classList.contains('hidden');
+                if (!enExito && !enConfirmacion) {
+                    reiniciarKiosco();
+                }
+                return;
+            }
+
+            if (pantallaEspera && pantallaVotacion.classList.contains('hidden')) {
+                mostrarPantalla(pantallaEspera);
+            }
+        } catch (error) {
+            // Sin conexión: se reintenta en el siguiente ciclo.
+        }
+    }
+
+    if (urnaId) {
+        consultarEstado();
+        setInterval(consultarEstado, 2500);
     }
 });

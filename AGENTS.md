@@ -25,20 +25,29 @@ Laravel 12 + SQLite + Tailwind CSS + JavaScript vanilla. Las vistas Blade reempl
 | tee | tee | tee (Tribunal) | /tribunal |
 | jrv | jrv | jrv (JRV) | /jrv |
 
-## Estructura clave
-- `assets/js/app.js` -- SPA del Tribunal (616 lns, 10 secciones vía templates JS + modal system)
-- `assets/js/login.js` -- Lógica login standalone
-- `assets/js/tailwind-config.js` -- Config Tailwind
-- `assets/css/styles.css` -- Estilos nav-link.active
-- `resources/views/layouts/tribunal.blade.php` -- Layout Tribunal (incluye app.js como SPA)
-- `resources/views/layouts/admin.blade.php` -- Layout admin Laravel
-- `resources/views/layouts/voting.blade.php` -- Layout kiosko/urna
-- `public/assets` -> `../../assets` (symlink)
-- `public/css/admin.css` -- CSS admin
-- `public/js/admin-config.js` -- tailwind.config admin
+## Flujo de operación
 
-## Tribunal SPA
-El layout `tribunal.blade.php` incluye `assets/js/app.js` que maneja toda la navegación del lado cliente (SPA). Las rutas `/tribunal`, `/tribunal/estudiantes`, `/tribunal/configuracion` cargan el mismo layout y app.js determina qué sección mostrar según el pathname. Los enlaces del sidebar usan `data-target` para navegación SPA con `e.preventDefault()`.
+1. **Admin/TEE** (`/login` → `/admin` o `/tribunal`): configura institución, partidos, mesas, secciones, candidatos, usuarios y abre/cierra la elección.
+2. **JRV** (`/login` → `/jrv`): busca al estudiante, lo asigna a una urna disponible y la urna se libera al votar.
+3. **Urna** (`/kiosko`): se activa con código de urna (`U001`) + usuario/contraseña JRV, espera la asignación y muestra la papeleta.
+4. **Cierre**: al cerrar la elección se sella el conteo por mesa (SHA-256); `/admin/integridad` y `php artisan tally:verify` detectan alteraciones.
+
+## Estructura clave
+- `app/Http/Controllers/KioskoController.php` -- activación, estado y cierre de urna
+- `public/js/voting.js` -- kiosco: polling, cronómetro, voto en blanco
+- `assets/js/jrv.js` -- portal JRV: búsqueda, urnas, asignación
+- `resources/views/layouts/tribunal.blade.php` -- navegación server-side del panel TEE
+- `resources/views/layouts/voting.blade.php` -- layout del kiosco
+- `public/assets` -> `../../assets` (symlink)
+
+## Usuarios y urnas de prueba
+| Usuario | Contraseña | Rol | Mesa |
+|---------|-----------|-----|------|
+| admin | admin | admin | — |
+| tee | tee | TEE | — |
+| jrv | jrv | JRV | Mesa 1 |
+
+Urnas sembradas: `U001` (Mesa 1), `U002` (Mesa 2), `U003` (Mesa 3, inactiva).
 
 ## Cambios recientes
 - `/Html/` eliminado (login.html, Tribunal_est.html, admin.html) — convertido a Blade

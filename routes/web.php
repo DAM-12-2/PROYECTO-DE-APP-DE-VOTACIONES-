@@ -18,10 +18,10 @@ use App\Http\Controllers\VoteController;
 use App\Http\Controllers\JrvController;
 use App\Http\Controllers\TribunalController;
 
-Route::get('/kiosko', function () {
-    $tiempoVotacion = (int) (\App\Models\Setting::where('nombre', 'tiempo_votacion')->value('detalle') ?? 90);
-    return view('voting.urna', compact('tiempoVotacion'));
-})->name('kiosko');
+Route::get('/kiosko', [\App\Http\Controllers\KioskoController::class, 'show'])->name('kiosko');
+Route::post('/kiosko/activar', [\App\Http\Controllers\KioskoController::class, 'activar'])->middleware('throttle:10,1');
+Route::post('/kiosko/cerrar', [\App\Http\Controllers\KioskoController::class, 'cerrar']);
+Route::get('/kiosko/estado', [\App\Http\Controllers\KioskoController::class, 'estado'])->middleware('throttle:180,1');
 
 Route::get('/', function () {
     return redirect('/login');
@@ -46,10 +46,10 @@ Route::middleware(['auth', 'role:admin,tee'])->prefix('admin')->group(function (
     Route::get('/dashboard/data', [DashboardController::class, 'dashboardData'])->name('admin.dashboard.data');
 
     Route::get('/estudiantes', [StudentController::class, 'index'])->name('admin.students');
-    Route::post('/estudiantes', [StudentController::class, 'store'])->middleware('block.padron');
+    Route::post('/estudiantes', [StudentController::class, 'store'])->middleware('block.padron')->name('admin.students.store');
     Route::get('/estudiantes/{id}/edit', [StudentController::class, 'edit'])->name('admin.students.edit');
     Route::put('/estudiantes/{id}', [StudentController::class, 'update'])->middleware('block.padron')->name('admin.students.update');
-    Route::delete('/estudiantes/{id}', [StudentController::class, 'destroy'])->middleware('block.padron');
+    Route::delete('/estudiantes/{id}', [StudentController::class, 'destroy'])->middleware('block.padron')->name('admin.students.destroy');
     Route::post('/estudiantes/importar', [StudentController::class, 'import'])->middleware('block.padron')->name('admin.students.import');
     Route::post('/estudiantes/{id}/desbloquear', [StudentController::class, 'desbloquear'])->name('admin.students.desbloquear');
 
@@ -67,6 +67,8 @@ Route::middleware(['auth', 'role:admin,tee'])->prefix('admin')->group(function (
 
     Route::get('/resultados', [ResultController::class, 'resultados'])->middleware('block.reports')->name('admin.resultados');
     Route::get('/resultados/exportar-csv', [ResultController::class, 'exportarResultadosCsv'])->middleware('block.reports')->name('admin.resultados.export_csv');
+    Route::get('/integridad', [ResultController::class, 'integridad'])->name('admin.integridad');
+    Route::post('/integridad/sellar', [ResultController::class, 'sellar'])->middleware('role:admin')->name('admin.integridad.sellar');
 
     Route::get('/configuracion', [SettingsController::class, 'settings'])->name('admin.settings');
     Route::post('/configuracion', [SettingsController::class, 'updateSettings']);
@@ -154,6 +156,9 @@ Route::middleware(['auth', 'role:jrv'])->prefix('jrv')->group(function () {
     Route::get('/', [JrvController::class, 'index'])->name('jrv.index');
     Route::get('/api/buscar', [JrvController::class, 'searchStudents'])->middleware('throttle:120,1');
     Route::get('/api/partidos', [JrvController::class, 'partidos'])->middleware('throttle:120,1');
+    Route::get('/api/urnas', [JrvController::class, 'urnas'])->middleware('throttle:120,1');
+    Route::post('/api/asignar', [JrvController::class, 'asignar'])->middleware('throttle:60,1');
+    Route::post('/api/liberar', [JrvController::class, 'liberar'])->middleware('throttle:60,1');
     Route::post('/api/activar-urna', [JrvController::class, 'activarUrna'])->middleware('throttle:60,1');
     Route::post('/api/desactivar-urna', [JrvController::class, 'desactivarUrna'])->middleware('throttle:60,1');
     Route::post('/api/votar', [VoteController::class, 'store'])->middleware('throttle:60,1');

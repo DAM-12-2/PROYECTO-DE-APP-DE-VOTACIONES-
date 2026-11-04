@@ -4,8 +4,77 @@
 
 <div class="rounded-2xl border border-outline bg-white p-6 shadow-sm sm:p-10">
 
-    {{-- Paso 1: identificación --}}
-    <section id="pantalla-identificacion" class="pantalla">
+    @if(!$urna)
+        {{-- Activación de la terminal de urna --}}
+        <section id="pantalla-activacion" class="pantalla">
+            <div class="mb-8 text-center">
+                <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-container text-white">
+                    <span class="material-symbols-outlined text-3xl">lock_open</span>
+                </div>
+                <h1 class="text-2xl font-bold sm:text-3xl">Activar urna</h1>
+                <p class="mt-2 text-on-surface-variant">
+                    La Junta Receptora de Votos debe habilitar esta terminal antes de votar.
+                </p>
+            </div>
+
+            @if($errors->any())
+                <div class="mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
+            <form method="POST" action="/kiosko/activar" class="mx-auto max-w-md space-y-4">
+                @csrf
+                <div>
+                    <label for="codigo" class="mb-1 block text-sm font-semibold">Código de urna</label>
+                    <input id="codigo" name="codigo" value="{{ old('codigo') }}" required autocomplete="off"
+                        class="w-full rounded-xl border-2 border-outline bg-surface px-4 py-3 text-center text-xl font-semibold tracking-widest outline-none focus:border-primary focus:bg-white"
+                        placeholder="U001">
+                </div>
+                <div>
+                    <label for="usuario" class="mb-1 block text-sm font-semibold">Usuario JRV</label>
+                    <input id="usuario" name="usuario" value="{{ old('usuario') }}" required autocomplete="username"
+                        class="w-full rounded-xl border-2 border-outline bg-surface px-4 py-3 outline-none focus:border-primary focus:bg-white">
+                </div>
+                <div>
+                    <label for="password" class="mb-1 block text-sm font-semibold">Contraseña JRV</label>
+                    <input id="password" name="password" type="password" required autocomplete="current-password"
+                        class="w-full rounded-xl border-2 border-outline bg-surface px-4 py-3 outline-none focus:border-primary focus:bg-white">
+                </div>
+                <button type="submit"
+                    class="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-4 text-lg font-semibold text-white transition hover:bg-primary-container focus:outline-none focus:ring-4 focus:ring-primary/20">
+                    Activar urna
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </button>
+            </form>
+        </section>
+    @else
+        {{-- Esperando asignación de estudiante --}}
+        <section id="pantalla-espera" class="pantalla">
+            <div class="mx-auto max-w-md py-8 text-center">
+                <div class="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <span class="material-symbols-outlined animate-pulse text-5xl">hourglass_top</span>
+                </div>
+                <h1 class="text-2xl font-bold">Urna {{ $urna->codigo }} activa</h1>
+                <p class="mt-2 text-on-surface-variant">
+                    {{ $urna->mesa?->nombre ?? 'Mesa asignada' }} · Esperando que la JRV asigne al siguiente estudiante.
+                </p>
+                <div class="mt-6 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
+                    <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                    Lista para votar
+                </div>
+                <form method="POST" action="/kiosko/cerrar" class="mt-8">
+                    @csrf
+                    <button type="submit" class="text-sm font-semibold text-on-surface-variant underline hover:text-red-600">
+                        Cerrar urna
+                    </button>
+                </form>
+            </div>
+        </section>
+    @endif
+
+    {{-- Identificación manual (respaldo si la JRV no asigna) --}}
+    <section id="pantalla-identificacion" class="hidden pantalla">
         <div class="mb-8 text-center">
             <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-container text-white">
                 <span class="material-symbols-outlined text-3xl">how_to_vote</span>
@@ -22,7 +91,6 @@
                 name="identificacion"
                 inputmode="numeric"
                 autocomplete="off"
-                autofocus
                 placeholder="Ej. 1000001"
                 class="w-full rounded-xl border-2 border-outline bg-surface px-4 py-4 text-center text-2xl font-semibold tracking-wider outline-none transition focus:border-primary focus:bg-white">
 
@@ -36,10 +104,6 @@
                 <span class="material-symbols-outlined">arrow_forward</span>
             </button>
         </form>
-
-        <p class="mt-6 text-center text-xs text-on-surface-variant">
-            Si su identificación no aparece en el padrón, solicite ayuda a la Junta Receptora de Votos.
-        </p>
     </section>
 
     {{-- Paso 2: selección --}}
@@ -48,6 +112,7 @@
             <div>
                 <p class="text-xs font-semibold uppercase tracking-widest text-on-surface-variant">Paso 2 de 3</p>
                 <h2 class="mt-1 text-2xl font-bold">Seleccione su opción</h2>
+                <p id="nombre-votante" class="mt-1 text-sm text-on-surface-variant"></p>
             </div>
 
             <div id="cronometro" class="flex items-center gap-3 rounded-xl border border-outline px-4 py-2">
