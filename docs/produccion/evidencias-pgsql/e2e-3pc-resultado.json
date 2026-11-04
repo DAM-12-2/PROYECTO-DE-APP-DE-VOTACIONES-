@@ -1,0 +1,44 @@
+{
+  "base": "http://127.0.0.1:8001",
+  "estudiante": "1000001",
+  "pasos": [
+    {
+      "paso": "PC3 urna activa y en espera",
+      "ts": "2026-11-04T17:55:24.119Z"
+    },
+    {
+      "paso": "PC1 solicitud enviada",
+      "ts": "2026-11-04T17:55:28.069Z",
+      "ms": 2629
+    },
+    {
+      "paso": "PC2 recibe la solicitud",
+      "ts": "2026-11-04T17:55:29.259Z"
+    },
+    {
+      "paso": "PC1 recibe la aprobación",
+      "ts": "2026-11-04T17:55:31.750Z",
+      "ms": 2491,
+      "urna": "U001"
+    },
+    {
+      "paso": "PC3 recibe la papeleta",
+      "ts": "2026-11-04T17:55:31.809Z"
+    },
+    {
+      "paso": "PC3 voto registrado",
+      "ts": "2026-11-04T17:55:34.794Z",
+      "ms": 2559
+    },
+    {
+      "paso": "PC1 recibe el voto",
+      "ts": "2026-11-04T17:55:34.870Z",
+      "ms": 2632
+    }
+  ],
+  "exito": true,
+  "latencias": {
+    "aprobacion_ms": 2632,
+    "voto_ms": 2559
+  }
+}

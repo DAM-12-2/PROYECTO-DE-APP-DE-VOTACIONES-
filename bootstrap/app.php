@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->web(append: [
             \App\Http\Middleware\SecurityHeaders::class,
+            \App\Http\Middleware\SetRlsContext::class,
         ]);
         $middleware->api(remove: 'Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful');
     })

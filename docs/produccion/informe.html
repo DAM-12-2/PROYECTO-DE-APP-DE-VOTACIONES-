@@ -101,6 +101,7 @@ fijas están en el seeder de desarrollo, que no debe ejecutarse en producción.<
 <tr><td>API legada</td><td class="ok">Padrón, votación y urnas exigen sesión y rol</td></tr>
 <tr><td>Acceso por mesa</td><td class="ok">La JRV no puede consultar ni registrar estudiantes de otra mesa</td></tr>
 <tr><td>CSV / Excel</td><td class="ok">CSV injection neutralizada, límite de 10 000 filas, tipo y tamaño validados</td></tr>
+<tr><td>RLS PostgreSQL</td><td class="ok">Probado en PostgreSQL 16: JRV mesa 1 ve 1 urna y 4 estudiantes; admin ve 3 urnas y 8; votos invisibles para JRV</td></tr>
 <tr><td>Tiempo real</td><td class="ok">Reverb local con canales privados y respaldo por polling</td></tr>
 </table>
 
@@ -254,6 +255,7 @@ no será el software sino la logística: cantidad de urnas, filas y tiempo por e
 <tr><td>22</td><td>Contraseñas con Argon2id</td><td class="ok">CUMPLE</td><td>Hash verificado</td></tr>
 <tr><td>23</td><td>API protegida</td><td class="ok">CUMPLE</td><td>Pruebas de 401</td></tr>
 <tr><td>24</td><td>CSV/Excel sin inyección</td><td class="ok">CUMPLE</td><td>Pruebas unitarias y de exportación</td></tr>
+<tr><td>25</td><td>RLS real en base de datos</td><td class="ok">CUMPLE</td><td>PostgreSQL 16 con políticas por mesa</td></tr>
 </table>
 
 <h2>9. Comandos de operación</h2>

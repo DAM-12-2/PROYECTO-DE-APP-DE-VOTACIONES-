@@ -72,9 +72,26 @@ El certificado debe instalarse como confiable en las tres computadoras.
 
 ## RLS y PostgreSQL
 
-El control por mesa ya funciona en la aplicación. Para activar Row Level Security
-en el motor, seguir `docs/despliegue-postgres-rls.md` y aplicar
-`database/rls-postgres.sql`.
+El aislamiento por mesa está probado con **PostgreSQL 16 + RLS**:
+
+| Rol | Estudiantes | Urnas | Votos | Solicitudes |
+|---|---|---|---|---|
+| JRV mesa 1 | 4 | 1 | 0 | 1 |
+| JRV mesa 2 | 4 | 1 | 0 | 0 |
+| Admin | 8 | 3 | 1 | 1 |
+
+Aplicar `database/rls-postgres.sql` como superusuario. El script incluye
+`FORCE ROW LEVEL SECURITY`, políticas por mesa y la función `urna_por_codigo`
+para activar la terminal antes del login.
+
+En el host sin driver:
+
+```bash
+sudo apt install postgresql php8.4-pgsql
+sudo systemctl enable --now postgresql
+```
+
+Guía completa: `docs/despliegue-postgres-rls.md`.
 
 ## Veredicto resumido
 

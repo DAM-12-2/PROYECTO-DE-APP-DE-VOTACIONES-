@@ -3,11 +3,15 @@
 -- El contexto se establece por transacción con set_config('app.role'|'app.user_id'|'app.mesa_id', ..., true).
 
 ALTER TABLE students ENABLE ROW LEVEL SECURITY;
+ALTER TABLE students FORCE ROW LEVEL SECURITY;
 ALTER TABLE votes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE votes FORCE ROW LEVEL SECURITY;
 ALTER TABLE urnas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE urnas FORCE ROW LEVEL SECURITY;
 ALTER TABLE vote_requests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE vote_requests FORCE ROW LEVEL SECURITY;
 ALTER TABLE bitacoras ENABLE ROW LEVEL SECURITY;
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bitacoras FORCE ROW LEVEL SECURITY;
 
 CREATE OR REPLACE FUNCTION app_role() RETURNS text LANGUAGE sql STABLE AS $$
   SELECT COALESCE(current_setting('app.role', true), 'anon')
@@ -34,6 +38,31 @@ CREATE POLICY students_write ON students FOR ALL USING (
   app_role() IN ('admin', 'tee')
 ) WITH CHECK (
   app_role() IN ('admin', 'tee')
+);
+
+-- Activación de urna: función acotada que solo busca por código.
+-- Debe crearse como superusuario para que pueda leer a través de RLS.
+CREATE OR REPLACE FUNCTION urna_por_codigo(p_codigo text)
+RETURNS TABLE(id bigint, codigo text, estado int, id_mesa int)
+LANGUAGE sql SECURITY DEFINER SET search_path = public
+AS $$
+  SELECT u.id, u.codigo, u.estado, u.id_mesa FROM urnas u WHERE u.codigo = p_codigo;
+$$;
+GRANT EXECUTE ON FUNCTION urna_por_codigo(text) TO CURRENT_USER;
+
+-- La JRV puede marcar el voto de estudiantes de su mesa (solo la fila).
+CREATE POLICY students_update_jrv ON students FOR UPDATE
+USING (
+  app_role() = 'jrv' AND EXISTS (
+    SELECT 1 FROM secciones_mesa sm
+    WHERE sm.seccion = students.seccion AND sm.mesa_id = app_mesa()
+  )
+)
+WITH CHECK (
+  app_role() = 'jrv' AND EXISTS (
+    SELECT 1 FROM secciones_mesa sm
+    WHERE sm.seccion = students.seccion AND sm.mesa_id = app_mesa()
+  )
 );
 
 -- Votos: el voto es secreto; solo admin/TEE leen el conteo cifrado.
@@ -65,9 +94,4 @@ CREATE POLICY bitacoras_select ON bitacoras FOR SELECT USING (
 );
 CREATE POLICY bitacoras_insert ON bitacoras FOR INSERT WITH CHECK (
   app_role() <> 'anon'
-);
-
--- Usuarios: admin/TEE ven todos; cada usuario se ve a sí mismo.
-CREATE POLICY users_select ON users FOR SELECT USING (
-  app_role() IN ('admin', 'tee') OR users.id = app_user()
 );

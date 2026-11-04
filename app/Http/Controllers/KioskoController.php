@@ -27,9 +27,16 @@ class KioskoController extends Controller
             'password' => 'required|string',
         ]);
 
-        $urna = Urna::where('codigo', $data['codigo'])->first();
+        if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'pgsql') {
+            $publica = \Illuminate\Support\Facades\DB::selectOne(
+                'SELECT * FROM urna_por_codigo(?)',
+                [$data['codigo']]
+            );
+        } else {
+            $publica = Urna::where('codigo', $data['codigo'])->first();
+        }
 
-        if (!$urna) {
+        if (!$publica) {
             return back()->withErrors(['codigo' => 'El código de urna no existe.'])->withInput();
         }
 
@@ -43,7 +50,7 @@ class KioskoController extends Controller
             return back()->withErrors(['usuario' => 'Debe cambiar su contraseña antes de operar la urna.'])->withInput();
         }
 
-        if ((int) $usuario->mesa_id !== (int) $urna->id_mesa) {
+        if ((int) $usuario->mesa_id !== (int) $publica->id_mesa) {
             return back()->withErrors(['usuario' => 'Este usuario JRV no pertenece a la mesa de la urna.'])->withInput();
         }
 
@@ -53,14 +60,17 @@ class KioskoController extends Controller
 
         Auth::login($usuario);
         $request->session()->regenerate();
-        $request->session()->put('urna_id', $urna->id);
 
-        $urna->update([
+        $this->setRlsContext($usuario);
+
+        Urna::where('id', $publica->id)->update([
             'estado' => 1,
             'horaactivacion' => now()->format('H:i:s'),
         ]);
 
-        return redirect('/kiosko')->with('success', "Urna {$urna->codigo} activada.");
+        $request->session()->put('urna_id', $publica->id);
+
+        return redirect('/kiosko')->with('success', "Urna {$publica->codigo} activada.");
     }
 
     public function cerrar(Request $request)
@@ -114,6 +124,18 @@ class KioskoController extends Controller
             'eleccion_abierta' => Setting::where('nombre', 'eleccion_abierta')->value('detalle') === '1',
             'tiempo_votacion' => $this->tiempoVotacion(),
         ]);
+    }
+
+
+    private function setRlsContext(User $usuario): void
+    {
+        if (\Illuminate\Support\Facades\DB::connection()->getDriverName() !== 'pgsql') {
+            return;
+        }
+
+        \Illuminate\Support\Facades\DB::selectOne("SELECT set_config('app.role', ?, false)", ['jrv']);
+        \Illuminate\Support\Facades\DB::selectOne("SELECT set_config('app.user_id', ?, false)", [(string) $usuario->id]);
+        \Illuminate\Support\Facades\DB::selectOne("SELECT set_config('app.mesa_id', ?, false)", [(string) $usuario->mesa_id]);
     }
 
     private function urnaActual(): ?Urna

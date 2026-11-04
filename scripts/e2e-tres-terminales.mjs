@@ -39,6 +39,7 @@ try {
     const pc2 = await c2.newPage();
     const pc3 = await c3.newPage();
 
+
     // PC3: activar urna
     await pc3.goto(`${BASE}/kiosko`);
     await pc3.fill('#codigo', 'U001');

@@ -81,10 +81,12 @@ class VoteController extends Controller
                     return [400, 'No hay una urna activa para su mesa'];
                 }
 
-                Vote::create([
+                Vote::insert([
                     'student_id' => $estudiante->id,
                     'encrypted_party' => Crypt::encryptString((string) $request->party_id),
                     'id_mesa' => $urna->id_mesa,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
 
                 $estudiante->voto = true;

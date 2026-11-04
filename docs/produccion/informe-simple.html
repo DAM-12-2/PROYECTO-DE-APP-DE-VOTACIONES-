@@ -107,8 +107,19 @@ dirección IP del router del colegio. No hace falta internet.
 <tr><td>Programas actualizados</td><td class="ok">BIEN</td><td>Se corrigieron 23 fallas de seguridad conocidas.</td></tr>
 <tr><td>Cabeceras de seguridad</td><td class="ok">BIEN</td><td>El navegador recibe instrucciones que bloquean ataques comunes.</td></tr>
 <tr><td>Archivos CSV</td><td class="ok">BIEN</td><td>No se pueden colar fórmulas maliciosas en Excel.</td></tr>
-<tr><td>RLS en la base de datos</td><td class="warn">PENDIENTE</td><td>Hay el control en el programa y el script listo para PostgreSQL.</td></tr>
+<tr><td>RLS en la base de datos</td><td class="ok">BIEN</td><td>Probado con PostgreSQL 16: cada Junta solo ve su mesa y los votos no son visibles.</td></tr>
 </table>
+
+<h3>Prueba real con PostgreSQL</h3>
+<p>Se instaló PostgreSQL en un contenedor y se aplicaron las reglas de aislamiento (RLS). El resultado:</p>
+<table>
+<tr><th>Quién consulta</th><th>Estudiantes</th><th>Urnas</th><th>Votos</th><th>Solicitudes</th></tr>
+<tr><td>Junta de la mesa 1</td><td>4 (solo su mesa)</td><td>1 (la suya)</td><td>0 (no puede ver votos)</td><td>1</td></tr>
+<tr><td>Junta de la mesa 2</td><td>4 (solo su mesa)</td><td>1 (la suya)</td><td>0</td><td>0</td></tr>
+<tr><td>Administrador</td><td>8 (todas)</td><td>3 (todas)</td><td>1</td><td>1</td></tr>
+</table>
+<p class="small">Si alguien intentara leer datos de otra mesa directamente en la base, PostgreSQL devuelve cero filas.
+El ciclo completo de las tres computadoras también se ejecutó sobre PostgreSQL sin errores.</p>
 
 <h2>5. ¿Aguanta la cantidad de estudiantes?</h2>
 <p>Se hicieron pruebas con hasta <strong>100 votos simultáneos</strong>.</p>
