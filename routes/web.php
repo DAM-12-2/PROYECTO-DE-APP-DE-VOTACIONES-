@@ -60,6 +60,8 @@ Route::middleware(['auth', 'password.changed', 'role:admin,tee'])->prefix('admin
     Route::get('/dashboard/data', [DashboardController::class, 'dashboardData'])->name('admin.dashboard.data');
 
     Route::get('/estudiantes', [StudentController::class, 'index'])->name('admin.students');
+    Route::get('/estudiantes/exportar', [StudentController::class, 'exportXlsx'])->name('admin.students.export.xlsx');
+    Route::get('/estudiantes/exportar/csv', [StudentController::class, 'export'])->name('admin.students.export.csv');
     Route::post('/estudiantes', [StudentController::class, 'store'])->middleware('block.padron')->name('admin.students.store');
     Route::get('/estudiantes/{id}/edit', [StudentController::class, 'edit'])->name('admin.students.edit');
     Route::put('/estudiantes/{id}', [StudentController::class, 'update'])->middleware('block.padron')->name('admin.students.update');

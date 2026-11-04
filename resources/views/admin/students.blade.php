@@ -11,6 +11,16 @@
             <h1 class="text-2xl font-bold text-primary">Estudiantes</h1>
             <p class="text-sm text-on-surface-variant mt-1">Padrón electoral del centro educativo.</p>
         </div>
+        <div class="flex flex-wrap gap-2">
+            <a href="{{ route('admin.students.export.xlsx') }}"
+               class="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-on-primary hover:bg-primary-container transition">
+                <span class="material-symbols-outlined text-[18px]">table_view</span> Exportar Excel
+            </a>
+            <a href="{{ route('admin.students.export.csv') }}"
+               class="inline-flex items-center gap-2 rounded-lg border border-outline-variant px-4 py-2 text-sm font-semibold text-primary hover:bg-surface-container transition">
+                <span class="material-symbols-outlined text-[18px]">description</span> Exportar CSV
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -55,12 +65,13 @@
                 <span class="material-symbols-outlined">upload_file</span> Importar padrón (PIAD)
             </h3>
             <p class="text-sm text-on-surface-variant mb-4">
-                Formato CSV con columnas <code>identificacion,nombre,apellidos,seccion</code>. Máximo 10 MB.
+                Plantilla del PIAD en Excel (<code>.xlsx</code>, <code>.xls</code>) o CSV, con las columnas
+                <code>Cédula, Primer apellido, Segundo apellido, Nombre, Sección</code>. Máximo 10 MB.
             </p>
             <form method="POST" action="{{ route('admin.students.import') }}" enctype="multipart/form-data"
                 class="flex flex-col sm:flex-row gap-3">
                 @csrf
-                <input type="file" name="csv_file" accept=".csv,.txt" required
+                <input type="file" name="csv_file" accept=".csv,.txt,.xls,.xlsx" required
                     class="flex-1 rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm">
                 <button type="submit"
                     class="rounded-lg bg-primary px-4 py-2 font-semibold text-on-primary hover:bg-primary-container transition">
