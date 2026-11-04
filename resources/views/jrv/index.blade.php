@@ -111,5 +111,6 @@
             </div>
         @endif
     </div>
+    <x-creditos class="mt-8 pb-4" />
 </main>
 @endsection
