@@ -33,7 +33,7 @@ class VoteTallyService
         return Party::where('estado', 1)->pluck('id')->map(fn($id) => (string)$id)->toArray();
     }
 
-    public function tallyVotes(Collection|array $votes = null): VoteTallyResult
+    public function tallyVotes(Collection|array|null $votes = null): VoteTallyResult
     {
         if ($votes === null) {
             $votes = Vote::select('encrypted_party', 'id_mesa')->get();

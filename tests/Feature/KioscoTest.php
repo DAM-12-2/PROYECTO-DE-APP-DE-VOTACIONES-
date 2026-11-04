@@ -18,6 +18,7 @@ class KioscoTest extends TestCase
         $response->assertSee('data-tiempo-votacion="90"', false);
         $response->assertSee('id="tiempo-restante"', false);
         $response->assertSee('id="btn-blanco"', false);
+        $response->assertSee('/js/voting.js', false);
     }
 
     public function test_kiosco_usa_el_tiempo_configurado(): void

@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Student;
 use App\Models\User;
 use App\Models\Vote;
+use App\Models\Setting;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -17,6 +18,7 @@ class VotoIntegridadTest extends TestCase
     {
         parent::setUp();
         $this->seed(DatabaseSeeder::class);
+        Setting::updateOrCreate(['nombre' => 'eleccion_abierta'], ['detalle' => '1']);
         $this->actingAs(User::where('name', 'jrv')->first());
     }
 

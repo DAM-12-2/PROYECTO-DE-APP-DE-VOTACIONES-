@@ -113,5 +113,7 @@ class DatabaseSeeder extends Seeder
         foreach ($urnas as $u) {
             Urna::updateOrCreate(['codigo' => $u['codigo']], $u);
         }
+
+        \App\Models\Setting::updateOrCreate(['nombre' => 'tiempo_votacion'], ['detalle' => '90']);
     }
 }

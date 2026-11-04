@@ -1,0 +1,10 @@
+base_url=http://127.0.0.1:8124
+solicitudes=200
+concurrencia=100
+exitos_201=200
+errores=0
+codigos=    200 201 
+latencia_media_s=2.008
+latencia_p95_s=2.733
+latencia_max_s=2.758051
+fecha=2026-11-04T10:41:59-06:00

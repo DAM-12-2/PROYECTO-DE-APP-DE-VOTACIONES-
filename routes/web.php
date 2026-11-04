@@ -31,17 +31,22 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::middleware('auth')->group(function () {
+    Route::get('/cambiar-password', [AuthController::class, 'showChangePassword'])->name('password.change');
+    Route::post('/cambiar-password', [AuthController::class, 'changePassword'])->name('password.change.update');
+});
+
 Route::get('/manual', function () {
     return view('admin.manual');
 })->name('admin.manual');
 
-Route::middleware(['auth', 'role:tee'])->prefix('tribunal')->group(function () {
+Route::middleware(['auth', 'password.changed', 'role:tee'])->prefix('tribunal')->group(function () {
     Route::get('/', [TribunalController::class, 'index'])->name('tribunal.dashboard');
     Route::get('/estudiantes', [TribunalController::class, 'estudiantes'])->name('tribunal.estudiantes');
     Route::get('/configuracion', [TribunalController::class, 'configuracion'])->name('tribunal.configuracion');
 });
 
-Route::middleware(['auth', 'role:admin,tee'])->prefix('admin')->group(function () {
+Route::middleware(['auth', 'password.changed', 'role:admin,tee'])->prefix('admin')->group(function () {
     Route::get('/', [DashboardController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/dashboard/data', [DashboardController::class, 'dashboardData'])->name('admin.dashboard.data');
 
@@ -152,7 +157,7 @@ Route::get('/ayuda', function () {
     Route::get('/api/ganador', [ResultController::class, 'apiVerificarGanador'])->middleware('throttle:30,1');
 });
 
-Route::middleware(['auth', 'role:jrv'])->prefix('jrv')->group(function () {
+Route::middleware(['auth', 'password.changed', 'role:jrv'])->prefix('jrv')->group(function () {
     Route::get('/', [JrvController::class, 'index'])->name('jrv.index');
     Route::get('/api/buscar', [JrvController::class, 'searchStudents'])->middleware('throttle:120,1');
     Route::get('/api/partidos', [JrvController::class, 'partidos'])->middleware('throttle:120,1');
@@ -161,5 +166,5 @@ Route::middleware(['auth', 'role:jrv'])->prefix('jrv')->group(function () {
     Route::post('/api/liberar', [JrvController::class, 'liberar'])->middleware('throttle:60,1');
     Route::post('/api/activar-urna', [JrvController::class, 'activarUrna'])->middleware('throttle:60,1');
     Route::post('/api/desactivar-urna', [JrvController::class, 'desactivarUrna'])->middleware('throttle:60,1');
-    Route::post('/api/votar', [VoteController::class, 'store'])->middleware('throttle:60,1');
+    Route::post('/api/votar', [VoteController::class, 'store'])->middleware('throttle:' . env('VOTE_THROTTLE', '60') . ',1');
 });

@@ -33,6 +33,7 @@ Thumbs.db
 *.sqlite3
 opencode.jsonc
 *.pdf
+!docs/produccion/*.pdf
 
 # Herramientas y binarios locales
 /composer.phar

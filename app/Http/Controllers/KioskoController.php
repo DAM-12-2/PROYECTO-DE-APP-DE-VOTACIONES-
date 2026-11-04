@@ -39,8 +39,16 @@ class KioskoController extends Controller
             return back()->withErrors(['usuario' => 'Usuario o contraseña de JRV inválidos.'])->withInput();
         }
 
+        if ($usuario->must_change_password) {
+            return back()->withErrors(['usuario' => 'Debe cambiar su contraseña antes de operar la urna.'])->withInput();
+        }
+
         if ((int) $usuario->mesa_id !== (int) $urna->id_mesa) {
             return back()->withErrors(['usuario' => 'Este usuario JRV no pertenece a la mesa de la urna.'])->withInput();
+        }
+
+        if (Setting::where('nombre', 'eleccion_abierta')->value('detalle') !== '1') {
+            return back()->withErrors(['codigo' => 'La elección está cerrada. El Tribunal debe abrirla primero.'])->withInput();
         }
 
         Auth::login($usuario);

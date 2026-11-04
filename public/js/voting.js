@@ -617,17 +617,24 @@ document.addEventListener('DOMContentLoaded', () => {
             tiempoLimite = data.tiempo_votacion || tiempoLimite;
 
             if (data.estudiante) {
-                if (identificacionActual === '') {
-                    identificacionActual = data.estudiante.identificacion;
-                    if (nombreVotante) {
-                        nombreVotante.textContent =
-                            data.estudiante.nombre + ' · ' + (data.estudiante.seccion || '');
-                    }
-                    const partidos = await cargarPartidos();
-                    if (partidos.length > 0) {
-                        mostrarPartidos(partidos);
-                        mostrarPantalla(pantallaVotacion);
-                    }
+                const enVotacion = !pantallaVotacion.classList.contains('hidden');
+                const enConfirmacion = !pantallaConfirmacion.classList.contains('hidden');
+                const enExito = !pantallaExito.classList.contains('hidden');
+
+                if (enVotacion || enConfirmacion || enExito) {
+                    return;
+                }
+
+                identificacionActual = data.estudiante.identificacion;
+                if (nombreVotante) {
+                    nombreVotante.textContent =
+                        data.estudiante.nombre + ' · ' + (data.estudiante.seccion || '');
+                }
+
+                const partidos = await cargarPartidos();
+                if (partidos.length > 0) {
+                    mostrarPartidos(partidos);
+                    mostrarPantalla(pantallaVotacion);
                 }
                 return;
             }

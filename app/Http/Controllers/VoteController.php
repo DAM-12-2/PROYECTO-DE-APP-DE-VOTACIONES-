@@ -9,6 +9,8 @@ use Illuminate\Database\UniqueConstraintViolationException;
 use App\Models\Student;
 use App\Models\Vote;
 use App\Models\Urna;
+use App\Models\Party;
+use App\Models\Setting;
 use App\Services\BitacoraService;
 
 class VoteController extends Controller
@@ -31,6 +33,15 @@ class VoteController extends Controller
 
         try {
             [$status, $message] = DB::transaction(function () use ($request, $user) {
+                if (Setting::where('nombre', 'eleccion_abierta')->value('detalle') !== '1') {
+                    return [423, 'La votación está cerrada.'];
+                }
+
+                $partyId = (int) $request->party_id;
+                if ($partyId > 0 && !Party::where('id', $partyId)->where('estado', 1)->exists()) {
+                    return [422, 'El partido seleccionado no es válido.'];
+                }
+
                 $estudiante = Student::where('identificacion', $request->identificacion)
                     ->lockForUpdate()
                     ->first();

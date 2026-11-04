@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Student;
 use App\Models\Urna;
 use App\Models\User;
+use App\Models\Setting;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -17,6 +18,7 @@ class KioskoFlujoTest extends TestCase
     {
         parent::setUp();
         $this->seed(DatabaseSeeder::class);
+        Setting::updateOrCreate(['nombre' => 'eleccion_abierta'], ['detalle' => '1']);
     }
 
     private function jrv(): User
