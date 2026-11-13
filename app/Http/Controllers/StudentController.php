@@ -106,10 +106,16 @@ class StudentController extends Controller
                 ? $this->leerExcel($file->getRealPath())
                 : $this->leerCsv($file->getRealPath());
         } catch (\Throwable $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No se pudo leer el archivo. Verifique que sea un CSV o Excel válido.',
-            ], 422);
+            $mensaje = 'No se pudo leer el archivo. Verifique que sea un CSV o Excel válido.';
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $mensaje,
+                ], 422);
+            }
+
+            return redirect()->route('admin.students')->withErrors(['csv_file' => $mensaje]);
         }
 
         $columnas = $this->mapearColumnas($filas);
@@ -163,12 +169,18 @@ class StudentController extends Controller
             $insertados++;
         }
 
-        return response()->json([
-            'success' => true,
-            'message' => "Se procesaron {$insertados} estudiantes. Filas rechazadas: {$rechazados}.",
-            'insertados' => $insertados,
-            'rechazados' => $rechazados,
-        ], 200);
+        $mensaje = "Se procesaron {$insertados} estudiantes. Filas rechazadas: {$rechazados}.";
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $mensaje,
+                'insertados' => $insertados,
+                'rechazados' => $rechazados,
+            ], 200);
+        }
+
+        return redirect()->route('admin.students')->with('success', $mensaje);
     }
 
     private function leerCsv(string $ruta): array
@@ -296,6 +308,8 @@ class StudentController extends Controller
     {
         $filas = $this->filasPadron();
         $total = $filas->count();
+        $votaron = $filas->filter(fn ($fila) => ($fila[5] ?? '') === 'Votó')->count();
+        $pendientes = $total - $votaron;
         $ultimaFila = 4 + $total;
 
         $spreadsheet = new Spreadsheet();
@@ -323,8 +337,9 @@ class StudentController extends Controller
         $hoja->getStyle('B2')->getFont()->setSize(11)->setColor(new Color('FF555555'));
 
         $hoja->mergeCells('B3:F3');
-        $hoja->setCellValue('B3', 'Generado el ' . now()->format('d/m/Y H:i') . '  ·  Total: ' . $total . ' estudiantes');
+        $hoja->setCellValue('B3', 'Generado el ' . now()->format('d/m/Y H:i') . '  ·  Total: ' . $total . '  ·  Votaron: ' . $votaron . '  ·  Pendientes: ' . $pendientes);
         $hoja->getStyle('B3')->getFont()->setSize(9)->setItalic(true)->setColor(new Color('FF777777'));
+        $hoja->getStyle('B1:F3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 
         $hoja->fromArray($this->encabezadosPadron(), null, 'A4');
 
@@ -375,6 +390,12 @@ class StudentController extends Controller
         $hoja->getPageSetup()->setFitToWidth(1);
         $hoja->getPageSetup()->setFitToHeight(0);
         $hoja->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(4, 4);
+        $hoja->getPageMargins()->setTop(0.55)->setRight(0.3)->setBottom(0.55)->setLeft(0.3);
+        $hoja->getHeaderFooter()->setOddHeader('&L&"Calibri,Bold"&12PADRÓN ELECTORAL&R&"Calibri"&10CTP AIRA');
+        $hoja->getHeaderFooter()->setOddFooter('&LGenerado por el Sistema Electoral CTP AIRA&RPágina &P de &N');
+
+        $this->agregarHojaResumen($spreadsheet, $filas, $total, $votaron, $pendientes);
+        $spreadsheet->setActiveSheetIndex(0);
 
         $spreadsheet->getProperties()
             ->setCreator('Sistema Electoral CTP AIRA')
@@ -391,6 +412,71 @@ class StudentController extends Controller
             'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Cache-Control' => 'max-age=0, no-cache, no-store, must-revalidate',
         ]);
+    }
+
+    private function agregarHojaResumen(Spreadsheet $spreadsheet, \Illuminate\Support\Collection $filas, int $total, int $votaron, int $pendientes): void
+    {
+        $hoja = $spreadsheet->createSheet();
+        $hoja->setTitle('Resumen');
+        $hoja->setShowGridLines(false);
+
+        $hoja->mergeCells('A1:D1');
+        $hoja->setCellValue('A1', 'RESUMEN DEL PADRÓN');
+        $hoja->getStyle('A1')->getFont()->setSize(18)->setBold(true)->setColor(new Color('FF001E40'));
+
+        $hoja->mergeCells('A2:D2');
+        $hoja->setCellValue('A2', 'CTP Ambientalista Isaías Retana Arias · ' . now()->format('d/m/Y H:i'));
+        $hoja->getStyle('A2')->getFont()->setSize(9)->setItalic(true)->setColor(new Color('FF777777'));
+
+        $resumen = [
+            ['Total de estudiantes', $total],
+            ['Votaron', $votaron],
+            ['Pendientes', $pendientes],
+        ];
+
+        $fila = 4;
+        foreach ($resumen as [$etiqueta, $valor]) {
+            $hoja->setCellValue('A' . $fila, $etiqueta);
+            $hoja->setCellValue('B' . $fila, $valor);
+            $hoja->getStyle('A' . $fila)->getFont()->setBold(true)->setColor(new Color('FF3C4654'));
+            $hoja->getStyle('B' . $fila)->getFont()->setBold(true)->setSize(12)->setColor(new Color('FF001E40'));
+            $hoja->getStyle('A' . $fila . ':B' . $fila)->getBorders()->getBottom()
+                ->setBorderStyle(Border::BORDER_THIN)->setColor(new Color('FFE2DCCD'));
+            $fila++;
+        }
+
+        $hoja->fromArray(['Sección', 'Total', 'Votaron', 'Pendientes'], null, 'A9');
+        $hoja->getStyle('A9:D9')->getFont()->setBold(true)->setColor(new Color('FFFFFFFF'));
+        $hoja->getStyle('A9:D9')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('001E40');
+        $hoja->getStyle('A9:D9')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $hoja->getRowDimension(9)->setRowHeight(24);
+
+        $porSeccion = $filas->groupBy(fn ($datos) => (string) ($datos[4] ?? '') ?: 'Sin sección')->sortKeys();
+        $fila = 10;
+        foreach ($porSeccion as $seccion => $grupo) {
+            $votosSeccion = $grupo->filter(fn ($datos) => ($datos[5] ?? '') === 'Votó')->count();
+
+            $hoja->fromArray([$seccion, $grupo->count(), $votosSeccion, $grupo->count() - $votosSeccion], null, 'A' . $fila);
+            $hoja->getStyle('A' . $fila . ':D' . $fila)->getBorders()->getAllBorders()
+                ->setBorderStyle(Border::BORDER_THIN)->setColor(new Color('FFD5D8DD'));
+            $hoja->getStyle('B' . $fila . ':D' . $fila)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            if ($fila % 2 === 0) {
+                $hoja->getStyle('A' . $fila . ':D' . $fila)->getFill()
+                    ->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('F7F9FB');
+            }
+
+            $fila++;
+        }
+
+        $hoja->getStyle('A' . $fila . ':D' . $fila)->getFont()->setBold(true);
+        $hoja->getStyle('A' . $fila . ':D' . $fila)->getBorders()->getTop()
+            ->setBorderStyle(Border::BORDER_MEDIUM)->setColor(new Color('FF001E40'));
+        $hoja->fromArray(['Total', $total, $votaron, $pendientes], null, 'A' . $fila);
+
+        foreach (['A' => 24, 'B' => 12, 'C' => 12, 'D' => 14] as $columna => $ancho) {
+            $hoja->getColumnDimension($columna)->setWidth($ancho);
+        }
     }
 
     private function encabezadosPadron(): array

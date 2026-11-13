@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="Foto del presidente">
+  <rect width="160" height="160" rx="14" fill="#f4f0e6"/>
+  <circle cx="80" cy="62" r="25" fill="#c9d3df"/>
+  <path d="M34 139c4-27 22-42 46-42s42 15 46 42z" fill="#c9d3df"/>
+  <circle cx="80" cy="80" r="68" fill="none" stroke="#0f2742" stroke-width="2" stroke-dasharray="7 5"/>
+  <text x="80" y="153" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" fill="#66707c">FOTO</text>
+</svg>

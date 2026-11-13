@@ -17,6 +17,8 @@ class UpdatePartyRequest extends FormRequest
         return [
             'siglas' => 'sometimes|required|string|max:50|unique:parties,siglas,' . $partyId,
             'nombre' => 'sometimes|required|string|max:100|unique:parties,nombre,' . $partyId,
+            'fotopresidente' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'bandera' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'estado' => 'sometimes|boolean',
         ];
     }

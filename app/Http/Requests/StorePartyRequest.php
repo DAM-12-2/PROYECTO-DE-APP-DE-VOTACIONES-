@@ -16,8 +16,8 @@ class StorePartyRequest extends FormRequest
         return [
             'nombre' => 'required|string|max:100|unique:parties,nombre',
             'siglas' => 'required|string|max:20|unique:parties,siglas',
-            'fotopresidente' => 'nullable|string|max:255',
-            'bandera' => 'nullable|string|max:255',
+            'fotopresidente' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'bandera' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ];
     }
 }

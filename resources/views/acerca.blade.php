@@ -17,7 +17,7 @@
                 <img src="/img/logo.png" alt="CTP AIRA" class="mx-auto mb-4 h-20 w-20 rounded-full border-2 border-white/30 object-cover">
                 <h1 class="font-headline-lg text-headline-lg">Sistema Electoral Estudiantil</h1>
                 <p class="mt-1 text-sm opacity-80">CTP Ambientalista Isaías Retana Arias</p>
-                <p class="text-sm opacity-80">Pedregoso · Buenos Aires · Puntarenas</p>
+                <p class="text-sm opacity-80">Pedregoso · Pérez Zeledón · San José</p>
             </div>
 
             <div class="p-8">

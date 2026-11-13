@@ -98,7 +98,7 @@ class PadronExportImportTest extends TestCase
 
         $file = UploadedFile::fake()->createWithContent('Plantilla Importar Estudiantes.xlsx', $binario);
 
-        $this->post(route('admin.students.import'), ['csv_file' => $file])
+        $this->post(route('admin.students.import'), ['csv_file' => $file], ['Accept' => 'application/json'])
             ->assertStatus(200)
             ->assertJsonPath('insertados', 2)
             ->assertJsonPath('rechazados', 0);
@@ -124,7 +124,7 @@ class PadronExportImportTest extends TestCase
 
         $file = UploadedFile::fake()->createWithContent('padron.csv', $csv);
 
-        $this->post(route('admin.students.import'), ['csv_file' => $file])
+        $this->post(route('admin.students.import'), ['csv_file' => $file], ['Accept' => 'application/json'])
             ->assertStatus(200)
             ->assertJsonPath('insertados', 1);
 
@@ -143,7 +143,7 @@ class PadronExportImportTest extends TestCase
 
         $file = UploadedFile::fake()->createWithContent('padron.csv', $csv);
 
-        $this->post(route('admin.students.import'), ['csv_file' => $file])
+        $this->post(route('admin.students.import'), ['csv_file' => $file], ['Accept' => 'application/json'])
             ->assertStatus(200)
             ->assertJsonPath('insertados', 1);
 
@@ -153,5 +153,53 @@ class PadronExportImportTest extends TestCase
             'apellidos' => 'Solano Jiménez',
             'seccion' => '12-3',
         ]);
+    }
+
+    public function test_importacion_no_altera_el_estado_de_voto(): void
+    {
+        $student = Student::where('identificacion', '1000002')->firstOrFail();
+        $this->assertTrue((bool) $student->voto);
+
+        $csv = "Cédula,Primer apellido,Segundo apellido,Nombre,Sección\n"
+            . "1000002,Gomez,,Luis,11-1\n";
+
+        $file = UploadedFile::fake()->createWithContent('padron.csv', $csv);
+
+        $this->post(route('admin.students.import'), ['csv_file' => $file], ['Accept' => 'application/json'])
+            ->assertStatus(200)
+            ->assertJsonPath('insertados', 1);
+
+        $this->assertTrue((bool) $student->fresh()->voto);
+    }
+
+    public function test_importacion_por_formulario_redirige_con_mensaje(): void
+    {
+        $csv = "Cédula,Primer apellido,Segundo apellido,Nombre,Sección\n"
+            . "333333333,Mora,Vargas,Ana,12-1\n";
+
+        $file = UploadedFile::fake()->createWithContent('padron.csv', $csv);
+
+        $this->from(route('admin.students'))
+            ->post(route('admin.students.import'), ['csv_file' => $file])
+            ->assertRedirect(route('admin.students'))
+            ->assertSessionHas('success');
+    }
+
+    public function test_exportacion_xlsx_incluye_hoja_resumen(): void
+    {
+        $response = $this->get(route('admin.students.export.xlsx'));
+        $response->assertStatus(200);
+
+        $temporal = tempnam(sys_get_temp_dir(), 'padron') . '.xlsx';
+        file_put_contents($temporal, $response->streamedContent());
+
+        $spreadsheet = IOFactory::load($temporal);
+        @unlink($temporal);
+
+        $this->assertSame(2, $spreadsheet->getSheetCount());
+        $this->assertSame('Resumen', $spreadsheet->getSheet(1)->getTitle());
+        $this->assertSame('RESUMEN DEL PADRÓN', $spreadsheet->getSheet(1)->getCell('A1')->getValue());
+
+        $spreadsheet->disconnectWorksheets();
     }
 }

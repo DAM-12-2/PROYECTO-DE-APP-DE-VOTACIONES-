@@ -71,6 +71,7 @@ Route::middleware(['auth', 'password.changed', 'role:admin,tee'])->prefix('admin
 
     Route::get('/partidos', [PartyController::class, 'index'])->name('admin.parties');
     Route::post('/partidos', [PartyController::class, 'store']);
+    Route::post('/partidos/importar-fotos', [PartyController::class, 'importPhotos'])->name('admin.parties.import_photos');
     Route::get('/partidos/{id}/edit', [PartyController::class, 'edit'])->name('admin.parties.edit');
     Route::put('/partidos/{id}', [PartyController::class, 'update'])->name('admin.parties.update');
     Route::delete('/partidos/{id}', [PartyController::class, 'destroy']);

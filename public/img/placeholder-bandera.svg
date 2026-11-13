@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160" role="img" aria-label="Bandera del partido">
+  <rect width="240" height="160" rx="14" fill="#0f2742"/>
+  <rect x="10" y="10" width="220" height="140" rx="8" fill="none" stroke="#c9a227" stroke-width="2" stroke-dasharray="7 5"/>
+  <path d="M78 58v48l42-24z" fill="#c9a227"/>
+  <text x="132" y="88" font-family="Segoe UI, Arial, sans-serif" font-size="14" fill="#fffdf8" letter-spacing="1">BANDERA</text>
+  <text x="132" y="105" font-family="Segoe UI, Arial, sans-serif" font-size="10" fill="#c9d3df">JPG o PNG</text>
+</svg>

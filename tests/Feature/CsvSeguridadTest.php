@@ -28,7 +28,7 @@ class CsvSeguridadTest extends TestCase
 
         $file = UploadedFile::fake()->createWithContent('padron.csv', $csv);
 
-        $this->post('/admin/estudiantes/importar', ['csv_file' => $file])
+        $this->post('/admin/estudiantes/importar', ['csv_file' => $file], ['Accept' => 'application/json'])
             ->assertStatus(200)
             ->assertJsonPath('insertados', 1)
             ->assertJsonPath('rechazados', 1);

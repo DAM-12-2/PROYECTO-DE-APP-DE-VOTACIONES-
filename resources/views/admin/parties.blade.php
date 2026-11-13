@@ -15,6 +15,17 @@
   </div>
  @endif
 
+ @if(session('photo_import_errors'))
+  <div class="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl mb-6 text-sm">
+   <p class="font-bold mb-1">Detalles de la importación</p>
+   <ul class="list-disc pl-5 space-y-1">
+    @foreach(session('photo_import_errors') as $error)
+     <li>{{ $error }}</li>
+    @endforeach
+   </ul>
+  </div>
+ @endif
+
  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
   <!-- Formulario -->
@@ -24,13 +35,13 @@
     <form method="POST" action="/admin/partidos" enctype="multipart/form-data" class="space-y-4">
      @csrf
      <div>
-      <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Siglas</label>
+      <label class="block text-xs font-bold text-slate-500 mb-1">Siglas</label>
       <input type="text" name="siglas" required
-       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 outline-none uppercase"
+       class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
        placeholder="PAC">
      </div>
      <div>
-      <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Nombre Completo</label>
+      <label class="block text-xs font-bold text-slate-500 mb-1">Nombre Completo</label>
       <input type="text" name="nombre" required
        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
        placeholder="Partido Acción Colegial">
@@ -38,9 +49,9 @@
 
      <!-- Bandera / Logo -->
      <div>
-      <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Bandera / Logo (Opcional)</label>
+      <label class="block text-xs font-bold text-slate-500 mb-1">Bandera / Logo (Opcional)</label>
       <div class="flex items-center space-x-3">
-       <img id="banderaPreview" src="{{ asset('storage/img/placeholder-bandera.svg') }}" class="w-16 h-16 rounded-lg object-cover border border-slate-200" alt="Bandera">
+       <img id="banderaPreview" src="{{ asset('img/placeholder-bandera.svg') }}" class="w-16 h-16 rounded-lg object-cover border border-slate-200" alt="Bandera">
        <label for="bandera" class="cursor-pointer">
         <span class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold px-3 py-2 rounded-lg transition-colors">
          Seleccionar archivo
@@ -53,9 +64,9 @@
 
      <!-- Foto Presidente -->
      <div>
-      <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Foto Presidente (Opcional)</label>
+      <label class="block text-xs font-bold text-slate-500 mb-1">Foto Presidente (Opcional)</label>
       <div class="flex items-center space-x-3">
-       <img id="presidentePreview" src="{{ asset('storage/img/placeholder-presidente.svg') }}" class="w-16 h-16 rounded-lg object-cover border border-slate-200" alt="Presidente">
+       <img id="presidentePreview" src="{{ asset('img/placeholder-presidente.svg') }}" class="w-16 h-16 rounded-lg object-cover border border-slate-200" alt="Presidente">
        <label for="fotopresidente" class="cursor-pointer">
         <span class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold px-3 py-2 rounded-lg transition-colors">
          Seleccionar archivo
@@ -122,6 +133,43 @@
      </div>
     @endif
    </div>
+  </div>
+ </div>
+
+ <div class="mt-8 bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+  <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+   <div class="max-w-2xl">
+    <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+     <i class="ph ph-images text-xl text-teal-600"></i> Importar fotos en lote
+    </h2>
+    <p class="text-sm text-slate-500 mt-1">
+     Suba un ZIP con las banderas y fotos de presidente. El sistema reconoce el partido por las siglas en el nombre del archivo.
+    </p>
+    <div class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-600">
+     <div class="rounded-lg bg-slate-50 border border-slate-200 px-3 py-2"><code>PVA_bandera.png</code> · bandera</div>
+     <div class="rounded-lg bg-slate-50 border border-slate-200 px-3 py-2"><code>PVA_presidente.jpg</code> · presidente</div>
+    </div>
+    <p class="text-xs text-slate-400 mt-2">También acepta guion: <code>PVA-bandera.png</code>. Máximo 20 MB, 120 archivos y 2 MB por imagen.</p>
+    <details class="mt-3 text-xs text-slate-500">
+     <summary class="cursor-pointer font-semibold text-slate-700">Usar manifiesto CSV o Excel (opcional)</summary>
+     <p class="mt-2">Incluya dentro del ZIP un archivo <code>manifest.csv</code>, <code>manifest.xlsx</code> o <code>manifest.xls</code> con las columnas:</p>
+     <pre class="mt-2 bg-slate-50 border border-slate-200 rounded-lg p-3 overflow-x-auto">archivo,siglas,tipo
+foto-bandera.png,PVA,bandera
+foto-presidente.jpg,PVA,presidente</pre>
+     <a href="{{ asset('plantilla-fotos-partidos.csv') }}" class="inline-block mt-2 text-teal-700 underline">Descargar plantilla CSV</a>
+    </details>
+   </div>
+
+   <form method="POST" action="{{ route('admin.parties.import_photos') }}" enctype="multipart/form-data"
+    class="w-full lg:w-96 shrink-0 space-y-3">
+    @csrf
+    <input type="file" name="zip_file" accept=".zip,application/zip" required
+     class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm">
+    @error('zip_file') <p class="text-xs text-red-600">{{ $message }}</p> @enderror
+    <button type="submit" class="w-full rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-4 text-sm transition">
+     Importar fotos
+    </button>
+   </form>
   </div>
  </div>
 
